@@ -3,21 +3,75 @@ import { useActor } from "@/hooks/useActor";
 import { useInternetIdentity } from "@/hooks/useInternetIdentity";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, LogIn, ShieldAlert, TreePine } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AdminDashboard } from "./AdminDashboard";
 
 export function AdminPage() {
-  const { login, clear, isInitializing, isLoggingIn, identity } =
-    useInternetIdentity();
+  const {
+    login,
+    clear,
+    isInitializing,
+    isLoggingIn,
+    isLoginIdle,
+    isLoginError,
+    identity,
+  } = useInternetIdentity();
   const { actor, isFetching: actorFetching } = useActor();
   const [authReady, setAuthReady] = useState(false);
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasStartedTimeout = useRef(false);
+  // Track how many times we've retried login when authClient wasn't ready yet
+  const loginRetryCount = useRef(0);
 
   // Wait for actor to be ready after identity loads
   useEffect(() => {
     if (!actorFetching && actor) {
       setAuthReady(true);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
     }
   }, [actorFetching, actor]);
+
+  // Safety timeout: start once on mount, cancel when ready
+  // This prevents infinite loading if actor fetch never resolves
+  useEffect(() => {
+    if (!hasStartedTimeout.current) {
+      hasStartedTimeout.current = true;
+      timeoutRef.current = setTimeout(() => {
+        setLoadingTimedOut(true);
+      }, 10000);
+    }
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Retry login automatically if the auth client wasn't ready when user clicked
+  const handleLogin = () => {
+    loginRetryCount.current = 0;
+    attemptLogin();
+  };
+
+  const attemptLogin = () => {
+    // If idle, call login directly — auth client is ready
+    if (isLoginIdle || isLoginError) {
+      login();
+    } else if (isInitializing && loginRetryCount.current < 20) {
+      // Auth client still initializing; retry after a short delay
+      loginRetryCount.current += 1;
+      setTimeout(attemptLogin, 300);
+    } else {
+      // Fallback: just call login and let it error visibly
+      login();
+    }
+  };
 
   const {
     data: isAdmin,
@@ -34,7 +88,8 @@ export function AdminPage() {
   });
 
   const isLoading =
-    isInitializing || (!!identity && (actorFetching || adminCheckLoading));
+    !loadingTimedOut &&
+    (isInitializing || (!!identity && (actorFetching || adminCheckLoading)));
 
   // Not logged in
   if (!identity && !isLoading) {
@@ -90,7 +145,7 @@ export function AdminPage() {
                 data-ocid="admin.login_button"
                 size="lg"
                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-display font-bold tracking-tight"
-                onClick={login}
+                onClick={handleLogin}
                 disabled={isLoggingIn}
               >
                 {isLoggingIn ? (
@@ -211,14 +266,69 @@ export function AdminPage() {
     );
   }
 
-  // Waiting for admin check result
+  // Timed out or waiting for admin check result — show login screen as safe fallback
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="flex flex-col items-center gap-3 text-muted-foreground">
-        <TreePine className="w-8 h-8 text-primary animate-pulse" />
-        <p className="font-mono text-xs uppercase tracking-widest">
-          Loading...
-        </p>
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <div
+        className="absolute inset-0 pointer-events-none opacity-30"
+        style={{
+          background:
+            "radial-gradient(ellipse 50% 60% at 50% 0%, oklch(0.25 0.12 27 / 30%) 0%, transparent 70%)",
+        }}
+      />
+      <div className="relative z-10 w-full max-w-md">
+        <div className="border border-primary/30 rounded-lg p-8 bg-card shadow-glow-red-sm">
+          <div className="flex flex-col items-center text-center gap-5">
+            <div className="relative">
+              <div className="w-16 h-16 rounded-lg overflow-hidden border border-primary/40 bg-secondary flex items-center justify-center">
+                <TreePine className="w-8 h-8 text-primary" />
+              </div>
+              <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                <ShieldAlert className="w-3 h-3 text-primary-foreground" />
+              </span>
+            </div>
+            <div>
+              <p className="font-mono text-[10px] text-primary/70 uppercase tracking-widest mb-1">
+                Admin Access Required
+              </p>
+              <h1 className="font-display font-extrabold text-2xl text-foreground">
+                <span className="text-primary">Bonsai</span> Registry
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Management Console
+              </p>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Sign in with your Internet Identity to access the admin panel.
+              Only authorized admins can manage the registry.
+            </p>
+            <Button
+              data-ocid="admin.login_button"
+              size="lg"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-display font-bold tracking-tight"
+              onClick={handleLogin}
+              disabled={isLoggingIn}
+            >
+              {isLoggingIn ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Signing In...
+                </>
+              ) : (
+                <>
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Sign In with Internet Identity
+                </>
+              )}
+            </Button>
+            <a
+              href="/"
+              className="text-xs text-muted-foreground hover:text-primary transition-colors"
+            >
+              ← Back to Registry
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
