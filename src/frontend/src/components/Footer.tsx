@@ -126,18 +126,27 @@ export function Footer() {
               T3knoLogic
             </a>
           </p>
-          <p className="text-xs text-muted-foreground flex items-center gap-1">
-            Built with <Heart className="w-3 h-3 text-primary fill-primary" />{" "}
-            using{" "}
+          <div className="flex items-center gap-3">
+            <p className="text-xs text-muted-foreground flex items-center gap-1">
+              Built with <Heart className="w-3 h-3 text-primary fill-primary" />{" "}
+              using{" "}
+              <a
+                href={caffeineUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                caffeine.ai
+              </a>
+            </p>
             <a
-              href={caffeineUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
+              href="#admin"
+              data-ocid="footer.admin_link"
+              className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground transition-colors font-mono"
             >
-              caffeine.ai
+              Admin
             </a>
-          </p>
+          </div>
         </div>
       </div>
     </footer>
