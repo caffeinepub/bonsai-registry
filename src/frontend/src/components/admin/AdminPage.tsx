@@ -3,75 +3,11 @@ import { useActor } from "@/hooks/useActor";
 import { useInternetIdentity } from "@/hooks/useInternetIdentity";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, LogIn, ShieldAlert, TreePine } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 import { AdminDashboard } from "./AdminDashboard";
 
 export function AdminPage() {
-  const {
-    login,
-    clear,
-    isInitializing,
-    isLoggingIn,
-    isLoginIdle,
-    isLoginError,
-    identity,
-  } = useInternetIdentity();
+  const { login, clear, isLoggingIn, identity } = useInternetIdentity();
   const { actor, isFetching: actorFetching } = useActor();
-  const [authReady, setAuthReady] = useState(false);
-  const [loadingTimedOut, setLoadingTimedOut] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hasStartedTimeout = useRef(false);
-  // Track how many times we've retried login when authClient wasn't ready yet
-  const loginRetryCount = useRef(0);
-
-  // Wait for actor to be ready after identity loads
-  useEffect(() => {
-    if (!actorFetching && actor) {
-      setAuthReady(true);
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-    }
-  }, [actorFetching, actor]);
-
-  // Safety timeout: start once on mount, cancel when ready
-  // This prevents infinite loading if actor fetch never resolves
-  useEffect(() => {
-    if (!hasStartedTimeout.current) {
-      hasStartedTimeout.current = true;
-      timeoutRef.current = setTimeout(() => {
-        setLoadingTimedOut(true);
-      }, 10000);
-    }
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Retry login automatically if the auth client wasn't ready when user clicked
-  const handleLogin = () => {
-    loginRetryCount.current = 0;
-    attemptLogin();
-  };
-
-  const attemptLogin = () => {
-    // If idle, call login directly — auth client is ready
-    if (isLoginIdle || isLoginError) {
-      login();
-    } else if (isInitializing && loginRetryCount.current < 20) {
-      // Auth client still initializing; retry after a short delay
-      loginRetryCount.current += 1;
-      setTimeout(attemptLogin, 300);
-    } else {
-      // Fallback: just call login and let it error visibly
-      login();
-    }
-  };
 
   const {
     data: isAdmin,
@@ -83,13 +19,11 @@ export function AdminPage() {
       if (!actor) return false;
       return actor.isCallerAdmin();
     },
-    enabled: !!actor && !actorFetching && !!identity && authReady,
+    enabled: !!actor && !actorFetching && !!identity,
     retry: false,
   });
 
-  const isLoading =
-    !loadingTimedOut &&
-    (isInitializing || (!!identity && (actorFetching || adminCheckLoading)));
+  const isLoading = !!identity && (actorFetching || adminCheckLoading);
 
   // Not logged in
   if (!identity && !isLoading) {
@@ -145,7 +79,7 @@ export function AdminPage() {
                 data-ocid="admin.login_button"
                 size="lg"
                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-display font-bold tracking-tight"
-                onClick={handleLogin}
+                onClick={login}
                 disabled={isLoggingIn}
               >
                 {isLoggingIn ? (
@@ -181,7 +115,7 @@ export function AdminPage() {
         <div className="flex flex-col items-center gap-3 text-muted-foreground">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="font-mono text-xs uppercase tracking-widest">
-            {isInitializing ? "Initializing..." : "Verifying access..."}
+            Verifying access...
           </p>
         </div>
       </div>
@@ -306,7 +240,7 @@ export function AdminPage() {
               data-ocid="admin.login_button"
               size="lg"
               className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-display font-bold tracking-tight"
-              onClick={handleLogin}
+              onClick={login}
               disabled={isLoggingIn}
             >
               {isLoggingIn ? (
