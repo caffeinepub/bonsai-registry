@@ -1,0 +1,106 @@
+import type { RegistryEntry } from "@/data/registryData";
+import { ExternalLink } from "lucide-react";
+
+const TAG_STYLES: Record<string, string> = {
+  gaming: "tag-gaming",
+  nft: "tag-nft",
+  defi: "tag-defi",
+  wallet: "tag-wallet",
+  exchange: "tag-exchange",
+  social: "tag-social",
+  tools: "tag-tools",
+  commerce: "tag-commerce",
+};
+
+const TAG_LABELS: Record<string, string> = {
+  gaming: "Gaming",
+  nft: "NFT",
+  defi: "DeFi",
+  wallet: "Wallet",
+  exchange: "Exchange",
+  social: "Social",
+  tools: "Tools",
+  commerce: "Commerce",
+};
+
+interface LinkCardProps {
+  entry: RegistryEntry;
+  index: number;
+}
+
+export function LinkCard({ entry, index }: LinkCardProps) {
+  const domain = (() => {
+    try {
+      return new URL(entry.url).hostname.replace("www.", "");
+    } catch {
+      return entry.url;
+    }
+  })();
+
+  return (
+    <a
+      href={entry.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-ocid={`registry.link.item.${index}`}
+      className="link-card group"
+    >
+      {/* ── Name row ── */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          {/* Favicon with letter fallback */}
+          <div className="w-6 h-6 rounded-sm flex-shrink-0 overflow-hidden bg-secondary flex items-center justify-center">
+            <img
+              src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
+              alt=""
+              width={24}
+              height={24}
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                const t = e.target as HTMLImageElement;
+                t.style.display = "none";
+                const sib = t.nextElementSibling as HTMLElement | null;
+                if (sib) sib.style.display = "flex";
+              }}
+            />
+            {/* Letter fallback — hidden until img errors */}
+            <span
+              style={{ display: "none" }}
+              className="w-full h-full items-center justify-center font-mono text-[10px] font-bold text-primary uppercase bg-primary/10"
+            >
+              {entry.name.charAt(0)}
+            </span>
+          </div>
+
+          <span className="text-sm font-semibold font-display text-foreground group-hover:text-primary transition-colors truncate leading-tight">
+            {entry.name}
+          </span>
+        </div>
+
+        <ExternalLink
+          className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary flex-shrink-0 transition-colors"
+          aria-hidden
+        />
+      </div>
+
+      {/* ── Description ── */}
+      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 mt-0.5">
+        {entry.description}
+      </p>
+
+      {/* ── Tags ── */}
+      <div className="flex flex-wrap gap-1 mt-auto pt-1">
+        {entry.tags.map((tag) => (
+          <span
+            key={tag}
+            className={`inline-flex items-center text-[10px] font-mono px-1.5 py-0.5 rounded-sm border font-medium ${TAG_STYLES[tag] ?? "text-muted-foreground bg-secondary border-border"}`}
+          >
+            {TAG_LABELS[tag] ?? tag}
+          </span>
+        ))}
+      </div>
+    </a>
+  );
+}
+
+export type { LinkCardProps };

@@ -1,0 +1,210 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Mona Sans";
+  src: url("/assets/fonts/MonaSans.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/assets/fonts/BricolageGrotesque.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/fonts/JetBrainsMono.woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --radius: 0.375rem;
+
+    /* ── Palette: Deep black + vivid red ── */
+    --background: 0.07 0 0;
+    --foreground: 0.96 0 0;
+    --card: 0.11 0 0;
+    --card-foreground: 0.96 0 0;
+    --popover: 0.13 0 0;
+    --popover-foreground: 0.96 0 0;
+
+    /* Red: oklch(0.60 0.235 27) — vivid, saturated, high contrast */
+    --primary: 0.60 0.235 27;
+    --primary-foreground: 0.99 0 0;
+
+    --secondary: 0.14 0 0;
+    --secondary-foreground: 0.90 0 0;
+    --muted: 0.13 0 0;
+    --muted-foreground: 0.52 0 0;
+    --accent: 0.60 0.235 27;
+    --accent-foreground: 0.99 0 0;
+    --destructive: 0.55 0.22 27;
+    --destructive-foreground: 0.99 0 0;
+
+    --border: 0.20 0 0;
+    --input: 0.17 0 0;
+    --ring: 0.60 0.235 27;
+
+    --chart-1: 0.60 0.235 27;
+    --chart-2: 0.65 0.15 200;
+    --chart-3: 0.70 0.18 140;
+    --chart-4: 0.75 0.12 80;
+    --chart-5: 0.60 0.20 300;
+
+    --sidebar: 0.09 0 0;
+    --sidebar-foreground: 0.90 0 0;
+    --sidebar-primary: 0.60 0.235 27;
+    --sidebar-primary-foreground: 0.99 0 0;
+    --sidebar-accent: 0.13 0 0;
+    --sidebar-accent-foreground: 0.90 0 0;
+    --sidebar-border: 0.18 0 0;
+    --sidebar-ring: 0.60 0.235 27;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Mona Sans", "General Sans", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ── Red scrollbar ── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: oklch(0.07 0 0); }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0.42 0.15 27);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: oklch(0.60 0.235 27); }
+
+  ::selection {
+    background: oklch(0.60 0.235 27 / 28%);
+    color: oklch(0.99 0 0);
+  }
+}
+
+@layer utilities {
+  /* ── Typography helpers ── */
+  .font-display {
+    font-family: "Bricolage Grotesque", "Mona Sans", system-ui, sans-serif;
+  }
+  .font-mono {
+    font-family: "JetBrains Mono", "Geist Mono", monospace;
+  }
+
+  /* ── Atmospheric header background ── */
+  .header-atmosphere {
+    background:
+      /* Radial red bloom top-left */
+      radial-gradient(
+        ellipse 60% 80% at -5% -10%,
+        oklch(0.60 0.235 27 / 12%) 0%,
+        transparent 60%
+      ),
+      /* Subtle grid lines */
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 39px,
+        oklch(0.60 0.235 27 / 4%) 39px,
+        oklch(0.60 0.235 27 / 4%) 40px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 79px,
+        oklch(0.60 0.235 27 / 3%) 79px,
+        oklch(0.60 0.235 27 / 3%) 80px
+      ),
+      oklch(0.07 0 0);
+  }
+
+  /* ── Card styles ── */
+  .link-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.875rem;
+    background: oklch(0.11 0 0);
+    border: 1px solid oklch(0.20 0 0);
+    border-radius: 0.375rem;
+    /* left-border accent line via box-shadow inset */
+    box-shadow: inset 3px 0 0 0 oklch(0.60 0.235 27 / 0%);
+    transition:
+      border-color 200ms ease,
+      box-shadow 200ms ease,
+      background 200ms ease;
+    text-decoration: none;
+  }
+
+  .link-card:hover {
+    border-color: oklch(0.60 0.235 27 / 55%);
+    background: oklch(0.13 0 0);
+    box-shadow:
+      inset 3px 0 0 0 oklch(0.60 0.235 27),
+      0 0 24px oklch(0.60 0.235 27 / 14%),
+      0 4px 16px oklch(0 0 0 / 40%);
+  }
+
+  /* ── Tag pills ── */
+  .tag-gaming   { @apply text-emerald-400 bg-emerald-400/10 border-emerald-400/20; }
+  .tag-nft      { @apply text-violet-400  bg-violet-400/10  border-violet-400/20; }
+  .tag-defi     { @apply text-sky-400     bg-sky-400/10     border-sky-400/20; }
+  .tag-wallet   { @apply text-amber-400   bg-amber-400/10   border-amber-400/20; }
+  .tag-exchange { @apply text-orange-400  bg-orange-400/10  border-orange-400/20; }
+  .tag-social   { @apply text-pink-400    bg-pink-400/10    border-pink-400/20; }
+  .tag-tools    { @apply text-cyan-400    bg-cyan-400/10    border-cyan-400/20; }
+  .tag-commerce { @apply text-yellow-400  bg-yellow-400/10  border-yellow-400/20; }
+
+  /* ── Section open/close animation ── */
+  @keyframes section-reveal {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .section-reveal {
+    animation: section-reveal 0.22s ease-out both;
+  }
+
+  /* ── Filter pill ── */
+  .filter-pill-active {
+    background: oklch(0.60 0.235 27);
+    color: oklch(0.99 0 0);
+    border-color: oklch(0.60 0.235 27);
+  }
+  .filter-pill-idle {
+    background: oklch(0.14 0 0);
+    color: oklch(0.52 0 0);
+    border-color: oklch(0.20 0 0);
+  }
+  .filter-pill-idle:hover {
+    border-color: oklch(0.60 0.235 27 / 45%);
+    color: oklch(0.85 0 0);
+  }
+
+  /* ── Stat counter badge ── */
+  .stat-badge {
+    font-family: "JetBrains Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+}
