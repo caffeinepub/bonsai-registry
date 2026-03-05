@@ -19,6 +19,10 @@ export interface BonsaiRegistryEntry {
     logoUrl?: string;
 }
 export type Time = bigint;
+export interface EntryRatingStats {
+    count: bigint;
+    average: number;
+}
 export interface UserProfile {
     name: string;
 }
@@ -44,14 +48,19 @@ export interface backendInterface {
     bulkImportEntries(entries: Array<BonsaiRegistryEntry>): Promise<Array<bigint>>;
     bulkImportEntriesWithSecret(secret: string, entries: Array<BonsaiRegistryEntry>): Promise<Array<bigint>>;
     fullTextSearch(arg0: string, arg1: bigint, arg2: bigint): Promise<Array<BonsaiRegistryEntry>>;
+    getAllEntryRatings(): Promise<Array<[bigint, EntryRatingStats]>>;
     getAllRegistryEntries(offset: bigint, limit: bigint): Promise<Array<BonsaiRegistryEntry>>;
+    getCallerAllRatings(): Promise<Array<[bigint, bigint]>>;
+    getCallerRating(entryId: bigint): Promise<bigint | null>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getEntriesByCategory(category: Category, offset: bigint, limit: bigint): Promise<Array<BonsaiRegistryEntry>>;
     getEntriesByEcosystem(ecosystem: string, offset: bigint, limit: bigint): Promise<Array<BonsaiRegistryEntry>>;
+    getEntryRating(entryId: bigint): Promise<EntryRatingStats>;
     getTotalEntriesCount(): Promise<bigint>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
+    rateEntry(entryId: bigint, rating: bigint): Promise<void>;
     removeRegistryEntry(id: bigint): Promise<void>;
     removeRegistryEntryWithSecret(secret: string, id: bigint): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;

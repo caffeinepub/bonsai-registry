@@ -1,7 +1,13 @@
 import type { EcosystemGroup, RegistryEntry } from "@/data/registryData";
+import type { CallerRatingsMap } from "@/hooks/useCallerRatings";
+import type { RatingsMap } from "@/hooks/useRatings";
+import { recordEvent } from "@/utils/analytics";
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import type { EntryRatingStats } from "../backend.d";
 import { LinkCard } from "./LinkCard";
+
+export type SortMode = "default" | "top-rated" | "most-rated";
 
 const TIER_LABELS: Record<number, string> = {
   1: "Foundation",
@@ -19,11 +25,23 @@ const TIER_DOT: Record<number, string> = {
   5: "bg-amber-400",
 };
 
+/** Extract the numeric backend ID from a registry entry ID string, or null if static */
+function getBackendId(entryId: string): string | null {
+  if (!entryId.startsWith("backend-")) return null;
+  return entryId.replace("backend-", "");
+}
+
 interface EcosystemSectionProps {
   group: EcosystemGroup;
   filteredEntries: RegistryEntry[];
   sectionIndex: number;
   defaultOpen?: boolean;
+  sortMode?: SortMode;
+  ratingsMap?: RatingsMap;
+  callerRatingsMap?: CallerRatingsMap;
+  onRate?: (entryId: string, rating: number) => void;
+  isAuthenticated?: boolean;
+  ratingLoadingId?: string | null;
 }
 
 export function EcosystemSection({
@@ -31,8 +49,59 @@ export function EcosystemSection({
   filteredEntries,
   sectionIndex,
   defaultOpen = false,
+  sortMode = "default",
+  ratingsMap = new Map(),
+  callerRatingsMap = new Map(),
+  onRate,
+  isAuthenticated = false,
+  ratingLoadingId = null,
 }: EcosystemSectionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  const toggleOpen = () => {
+    const next = !isOpen;
+    setIsOpen(next);
+    if (next) {
+      recordEvent("ecosystem_view", group.slug);
+    }
+  };
+
+  // Sort entries based on sortMode
+  const sortedEntries = useMemo<RegistryEntry[]>(() => {
+    if (sortMode === "default") return filteredEntries;
+
+    return [...filteredEntries].sort((a, b) => {
+      const aId = getBackendId(a.id);
+      const bId = getBackendId(b.id);
+      const aStats: EntryRatingStats | undefined = aId
+        ? ratingsMap.get(aId)
+        : undefined;
+      const bStats: EntryRatingStats | undefined = bId
+        ? ratingsMap.get(bId)
+        : undefined;
+
+      if (sortMode === "top-rated") {
+        const aAvg = aStats?.average ?? 0;
+        const bAvg = bStats?.average ?? 0;
+        const aCount = aStats ? Number(aStats.count) : 0;
+        const bCount = bStats ? Number(bStats.count) : 0;
+        // Entries with no ratings go last
+        if (aAvg === 0 && bAvg === 0) return 0;
+        if (aAvg === 0) return 1;
+        if (bAvg === 0) return -1;
+        if (bAvg !== aAvg) return bAvg - aAvg;
+        return bCount - aCount; // tiebreaker: count descending
+      }
+
+      if (sortMode === "most-rated") {
+        const aCount = aStats ? Number(aStats.count) : 0;
+        const bCount = bStats ? Number(bStats.count) : 0;
+        return bCount - aCount;
+      }
+
+      return 0;
+    });
+  }, [filteredEntries, sortMode, ratingsMap]);
 
   if (filteredEntries.length === 0) return null;
 
@@ -45,7 +114,7 @@ export function EcosystemSection({
       {/* ── Section trigger ── */}
       <button
         type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={toggleOpen}
         className="w-full flex items-center justify-between px-4 sm:px-5 py-4 hover:bg-secondary/60 transition-colors group"
         aria-expanded={isOpen}
       >
@@ -99,9 +168,27 @@ export function EcosystemSection({
           <div className="h-px bg-primary/30 mx-5" />
           <div className="p-4 sm:p-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
-              {filteredEntries.map((entry, idx) => (
-                <LinkCard key={entry.id} entry={entry} index={idx + 1} />
-              ))}
+              {sortedEntries.map((entry, idx) => {
+                const backendId = getBackendId(entry.id);
+                const stats = backendId
+                  ? (ratingsMap.get(backendId) ?? null)
+                  : null;
+                const userRating = backendId
+                  ? (callerRatingsMap.get(backendId) ?? null)
+                  : null;
+                return (
+                  <LinkCard
+                    key={entry.id}
+                    entry={entry}
+                    index={idx + 1}
+                    stats={stats}
+                    userRating={userRating}
+                    onRate={onRate}
+                    isAuthenticated={isAuthenticated}
+                    isRatingLoading={ratingLoadingId === entry.id}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>

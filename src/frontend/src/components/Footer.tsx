@@ -1,6 +1,11 @@
+import { recordEvent } from "@/utils/analytics";
 import { ExternalLink, Heart, TreePine } from "lucide-react";
 
-export function Footer() {
+interface FooterProps {
+  onTipOpen?: () => void;
+}
+
+export function Footer({ onTipOpen }: FooterProps) {
   const currentYear = new Date().getFullYear();
   const hostname =
     typeof window !== "undefined"
@@ -127,6 +132,20 @@ export function Footer() {
             </a>
           </p>
           <div className="flex items-center gap-3">
+            {onTipOpen && (
+              <button
+                type="button"
+                data-ocid="footer.tip_button"
+                onClick={() => {
+                  recordEvent("tip_modal_open", "footer_button");
+                  onTipOpen();
+                }}
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors border border-primary/20 hover:border-primary/40 rounded px-2 py-1"
+              >
+                <Heart className="w-3 h-3 text-primary fill-primary" />
+                Support the Project
+              </button>
+            )}
             <p className="text-xs text-muted-foreground flex items-center gap-1">
               Built with <Heart className="w-3 h-3 text-primary fill-primary" />{" "}
               using{" "}

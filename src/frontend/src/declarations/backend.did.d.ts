@@ -29,6 +29,7 @@ export type Category = { 'nft' : null } |
   { 'wallet' : null } |
   { 'commerce' : null } |
   { 'exchange' : null };
+export interface EntryRatingStats { 'count' : bigint, 'average' : number }
 export type Time = bigint;
 export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
@@ -54,10 +55,13 @@ export interface _SERVICE {
     [string, bigint, bigint],
     Array<BonsaiRegistryEntry>
   >,
+  'getAllEntryRatings' : ActorMethod<[], Array<[bigint, EntryRatingStats]>>,
   'getAllRegistryEntries' : ActorMethod<
     [bigint, bigint],
     Array<BonsaiRegistryEntry>
   >,
+  'getCallerAllRatings' : ActorMethod<[], Array<[bigint, bigint]>>,
+  'getCallerRating' : ActorMethod<[bigint], [] | [bigint]>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getEntriesByCategory' : ActorMethod<
@@ -68,9 +72,11 @@ export interface _SERVICE {
     [string, bigint, bigint],
     Array<BonsaiRegistryEntry>
   >,
+  'getEntryRating' : ActorMethod<[bigint], EntryRatingStats>,
   'getTotalEntriesCount' : ActorMethod<[], bigint>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'rateEntry' : ActorMethod<[bigint, bigint], undefined>,
   'removeRegistryEntry' : ActorMethod<[bigint], undefined>,
   'removeRegistryEntryWithSecret' : ActorMethod<[string, bigint], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,

@@ -1,5 +1,8 @@
 import type { RegistryEntry } from "@/data/registryData";
+import { recordEvent } from "@/utils/analytics";
 import { ExternalLink } from "lucide-react";
+import type { EntryRatingStats } from "../backend.d";
+import { StarRating } from "./StarRating";
 
 const TAG_STYLES: Record<string, string> = {
   gaming: "tag-gaming",
@@ -26,9 +29,22 @@ const TAG_LABELS: Record<string, string> = {
 interface LinkCardProps {
   entry: RegistryEntry;
   index: number;
+  stats?: EntryRatingStats | null;
+  userRating?: number | null;
+  onRate?: (entryId: string, rating: number) => void;
+  isAuthenticated?: boolean;
+  isRatingLoading?: boolean;
 }
 
-export function LinkCard({ entry, index }: LinkCardProps) {
+export function LinkCard({
+  entry,
+  index,
+  stats,
+  userRating,
+  onRate,
+  isAuthenticated = false,
+  isRatingLoading = false,
+}: LinkCardProps) {
   const domain = (() => {
     try {
       return new URL(entry.url).hostname.replace("www.", "");
@@ -37,6 +53,9 @@ export function LinkCard({ entry, index }: LinkCardProps) {
     }
   })();
 
+  // Only show rating UI for backend-managed entries (they have numeric backend IDs)
+  const isBackendEntry = entry.id.startsWith("backend-");
+
   return (
     <a
       href={entry.url}
@@ -44,6 +63,7 @@ export function LinkCard({ entry, index }: LinkCardProps) {
       rel="noopener noreferrer"
       data-ocid={`registry.link.item.${index}`}
       className="link-card group"
+      onClick={() => recordEvent("link_click", entry.name)}
     >
       {/* ── Name row ── */}
       <div className="flex items-center justify-between gap-2">
@@ -99,6 +119,28 @@ export function LinkCard({ entry, index }: LinkCardProps) {
           </span>
         ))}
       </div>
+
+      {/* ── Rating ── (backend entries only) */}
+      {isBackendEntry && (
+        // fieldset prevents the anchor from capturing clicks on interactive star buttons
+        <fieldset
+          aria-label="Rate this project"
+          className="mt-1 pt-1.5 border-t border-border/50 border-0 p-0 m-0"
+          onClick={(e) => e.preventDefault()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") e.preventDefault();
+          }}
+        >
+          <StarRating
+            entryId={entry.id}
+            stats={stats ?? null}
+            userRating={userRating ?? null}
+            onRate={(rating) => onRate?.(entry.id, rating)}
+            isAuthenticated={isAuthenticated}
+            isLoading={isRatingLoading}
+          />
+        </fieldset>
+      )}
     </a>
   );
 }

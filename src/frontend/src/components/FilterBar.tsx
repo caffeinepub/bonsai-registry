@@ -1,4 +1,6 @@
 import type { Category } from "@/data/registryData";
+import { AlignJustify, BarChart2, Star } from "lucide-react";
+import type { SortMode } from "./EcosystemSection";
 
 const CATEGORY_FILTERS: { label: string; value: Category | "all" }[] = [
   { label: "All", value: "all" },
@@ -31,6 +33,28 @@ const CHAIN_FILTERS: { label: string; value: string }[] = [
   { label: "Creators", value: "creator" },
 ];
 
+const SORT_OPTIONS: {
+  label: string;
+  value: SortMode;
+  icon: React.ReactNode;
+}[] = [
+  {
+    label: "Default",
+    value: "default",
+    icon: <AlignJustify className="w-3 h-3" aria-hidden />,
+  },
+  {
+    label: "Top Rated",
+    value: "top-rated",
+    icon: <Star className="w-3 h-3" aria-hidden />,
+  },
+  {
+    label: "Most Rated",
+    value: "most-rated",
+    icon: <BarChart2 className="w-3 h-3" aria-hidden />,
+  },
+];
+
 interface FilterBarProps {
   activeCategory: Category | "all";
   activeChain: string;
@@ -38,6 +62,8 @@ interface FilterBarProps {
   onChainChange: (chain: string) => void;
   filteredCount: number;
   totalCount: number;
+  sortMode?: SortMode;
+  onSortChange?: (mode: SortMode) => void;
 }
 
 export function FilterBar({
@@ -47,6 +73,8 @@ export function FilterBar({
   onChainChange,
   filteredCount,
   totalCount,
+  sortMode = "default",
+  onSortChange,
 }: FilterBarProps) {
   const isFiltered = activeCategory !== "all" || activeChain !== "all";
 
@@ -102,6 +130,34 @@ export function FilterBar({
             ))}
           </div>
         </div>
+
+        {/* ── Sort row ── */}
+        {onSortChange && (
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+            <span className="font-mono text-[10px] text-muted-foreground/50 uppercase tracking-widest flex-shrink-0 w-16 text-right pr-1">
+              Sort
+            </span>
+            <div className="flex items-center gap-1.5 flex-nowrap">
+              {SORT_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  data-ocid="registry.sort.tab"
+                  onClick={() => onSortChange(opt.value)}
+                  className={[
+                    "flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-medium border transition-all duration-150",
+                    sortMode === opt.value
+                      ? "filter-pill-active"
+                      : "filter-pill-idle",
+                  ].join(" ")}
+                >
+                  {opt.icon}
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* ── Status row ── */}
         <div className="flex items-center gap-3 pb-0.5">

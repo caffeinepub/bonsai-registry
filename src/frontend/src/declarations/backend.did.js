@@ -35,6 +35,10 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const EntryRatingStats = IDL.Record({
+  'count' : IDL.Nat,
+  'average' : IDL.Float64,
+});
 export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 
 export const idlService = IDL.Service({
@@ -61,11 +65,22 @@ export const idlService = IDL.Service({
       [IDL.Vec(BonsaiRegistryEntry)],
       ['query'],
     ),
+  'getAllEntryRatings' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Tuple(IDL.Nat, EntryRatingStats))],
+      ['query'],
+    ),
   'getAllRegistryEntries' : IDL.Func(
       [IDL.Nat, IDL.Nat],
       [IDL.Vec(BonsaiRegistryEntry)],
       ['query'],
     ),
+  'getCallerAllRatings' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Tuple(IDL.Nat, IDL.Nat))],
+      ['query'],
+    ),
+  'getCallerRating' : IDL.Func([IDL.Nat], [IDL.Opt(IDL.Nat)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getEntriesByCategory' : IDL.Func(
@@ -78,6 +93,7 @@ export const idlService = IDL.Service({
       [IDL.Vec(BonsaiRegistryEntry)],
       ['query'],
     ),
+  'getEntryRating' : IDL.Func([IDL.Nat], [EntryRatingStats], ['query']),
   'getTotalEntriesCount' : IDL.Func([], [IDL.Nat], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
@@ -85,6 +101,7 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'rateEntry' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
   'removeRegistryEntry' : IDL.Func([IDL.Nat], [], []),
   'removeRegistryEntryWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
@@ -126,6 +143,10 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const EntryRatingStats = IDL.Record({
+    'count' : IDL.Nat,
+    'average' : IDL.Float64,
+  });
   const UserProfile = IDL.Record({ 'name' : IDL.Text });
   
   return IDL.Service({
@@ -152,11 +173,22 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(BonsaiRegistryEntry)],
         ['query'],
       ),
+    'getAllEntryRatings' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Nat, EntryRatingStats))],
+        ['query'],
+      ),
     'getAllRegistryEntries' : IDL.Func(
         [IDL.Nat, IDL.Nat],
         [IDL.Vec(BonsaiRegistryEntry)],
         ['query'],
       ),
+    'getCallerAllRatings' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Nat, IDL.Nat))],
+        ['query'],
+      ),
+    'getCallerRating' : IDL.Func([IDL.Nat], [IDL.Opt(IDL.Nat)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getEntriesByCategory' : IDL.Func(
@@ -169,6 +201,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(BonsaiRegistryEntry)],
         ['query'],
       ),
+    'getEntryRating' : IDL.Func([IDL.Nat], [EntryRatingStats], ['query']),
     'getTotalEntriesCount' : IDL.Func([], [IDL.Nat], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
@@ -176,6 +209,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'rateEntry' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
     'removeRegistryEntry' : IDL.Func([IDL.Nat], [], []),
     'removeRegistryEntryWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),

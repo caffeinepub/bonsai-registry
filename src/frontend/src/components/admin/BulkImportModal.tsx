@@ -125,6 +125,7 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
   const [parseError, setParseError] = useState<string | null>(null);
   const [preview, setPreview] = useState<BonsaiRegistryEntry[]>([]);
   const [importedCount, setImportedCount] = useState<number | null>(null);
+  const [skippedCount, setSkippedCount] = useState<number>(0);
 
   const handleTextChange = useCallback((value: string) => {
     setJsonText(value);
@@ -146,10 +147,20 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
       if (!actor) throw new Error("Not connected");
       return actor.bulkImportEntriesWithSecret(ADMIN_SECRET, entries);
     },
-    onSuccess: (ids) => {
+    onSuccess: (ids, submittedEntries) => {
       const count = ids.length;
+      const skipped = submittedEntries.length - count;
       setImportedCount(count);
-      toast.success(`Imported ${count} entries successfully`);
+      setSkippedCount(skipped);
+      if (skipped > 0) {
+        toast.success(
+          `Imported ${count} new ${count === 1 ? "entry" : "entries"}. ${skipped} duplicate${skipped === 1 ? "" : "s"} skipped.`,
+        );
+      } else {
+        toast.success(
+          `Imported ${count} ${count === 1 ? "entry" : "entries"} successfully`,
+        );
+      }
       queryClient.invalidateQueries({ queryKey: ["registry-entries"] });
       queryClient.invalidateQueries({ queryKey: ["registry-entries-count"] });
     },
@@ -163,6 +174,7 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
     setParseError(null);
     setPreview([]);
     setImportedCount(null);
+    setSkippedCount(0);
     mutation.reset();
     onClose();
   };
@@ -258,9 +270,24 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
 
         {/* Success */}
         {importedCount !== null && (
-          <div className="flex items-center gap-2 p-3 rounded bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400">
-            <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-            Successfully imported <strong>{importedCount}</strong> entries!
+          <div className="flex flex-col gap-1 p-3 rounded bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+              <span>
+                Successfully imported <strong>{importedCount}</strong> new{" "}
+                {importedCount === 1 ? "entry" : "entries"}.
+              </span>
+            </div>
+            {skippedCount > 0 && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Info className="w-4 h-4 flex-shrink-0" />
+                <span>
+                  <strong>{skippedCount}</strong> duplicate
+                  {skippedCount === 1 ? "" : "s"} already existed and were
+                  skipped.
+                </span>
+              </div>
+            )}
           </div>
         )}
 

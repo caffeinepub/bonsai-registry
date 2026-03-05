@@ -1,5 +1,15 @@
 import { Input } from "@/components/ui/input";
-import { Loader2, Menu, Search, TreePine, X } from "lucide-react";
+import type { Identity } from "@icp-sdk/core/agent";
+import {
+  Loader2,
+  LogIn,
+  LogOut,
+  Menu,
+  Search,
+  TreePine,
+  User,
+  X,
+} from "lucide-react";
 
 interface HeaderProps {
   searchQuery: string;
@@ -9,6 +19,12 @@ interface HeaderProps {
   mobileNavOpen: boolean;
   onToggleMobileNav: () => void;
   backendLoading?: boolean;
+  // Internet Identity auth
+  identity?: Identity | null;
+  isLoggingIn?: boolean;
+  isInitializing?: boolean;
+  onLogin?: () => void;
+  onLogout?: () => void;
 }
 
 export function Header({
@@ -19,7 +35,19 @@ export function Header({
   mobileNavOpen,
   onToggleMobileNav,
   backendLoading = false,
+  identity,
+  isLoggingIn = false,
+  isInitializing = false,
+  onLogin,
+  onLogout,
 }: HeaderProps) {
+  const isSignedIn = !!identity;
+  const principal = identity?.getPrincipal().toString();
+  // Truncate principal for display: show first 5 + ... + last 3 chars
+  const shortPrincipal = principal
+    ? `${principal.slice(0, 5)}…${principal.slice(-3)}`
+    : null;
+
   return (
     <header className="header-atmosphere border-b border-border sticky top-0 z-40 backdrop-blur-sm">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
@@ -44,21 +72,77 @@ export function Header({
             )}
           </div>
 
-          {/* Mobile hamburger — top strip */}
-          <button
-            type="button"
-            data-ocid="mobile.menu.button"
-            onClick={onToggleMobileNav}
-            className="lg:hidden flex items-center gap-1.5 px-2 py-1 rounded border border-border text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors"
-            aria-label="Toggle navigation menu"
-          >
-            {mobileNavOpen ? (
-              <X className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-2">
+            {/* ── Internet Identity Auth button ── */}
+            {isInitializing ? (
+              <span className="flex items-center gap-1 px-2.5 py-1 rounded border border-border text-muted-foreground/40 text-[10px] font-mono">
+                <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                <span className="hidden sm:inline">Loading…</span>
+              </span>
+            ) : isSignedIn ? (
+              <div className="flex items-center gap-1.5">
+                {/* User indicator */}
+                <div
+                  data-ocid="header.user_indicator"
+                  className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded border border-primary/25 bg-primary/8 text-[10px] font-mono text-primary/80"
+                >
+                  <User className="w-2.5 h-2.5 text-primary" aria-hidden />
+                  <span title={principal ?? ""}>{shortPrincipal}</span>
+                </div>
+                {/* Logout */}
+                <button
+                  type="button"
+                  data-ocid="header.signout_button"
+                  onClick={onLogout}
+                  title="Sign out"
+                  className="flex items-center gap-1 px-2 py-1 rounded border border-border text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors"
+                  aria-label="Sign out"
+                >
+                  <LogOut className="w-3 h-3" aria-hidden />
+                  <span className="text-[10px] font-mono uppercase hidden sm:inline">
+                    Sign Out
+                  </span>
+                </button>
+              </div>
             ) : (
-              <Menu className="w-3.5 h-3.5" />
+              <button
+                type="button"
+                data-ocid="header.signin_button"
+                onClick={onLogin}
+                disabled={isLoggingIn}
+                className={[
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded border text-[10px] font-mono uppercase transition-all duration-150",
+                  isLoggingIn
+                    ? "border-border text-muted-foreground/50 cursor-wait"
+                    : "border-primary/40 bg-primary/8 text-primary hover:bg-primary/15 hover:border-primary/70",
+                ].join(" ")}
+                aria-label="Sign in with Internet Identity"
+              >
+                {isLoggingIn ? (
+                  <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                ) : (
+                  <LogIn className="w-3 h-3" aria-hidden />
+                )}
+                <span>{isLoggingIn ? "Signing In…" : "Sign In"}</span>
+              </button>
             )}
-            <span className="text-[10px] font-mono uppercase">Nav</span>
-          </button>
+
+            {/* Mobile hamburger — top strip */}
+            <button
+              type="button"
+              data-ocid="mobile.menu.button"
+              onClick={onToggleMobileNav}
+              className="lg:hidden flex items-center gap-1.5 px-2 py-1 rounded border border-border text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors"
+              aria-label="Toggle navigation menu"
+            >
+              {mobileNavOpen ? (
+                <X className="w-3.5 h-3.5" />
+              ) : (
+                <Menu className="w-3.5 h-3.5" />
+              )}
+              <span className="text-[10px] font-mono uppercase">Nav</span>
+            </button>
+          </div>
         </div>
 
         {/* ── Brand + Search row ── */}

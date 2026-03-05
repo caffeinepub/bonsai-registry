@@ -1,11 +1,16 @@
 import { Toaster } from "@/components/ui/sonner";
 import { Loader2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import type { SortMode } from "./components/EcosystemSection";
 import { EcosystemSection } from "./components/EcosystemSection";
 import { FilterBar } from "./components/FilterBar";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
+import { OnboardingModal } from "./components/OnboardingModal";
 import { Sidebar } from "./components/Sidebar";
+import { TipButton } from "./components/TipButton";
+import { TipModal } from "./components/TipModal";
 import { AdminPage } from "./components/admin/AdminPage";
 import {
   type Category,
@@ -17,15 +22,44 @@ import {
   totalEntries,
 } from "./data/registryData";
 import { useBackendEntries } from "./hooks/useBackendEntries";
+import { useCallerRatings } from "./hooks/useCallerRatings";
+import { useInternetIdentity } from "./hooks/useInternetIdentity";
+import { useRatings } from "./hooks/useRatings";
+import { useRecordEvent } from "./hooks/useRecordEvent";
+import { useSubmitRating } from "./hooks/useSubmitRating";
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<Category | "all">("all");
   const [activeChain, setActiveChain] = useState<string>("all");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [sortMode, setSortMode] = useState<SortMode>("default");
+  const [ratingLoadingId, setRatingLoadingId] = useState<string | null>(null);
+  const [tipOpen, setTipOpen] = useState(false);
+
+  // Anonymous analytics
+  const record = useRecordEvent();
+
+  // Internet Identity auth
+  const {
+    identity,
+    login,
+    clear: logout,
+    isLoggingIn,
+    isInitializing,
+  } = useInternetIdentity();
 
   // Fetch entries added/edited via the admin panel
   const { backendEntries, isLoading: backendLoading } = useBackendEntries();
+
+  // Community ratings (public — no auth needed)
+  const { ratingsMap } = useRatings();
+
+  // Caller's own ratings (only when signed in)
+  const { callerRatingsMap } = useCallerRatings(identity ?? undefined);
+
+  // Rating submission mutation
+  const submitRating = useSubmitRating();
 
   // Resolve the initial hash: if the URL contains an OAuth callback fragment
   // (from Internet Identity / Microsoft login), restore the saved return path
@@ -59,6 +93,52 @@ export default function App() {
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
+
+  // Record page view on mount (intentionally once — record is stable)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only on mount
+  useEffect(() => {
+    record("page_view", "registry");
+  }, []);
+
+  // Record search queries (debounced via useRecordEvent)
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      record("search", searchQuery.trim());
+    }
+  }, [searchQuery, record]);
+
+  // Handle rating submission
+  const handleRate = useCallback(
+    (entryId: string, rating: number) => {
+      if (!identity) {
+        toast.error("Please sign in with Internet Identity to rate projects.");
+        return;
+      }
+
+      // Extract numeric backend ID
+      if (!entryId.startsWith("backend-")) return;
+      const numericId = BigInt(entryId.replace("backend-", ""));
+
+      setRatingLoadingId(entryId);
+      submitRating.mutate(
+        { entryId: numericId, rating },
+        {
+          onSuccess: () => {
+            toast.success("Rating submitted! Thank you for your vote.");
+            setRatingLoadingId(null);
+          },
+          onError: (err) => {
+            const msg = err.message.includes("Only users")
+              ? "Your Internet Identity doesn't have rating permission yet. Try again after a moment."
+              : err.message || "Failed to submit rating. Please try again.";
+            toast.error(msg);
+            setRatingLoadingId(null);
+          },
+        },
+      );
+    },
+    [identity, submitRating],
+  );
 
   // Merge static + backend entries into a unified set of ecosystem groups.
   // Backend entries take precedence over static ones (same name + ecosystem).
@@ -169,7 +249,7 @@ export default function App() {
     return mergedGroups;
   }, [activeChain, mergedGroups]);
 
-  // Admin route
+  // Admin route — pass no rating props, keep existing behavior
   if (currentHash === "#admin") {
     return (
       <>
@@ -179,8 +259,20 @@ export default function App() {
     );
   }
 
+  // Handle tip modal open
+  const handleTipOpen = () => setTipOpen(true);
+
   return (
     <>
+      {/* Onboarding — auto-shows on first visit */}
+      <OnboardingModal />
+
+      {/* Tip modal */}
+      <TipModal open={tipOpen} onClose={() => setTipOpen(false)} />
+
+      {/* Floating tip button */}
+      <TipButton onClick={handleTipOpen} />
+
       <div className="min-h-screen bg-background text-foreground flex flex-col">
         {/* Header */}
         <Header
@@ -191,6 +283,11 @@ export default function App() {
           mobileNavOpen={mobileNavOpen}
           onToggleMobileNav={() => setMobileNavOpen((v) => !v)}
           backendLoading={backendLoading}
+          identity={identity}
+          isLoggingIn={isLoggingIn}
+          isInitializing={isInitializing}
+          onLogin={login}
+          onLogout={logout}
         />
 
         {/* Filter bar */}
@@ -201,6 +298,8 @@ export default function App() {
           onChainChange={setActiveChain}
           filteredCount={filteredCount}
           totalCount={mergedAllEntries.length}
+          sortMode={sortMode}
+          onSortChange={setSortMode}
         />
 
         {/* Main layout */}
@@ -284,6 +383,32 @@ export default function App() {
                           </button>{" "}
                           to gaming, DeFi, NFTs, and RWA tokenization.
                         </p>
+
+                        {/* Community rating CTA */}
+                        {!identity && (
+                          <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground/70">
+                            <span className="text-amber-400">★</span>
+                            <span>
+                              <button
+                                type="button"
+                                onClick={login}
+                                className="text-primary hover:underline font-medium"
+                              >
+                                Sign in with Internet Identity
+                              </button>{" "}
+                              to rate and rank your favorite Web3 projects
+                            </span>
+                          </div>
+                        )}
+                        {identity && (
+                          <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground/70">
+                            <span className="text-amber-400">★</span>
+                            <span className="text-primary/80 font-medium">
+                              You&apos;re signed in — hover any card to rate
+                              projects
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -296,6 +421,12 @@ export default function App() {
                     filteredEntries={entries}
                     sectionIndex={idx + 1}
                     defaultOpen={idx < 2}
+                    sortMode={sortMode}
+                    ratingsMap={ratingsMap}
+                    callerRatingsMap={callerRatingsMap}
+                    onRate={handleRate}
+                    isAuthenticated={!!identity}
+                    ratingLoadingId={ratingLoadingId}
                   />
                 ))}
               </>
@@ -313,7 +444,7 @@ export default function App() {
         </div>
 
         {/* Footer */}
-        <Footer />
+        <Footer onTipOpen={handleTipOpen} />
       </div>
       <Toaster />
     </>

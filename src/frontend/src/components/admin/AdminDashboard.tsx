@@ -11,6 +11,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
+  BarChart2,
   Database,
   Download,
   LayoutGrid,
@@ -21,6 +22,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AnalyticsTab } from "./AnalyticsTab";
 import { BulkImportModal } from "./BulkImportModal";
 import { EcosystemManager } from "./EcosystemManager";
 import { EntryTable } from "./EntryTable";
@@ -268,6 +270,14 @@ function AdminDashboardInner({ onLogout }: { onLogout: () => void }) {
               <LayoutGrid className="w-3.5 h-3.5" />
               Ecosystems
             </TabsTrigger>
+            <TabsTrigger
+              data-ocid="admin.analytics_tab"
+              value="analytics"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs gap-1.5 h-7"
+            >
+              <BarChart2 className="w-3.5 h-3.5" />
+              Analytics
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="entries">
@@ -276,6 +286,10 @@ function AdminDashboardInner({ onLogout }: { onLogout: () => void }) {
 
           <TabsContent value="ecosystems">
             <EcosystemManager />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <AnalyticsTab />
           </TabsContent>
         </Tabs>
       </div>
