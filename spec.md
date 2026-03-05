@@ -1,42 +1,40 @@
 # Bonsai Registry
 
 ## Current State
-- Full registry app with 34+ ecosystems, 600+ entries, rating system
-- Admin panel with password-based auth (`#WakeUp4`)
-- Backend: Motoko with `authorization` component, registry entries, ratings, user profiles
-- Frontend: React + Tailwind, ecosystem sections, filter bar, sidebar, header, footer
+
+The app is a fully deployed Web3 registry with:
+- 34 ecosystems, 600+ curated entries across Bitcoin, Ethereum, Solana, Hedera, ICP, and many more
+- Admin panel at `#admin` with password login, bulk import/export, entry CRUD
+- Community rating system (Internet Identity, 5-star, sort by Top Rated / Most Rated)
+- Onboarding modal, anonymous analytics, tipping modal with real wallet addresses
+- Static registry data in `src/frontend/src/data/registryData.ts`
+- Backend Motoko canister with `bulkImportEntriesWithSecret`, `addEntryWithSecret`, `editEntryWithSecret`, `deleteEntryWithSecret`, `getEntries`, `rateEntry`, etc.
 
 ## Requested Changes (Diff)
 
+The user's GitHub repo (https://github.com/T3kNoLogic/Bonsai-Registry) has been updated with:
+- `bonsai-registry-export-2026-03-05.json` — updated multi-chain entries (cleaner data for existing chains)
+- `bonsai-registry-extended.json` — deep ICP ecosystem data (135+ ICP entries from official ecosystem, awesome-internet-computer, DFINITY blog, NFT collections, grant recipients)
+- `bonsai-registry-news.json` — ICP news feed: 46 news articles + 3 scam alerts
+- `index.html` — reference design: black/red color theme, 75 ecosystems branding, improved collapsible navigation, news section
+
 ### Add
-1. **Onboarding flow** — First-visit modal/overlay that welcomes new users, collects optional anonymous preferences (favorite ecosystems, interests), and explains the registry. Stored in localStorage so it only shows once.
-2. **Anonymous Analytics / CRM** — Backend stores anonymized usage events: page views (no PII), ecosystem clicks, link clicks, search queries (hashed/anonymized). No personal data stored on-chain. Admin analytics dashboard tab showing top searched terms, most-clicked ecosystems, popular entries, daily active sessions.
-3. **Tipping feature** — "Support Bonsai" button/section in the footer and a floating tip button. Opens a modal showing accepted tokens with their wallet addresses for the user to send tips. Tokens: ICP (ICP ledger address), BTC (Bitcoin), ETH (Ethereum), HBAR (Hedera), SOL (Solana). Admin can configure tokens and wallet addresses from the admin panel.
+- **News Feed Section**: A dedicated "ICP News & Updates" section on the main registry page showing the 46 ICP news articles from `bonsai-registry-news.json`. Each article shows: title, source, date, tags. Scam alerts displayed separately with a warning indicator.
+- **Expanded ICP entries**: Add the additional ICP entries from `bonsai-registry-extended.json` that are NOT already in the static registry data (specifically the dev tools, SDKs, Candid libs, token standards from the awesome-internet-computer source)
 
 ### Modify
-- Footer: add "Support the Project" tip button linking to tip modal
-- Admin panel: add Analytics tab and Tip Configuration tab
-- Header: optionally nudge first-time users to onboarding
+- **Branding**: Update the registry header tagline to "75+ Blockchain Ecosystems" to match the GitHub repo's updated scope
+- **ICP section**: Ensure ICP entries include the dev tooling and SDK categories that are prominent in the extended data
+- **Sidebar/filter**: Update ecosystem count to reflect 75+ ecosystems label
 
 ### Remove
-- Nothing removed
+- Nothing to remove
 
 ## Implementation Plan
 
-### Backend
-1. Add `AnalyticsEvent` type: `{ eventType: Text; payload: Text; timestamp: Time }` — no principal, no PII
-2. Add `TipConfig` type: `{ token: Text; symbol: Text; address: Text; logoUrl: ?Text; enabled: Bool }`
-3. Add `recordEvent(eventType: Text, payload: Text)` — public, anonymous-safe, stores to a capped ring buffer (max 10,000 events)
-4. Add `getAnalyticsSummary(secret: Text)` — admin-only via secret, returns aggregated counts
-5. Add `getTipConfigs()` — public query, returns enabled tip addresses
-6. Add `setTipConfigsWithSecret(secret: Text, configs: [TipConfig])` — admin-only, saves tip config
-7. Seed default tip configs with placeholder addresses
-
-### Frontend
-1. **OnboardingModal** component — shows on first visit (localStorage `bonsai_onboarded` flag), step-by-step welcome, ecosystem preference picker, closes and saves preference to localStorage
-2. **TipModal** component — displays configured tokens + addresses with copy-to-clipboard and QR display; triggered from footer button and floating action button
-3. **Analytics hooks** — `useRecordEvent` hook that fires `recordEvent` for ecosystem views, link clicks, searches (debounced, no PII)
-4. **Admin Analytics tab** — chart/stats view: top events by type, most clicked entries, search frequency (admin only via secret)
-5. **Admin Tip Config tab** — form to add/edit/remove tip token entries (token name, symbol, wallet address)
-6. Add floating "Tip" button (bottom-right corner, subtle) linking to tip modal
-7. Wire onboarding modal into App.tsx on mount
+1. Add `newsData.ts` to `src/frontend/src/data/` with the 46 news items and 3 scam alerts from `bonsai-registry-news.json` (hardcoded, loaded from static data)
+2. Create `NewsSection.tsx` component that renders the news feed: collapsible section, article cards with title/source/date/tags, separate scam alert cards with red warning style
+3. Add the NewsSection to `App.tsx` — show it below the registry sections when no search/filter is active
+4. Update `registryData.ts` ICP entries to add ~20 additional high-value ICP entries from the extended data that aren't already present (focus on: dev tooling, Candid libraries, SNS/governance, cross-chain bridges) — keep the list curated, not exhaustive
+5. Update header copy from "34+ ecosystems" to "75+ ecosystems" branding
+6. Validate and deploy

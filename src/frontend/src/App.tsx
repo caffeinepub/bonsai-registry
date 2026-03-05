@@ -7,6 +7,7 @@ import { EcosystemSection } from "./components/EcosystemSection";
 import { FilterBar } from "./components/FilterBar";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
+import { NewsSection } from "./components/NewsSection";
 import { OnboardingModal } from "./components/OnboardingModal";
 import { Sidebar } from "./components/Sidebar";
 import { TipButton } from "./components/TipButton";
@@ -429,6 +430,11 @@ export default function App() {
                     ratingLoadingId={ratingLoadingId}
                   />
                 ))}
+
+                {/* ICP News & Community Updates — only on unfiltered view */}
+                {searchQuery === "" &&
+                  activeCategory === "all" &&
+                  activeChain === "all" && <NewsSection />}
               </>
             )}
           </main>
