@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { Menu, Search, TreePine, X } from "lucide-react";
+import { Loader2, Menu, Search, TreePine, X } from "lucide-react";
 
 interface HeaderProps {
   searchQuery: string;
@@ -8,6 +8,7 @@ interface HeaderProps {
   totalEcosystems: number;
   mobileNavOpen: boolean;
   onToggleMobileNav: () => void;
+  backendLoading?: boolean;
 }
 
 export function Header({
@@ -17,6 +18,7 @@ export function Header({
   totalEcosystems,
   mobileNavOpen,
   onToggleMobileNav,
+  backendLoading = false,
 }: HeaderProps) {
   return (
     <header className="header-atmosphere border-b border-border sticky top-0 z-40 backdrop-blur-sm">
@@ -31,6 +33,15 @@ export function Header({
             <span className="font-mono text-[10px] text-muted-foreground/60 uppercase tracking-widest">
               {totalEcosystems}+ Chains · {totalEntries}+ Projects
             </span>
+            {backendLoading && (
+              <span
+                data-ocid="registry.loading_state"
+                className="flex items-center gap-1 text-[10px] font-mono text-primary/60 uppercase tracking-widest"
+              >
+                <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                Syncing
+              </span>
+            )}
           </div>
 
           {/* Mobile hamburger — top strip */}

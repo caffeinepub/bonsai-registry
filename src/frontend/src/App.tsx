@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/sonner";
+import { Loader2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { EcosystemSection } from "./components/EcosystemSection";
 import { FilterBar } from "./components/FilterBar";
@@ -8,17 +9,23 @@ import { Sidebar } from "./components/Sidebar";
 import { AdminPage } from "./components/admin/AdminPage";
 import {
   type Category,
-  allEntries,
+  type EcosystemGroup,
+  type RegistryEntry,
+  type Tier,
   ecosystemGroups,
   totalEcosystems,
   totalEntries,
 } from "./data/registryData";
+import { useBackendEntries } from "./hooks/useBackendEntries";
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<Category | "all">("all");
   const [activeChain, setActiveChain] = useState<string>("all");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  // Fetch entries added/edited via the admin panel
+  const { backendEntries, isLoading: backendLoading } = useBackendEntries();
 
   // Resolve the initial hash: if the URL contains an OAuth callback fragment
   // (from Internet Identity / Microsoft login), restore the saved return path
@@ -53,11 +60,71 @@ export default function App() {
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
+  // Merge static + backend entries into a unified set of ecosystem groups.
+  // Backend entries take precedence over static ones (same name + ecosystem).
+  const mergedGroups = useMemo<EcosystemGroup[]>(() => {
+    // Build a lookup for static groups by slug
+    const groupMap = new Map<string, EcosystemGroup>(
+      ecosystemGroups.map((g) => [g.slug, { ...g, entries: [...g.entries] }]),
+    );
+
+    for (const be of backendEntries) {
+      const slug = be.ecosystem;
+
+      if (!groupMap.has(slug)) {
+        // New ecosystem — create a group on the fly
+        const capitalized =
+          slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, " ");
+        groupMap.set(slug, {
+          slug,
+          name: capitalized,
+          token: "",
+          tier: 3 as Tier,
+          entries: [],
+        });
+      }
+
+      const group = groupMap.get(slug)!;
+
+      // Deduplicate: if a static entry with the same name exists, replace it
+      const existingIdx = group.entries.findIndex(
+        (e) => e.name.toLowerCase() === be.name.toLowerCase(),
+      );
+      if (existingIdx >= 0) {
+        group.entries[existingIdx] = be;
+      } else {
+        group.entries.push(be);
+      }
+    }
+
+    // Preserve original tier-based ordering: static groups first in order,
+    // then any new backend-only groups at the end.
+    const staticSlugs = new Set(ecosystemGroups.map((g) => g.slug));
+    const newSlugs = [...groupMap.keys()].filter((s) => !staticSlugs.has(s));
+
+    return [
+      ...ecosystemGroups.map((g) => groupMap.get(g.slug)!),
+      ...newSlugs.map((s) => groupMap.get(s)!),
+    ];
+  }, [backendEntries]);
+
+  // Derived totals that reflect merged data once backend loads
+  const mergedAllEntries = useMemo<RegistryEntry[]>(
+    () => mergedGroups.flatMap((g) => g.entries),
+    [mergedGroups],
+  );
+  const displayTotalEntries = backendLoading
+    ? totalEntries
+    : mergedAllEntries.length;
+  const displayTotalEcosystems = backendLoading
+    ? totalEcosystems
+    : mergedGroups.length;
+
   // Filter all entries based on active filters + search
   const filteredGroups = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
 
-    return ecosystemGroups
+    return mergedGroups
       .filter((group) => {
         // Chain filter
         if (activeChain !== "all" && group.slug !== activeChain) return false;
@@ -87,7 +154,7 @@ export default function App() {
         return { group, entries };
       })
       .filter(({ entries }) => entries.length > 0);
-  }, [searchQuery, activeCategory, activeChain]);
+  }, [searchQuery, activeCategory, activeChain, mergedGroups]);
 
   const filteredCount = useMemo(
     () => filteredGroups.reduce((sum, { entries }) => sum + entries.length, 0),
@@ -97,10 +164,10 @@ export default function App() {
   // Groups that match chain filter (for sidebar)
   const sidebarGroups = useMemo(() => {
     if (activeChain !== "all") {
-      return ecosystemGroups.filter((g) => g.slug === activeChain);
+      return mergedGroups.filter((g) => g.slug === activeChain);
     }
-    return ecosystemGroups;
-  }, [activeChain]);
+    return mergedGroups;
+  }, [activeChain, mergedGroups]);
 
   // Admin route
   if (currentHash === "#admin") {
@@ -119,10 +186,11 @@ export default function App() {
         <Header
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          totalEntries={totalEntries}
-          totalEcosystems={totalEcosystems}
+          totalEntries={displayTotalEntries}
+          totalEcosystems={displayTotalEcosystems}
           mobileNavOpen={mobileNavOpen}
           onToggleMobileNav={() => setMobileNavOpen((v) => !v)}
+          backendLoading={backendLoading}
         />
 
         {/* Filter bar */}
@@ -132,7 +200,7 @@ export default function App() {
           onCategoryChange={setActiveCategory}
           onChainChange={setActiveChain}
           filteredCount={filteredCount}
-          totalCount={allEntries.length}
+          totalCount={mergedAllEntries.length}
         />
 
         {/* Main layout */}
@@ -184,11 +252,11 @@ export default function App() {
                         <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
                           Your gateway to{" "}
                           <strong className="text-foreground">
-                            {totalEntries}+
+                            {displayTotalEntries}+
                           </strong>{" "}
                           curated Web3 projects across{" "}
                           <strong className="text-foreground">
-                            {totalEcosystems}+
+                            {displayTotalEcosystems}+
                           </strong>{" "}
                           decentralized ecosystems — from{" "}
                           <button
@@ -237,8 +305,8 @@ export default function App() {
           {/* Sidebar */}
           <Sidebar
             groups={sidebarGroups}
-            totalEntries={totalEntries}
-            totalEcosystems={totalEcosystems}
+            totalEntries={displayTotalEntries}
+            totalEcosystems={displayTotalEcosystems}
             mobileOpen={mobileNavOpen}
             onCloseMobile={() => setMobileNavOpen(false)}
           />
