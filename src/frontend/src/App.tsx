@@ -19,9 +19,33 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<Category | "all">("all");
   const [activeChain, setActiveChain] = useState<string>("all");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [currentHash, setCurrentHash] = useState(
-    typeof window !== "undefined" ? window.location.hash : "",
-  );
+
+  // Resolve the initial hash: if the URL contains an OAuth callback fragment
+  // (from Internet Identity / Microsoft login), restore the saved return path
+  // instead of treating the raw callback data as a route hash.
+  const resolveInitialHash = () => {
+    if (typeof window === "undefined") return "";
+    const hash = window.location.hash;
+    // OAuth callbacks contain "code=" or "id_token=" in the fragment
+    if (
+      hash.includes("code=") ||
+      hash.includes("id_token=") ||
+      hash.includes("access_token=")
+    ) {
+      const savedPath = sessionStorage.getItem("auth_return_path") || "";
+      sessionStorage.removeItem("auth_return_path");
+      // Clean the URL so the callback fragment doesn't persist
+      if (savedPath) {
+        window.location.replace(window.location.pathname + savedPath);
+      } else {
+        window.location.replace(window.location.pathname);
+      }
+      return savedPath;
+    }
+    return hash;
+  };
+
+  const [currentHash, setCurrentHash] = useState(() => resolveInitialHash());
 
   useEffect(() => {
     const handleHashChange = () => setCurrentHash(window.location.hash);

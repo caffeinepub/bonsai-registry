@@ -2,12 +2,42 @@ import { Button } from "@/components/ui/button";
 import { useActor } from "@/hooks/useActor";
 import { useInternetIdentity } from "@/hooks/useInternetIdentity";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, LogIn, ShieldAlert, TreePine } from "lucide-react";
+import {
+  AlertCircle,
+  Loader2,
+  LogIn,
+  ShieldAlert,
+  TreePine,
+} from "lucide-react";
 import { AdminDashboard } from "./AdminDashboard";
 
 export function AdminPage() {
-  const { login, clear, isLoggingIn, identity } = useInternetIdentity();
+  const {
+    login,
+    clear,
+    isLoggingIn,
+    isLoginError,
+    loginError,
+    isInitializing,
+    identity,
+  } = useInternetIdentity();
   const { actor, isFetching: actorFetching } = useActor();
+
+  // Save the admin return path before opening the popup so the OAuth callback
+  // can restore it after redirecting back from id.ai
+  const handleLogin = () => {
+    sessionStorage.setItem("auth_return_path", "#admin");
+    if (
+      isLoginError &&
+      loginError?.message === "User is already authenticated"
+    ) {
+      clear();
+      // Give the hook a tick to reset, then login
+      setTimeout(() => login(), 100);
+    } else {
+      login();
+    }
+  };
 
   const {
     data: isAdmin,
@@ -25,7 +55,21 @@ export function AdminPage() {
 
   const isLoading = !!identity && (actorFetching || adminCheckLoading);
 
-  // Not logged in
+  // Show spinner while the auth client is initializing (before we know login state)
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-muted-foreground">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p className="font-mono text-xs uppercase tracking-widest">
+            Loading...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Not logged in (or login error — show login screen with error feedback)
   if (!identity && !isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
@@ -75,11 +119,26 @@ export function AdminPage() {
                 Only authorized admins can manage the registry.
               </p>
 
+              {/* Show login error feedback so the user knows what went wrong */}
+              {isLoginError && loginError && (
+                <div
+                  data-ocid="admin.error_state"
+                  className="w-full flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-left"
+                >
+                  <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                  <p className="text-xs text-destructive leading-relaxed">
+                    {loginError.message === "User is already authenticated"
+                      ? "A previous session was detected. Click Sign In again to continue."
+                      : loginError.message}
+                  </p>
+                </div>
+              )}
+
               <Button
                 data-ocid="admin.login_button"
                 size="lg"
                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-display font-bold tracking-tight"
-                onClick={login}
+                onClick={handleLogin}
                 disabled={isLoggingIn}
               >
                 {isLoggingIn ? (
@@ -240,7 +299,7 @@ export function AdminPage() {
               data-ocid="admin.login_button"
               size="lg"
               className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-display font-bold tracking-tight"
-              onClick={login}
+              onClick={handleLogin}
               disabled={isLoggingIn}
             >
               {isLoggingIn ? (
