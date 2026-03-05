@@ -8,7 +8,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useActor } from "@/hooks/useActor";
+import { useAdminActorContext } from "@/hooks/useAdminActorContext";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -24,12 +24,14 @@ export function DeleteEntryDialog({
   onClose,
   onSuccess,
 }: DeleteEntryDialogProps) {
-  const { actor } = useActor();
+  const actor = useAdminActorContext();
+
+  const ADMIN_SECRET = "#WakeUp4";
 
   const mutation = useMutation({
     mutationFn: async (id: bigint) => {
       if (!actor) throw new Error("Not connected");
-      await actor.removeRegistryEntry(id);
+      await actor.removeRegistryEntryWithSecret(ADMIN_SECRET, id);
     },
     onSuccess: () => {
       toast.success("Entry deleted successfully");

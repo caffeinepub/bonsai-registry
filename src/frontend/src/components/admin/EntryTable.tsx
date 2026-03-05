@@ -19,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ecosystemGroups } from "@/data/registryData";
-import { useActor } from "@/hooks/useActor";
+import { useAdminActorContext } from "@/hooks/useAdminActorContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
@@ -81,7 +81,7 @@ function SortIcon({
 }
 
 export function EntryTable() {
-  const { actor } = useActor();
+  const actor = useAdminActorContext();
   const queryClient = useQueryClient();
 
   const [search, setSearch] = useState("");

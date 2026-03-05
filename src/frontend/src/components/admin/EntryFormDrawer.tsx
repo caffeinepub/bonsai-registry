@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { ecosystemGroups } from "@/data/registryData";
-import { useActor } from "@/hooks/useActor";
+import { useAdminActorContext } from "@/hooks/useAdminActorContext";
 import { useMutation } from "@tanstack/react-query";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -105,7 +105,7 @@ export function EntryFormDrawer({
   onSuccess,
   entry,
 }: EntryFormDrawerProps) {
-  const { actor } = useActor();
+  const actor = useAdminActorContext();
   const [form, setForm] = useState<FormState>(defaultForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const isEdit = !!entry;
@@ -116,6 +116,8 @@ export function EntryFormDrawer({
       setErrors({});
     }
   }, [open, entry]);
+
+  const ADMIN_SECRET = "#WakeUp4";
 
   const mutation = useMutation({
     mutationFn: async (f: FormState) => {
@@ -132,9 +134,13 @@ export function EntryFormDrawer({
         logoUrl: f.logoUrl.trim() || undefined,
       };
       if (isEdit) {
-        await actor.updateRegistryEntry(entry!.id, entryData);
+        await actor.updateRegistryEntryWithSecret(
+          ADMIN_SECRET,
+          entry!.id,
+          entryData,
+        );
       } else {
-        await actor.addRegistryEntry(entryData);
+        await actor.addRegistryEntryWithSecret(ADMIN_SECRET, entryData);
       }
     },
     onSuccess: () => {

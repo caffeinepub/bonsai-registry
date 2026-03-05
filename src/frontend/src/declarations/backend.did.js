@@ -40,9 +40,19 @@ export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'addRegistryEntry' : IDL.Func([BonsaiRegistryEntry], [IDL.Nat], []),
+  'addRegistryEntryWithSecret' : IDL.Func(
+      [IDL.Text, BonsaiRegistryEntry],
+      [IDL.Nat],
+      [],
+    ),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'bulkImportEntries' : IDL.Func(
       [IDL.Vec(BonsaiRegistryEntry)],
+      [IDL.Vec(IDL.Nat)],
+      [],
+    ),
+  'bulkImportEntriesWithSecret' : IDL.Func(
+      [IDL.Text, IDL.Vec(BonsaiRegistryEntry)],
       [IDL.Vec(IDL.Nat)],
       [],
     ),
@@ -76,8 +86,14 @@ export const idlService = IDL.Service({
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'removeRegistryEntry' : IDL.Func([IDL.Nat], [], []),
+  'removeRegistryEntryWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'updateRegistryEntry' : IDL.Func([IDL.Nat, BonsaiRegistryEntry], [], []),
+  'updateRegistryEntryWithSecret' : IDL.Func(
+      [IDL.Text, IDL.Nat, BonsaiRegistryEntry],
+      [],
+      [],
+    ),
 });
 
 export const idlInitArgs = [];
@@ -115,9 +131,19 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'addRegistryEntry' : IDL.Func([BonsaiRegistryEntry], [IDL.Nat], []),
+    'addRegistryEntryWithSecret' : IDL.Func(
+        [IDL.Text, BonsaiRegistryEntry],
+        [IDL.Nat],
+        [],
+      ),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'bulkImportEntries' : IDL.Func(
         [IDL.Vec(BonsaiRegistryEntry)],
+        [IDL.Vec(IDL.Nat)],
+        [],
+      ),
+    'bulkImportEntriesWithSecret' : IDL.Func(
+        [IDL.Text, IDL.Vec(BonsaiRegistryEntry)],
         [IDL.Vec(IDL.Nat)],
         [],
       ),
@@ -151,8 +177,14 @@ export const idlFactory = ({ IDL }) => {
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'removeRegistryEntry' : IDL.Func([IDL.Nat], [], []),
+    'removeRegistryEntryWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'updateRegistryEntry' : IDL.Func([IDL.Nat, BonsaiRegistryEntry], [], []),
+    'updateRegistryEntryWithSecret' : IDL.Func(
+        [IDL.Text, IDL.Nat, BonsaiRegistryEntry],
+        [],
+        [],
+      ),
   });
 };
 

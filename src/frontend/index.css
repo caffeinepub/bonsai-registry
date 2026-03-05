@@ -1,30 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=JetBrains+Mono:wght@100..800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@font-face {
-  font-family: "Mona Sans";
-  src: url("/assets/fonts/MonaSans.woff2") format("woff2");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Bricolage Grotesque";
-  src: url("/assets/fonts/BricolageGrotesque.woff2") format("woff2");
-  font-weight: 200 800;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "JetBrains Mono";
-  src: url("/assets/fonts/JetBrainsMono.woff2") format("woff2");
-  font-weight: 100 800;
-  font-style: normal;
-  font-display: swap;
-}
 
 @layer base {
   :root {
@@ -82,7 +60,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: "Mona Sans", "General Sans", system-ui, sans-serif;
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -105,7 +83,7 @@
 @layer utilities {
   /* ── Typography helpers ── */
   .font-display {
-    font-family: "Bricolage Grotesque", "Mona Sans", system-ui, sans-serif;
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
   }
   .font-mono {
     font-family: "JetBrains Mono", "Geist Mono", monospace;

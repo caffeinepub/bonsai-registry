@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { useActor } from "@/hooks/useActor";
+import { useAdminActorContext } from "@/hooks/useAdminActorContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, CheckCircle2, Info, Loader2 } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -119,7 +119,7 @@ function parseEntries(raw: string): {
 }
 
 export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
-  const { actor } = useActor();
+  const actor = useAdminActorContext();
   const queryClient = useQueryClient();
   const [jsonText, setJsonText] = useState("");
   const [parseError, setParseError] = useState<string | null>(null);
@@ -139,10 +139,12 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
     setPreview(entries);
   }, []);
 
+  const ADMIN_SECRET = "#WakeUp4";
+
   const mutation = useMutation({
     mutationFn: async (entries: BonsaiRegistryEntry[]) => {
       if (!actor) throw new Error("Not connected");
-      return actor.bulkImportEntries(entries);
+      return actor.bulkImportEntriesWithSecret(ADMIN_SECRET, entries);
     },
     onSuccess: (ids) => {
       const count = ids.length;

@@ -39,8 +39,10 @@ export enum UserRole {
 }
 export interface backendInterface {
     addRegistryEntry(entry: BonsaiRegistryEntry): Promise<bigint>;
+    addRegistryEntryWithSecret(secret: string, entry: BonsaiRegistryEntry): Promise<bigint>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     bulkImportEntries(entries: Array<BonsaiRegistryEntry>): Promise<Array<bigint>>;
+    bulkImportEntriesWithSecret(secret: string, entries: Array<BonsaiRegistryEntry>): Promise<Array<bigint>>;
     fullTextSearch(arg0: string, arg1: bigint, arg2: bigint): Promise<Array<BonsaiRegistryEntry>>;
     getAllRegistryEntries(offset: bigint, limit: bigint): Promise<Array<BonsaiRegistryEntry>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
@@ -51,6 +53,8 @@ export interface backendInterface {
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     removeRegistryEntry(id: bigint): Promise<void>;
+    removeRegistryEntryWithSecret(secret: string, id: bigint): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     updateRegistryEntry(id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
+    updateRegistryEntryWithSecret(secret: string, id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
 }

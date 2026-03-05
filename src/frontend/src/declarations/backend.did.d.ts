@@ -37,9 +37,17 @@ export type UserRole = { 'admin' : null } |
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addRegistryEntry' : ActorMethod<[BonsaiRegistryEntry], bigint>,
+  'addRegistryEntryWithSecret' : ActorMethod<
+    [string, BonsaiRegistryEntry],
+    bigint
+  >,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'bulkImportEntries' : ActorMethod<
     [Array<BonsaiRegistryEntry>],
+    Array<bigint>
+  >,
+  'bulkImportEntriesWithSecret' : ActorMethod<
+    [string, Array<BonsaiRegistryEntry>],
     Array<bigint>
   >,
   'fullTextSearch' : ActorMethod<
@@ -64,8 +72,13 @@ export interface _SERVICE {
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'removeRegistryEntry' : ActorMethod<[bigint], undefined>,
+  'removeRegistryEntryWithSecret' : ActorMethod<[string, bigint], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'updateRegistryEntry' : ActorMethod<[bigint, BonsaiRegistryEntry], undefined>,
+  'updateRegistryEntryWithSecret' : ActorMethod<
+    [string, bigint, BonsaiRegistryEntry],
+    undefined
+  >,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

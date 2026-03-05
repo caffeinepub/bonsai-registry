@@ -122,8 +122,10 @@ export enum UserRole {
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     addRegistryEntry(entry: BonsaiRegistryEntry): Promise<bigint>;
+    addRegistryEntryWithSecret(secret: string, entry: BonsaiRegistryEntry): Promise<bigint>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     bulkImportEntries(entries: Array<BonsaiRegistryEntry>): Promise<Array<bigint>>;
+    bulkImportEntriesWithSecret(secret: string, entries: Array<BonsaiRegistryEntry>): Promise<Array<bigint>>;
     fullTextSearch(arg0: string, arg1: bigint, arg2: bigint): Promise<Array<BonsaiRegistryEntry>>;
     getAllRegistryEntries(offset: bigint, limit: bigint): Promise<Array<BonsaiRegistryEntry>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
@@ -134,8 +136,10 @@ export interface backendInterface {
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     removeRegistryEntry(id: bigint): Promise<void>;
+    removeRegistryEntryWithSecret(secret: string, id: bigint): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     updateRegistryEntry(id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
+    updateRegistryEntryWithSecret(secret: string, id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
 }
 import type { BonsaiRegistryEntry as _BonsaiRegistryEntry, Category as _Category, Time as _Time, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -168,6 +172,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async addRegistryEntryWithSecret(arg0: string, arg1: BonsaiRegistryEntry): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.addRegistryEntryWithSecret(arg0, to_candid_BonsaiRegistryEntry_n1(this._uploadFile, this._downloadFile, arg1));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.addRegistryEntryWithSecret(arg0, to_candid_BonsaiRegistryEntry_n1(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
     async assignCallerUserRole(arg0: Principal, arg1: UserRole): Promise<void> {
         if (this.processError) {
             try {
@@ -193,6 +211,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.bulkImportEntries(to_candid_vec_n8(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
+    async bulkImportEntriesWithSecret(arg0: string, arg1: Array<BonsaiRegistryEntry>): Promise<Array<bigint>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.bulkImportEntriesWithSecret(arg0, to_candid_vec_n8(this._uploadFile, this._downloadFile, arg1));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.bulkImportEntriesWithSecret(arg0, to_candid_vec_n8(this._uploadFile, this._downloadFile, arg1));
             return result;
         }
     }
@@ -336,6 +368,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async removeRegistryEntryWithSecret(arg0: string, arg1: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.removeRegistryEntryWithSecret(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.removeRegistryEntryWithSecret(arg0, arg1);
+            return result;
+        }
+    }
     async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
         if (this.processError) {
             try {
@@ -361,6 +407,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.updateRegistryEntry(arg0, to_candid_BonsaiRegistryEntry_n1(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async updateRegistryEntryWithSecret(arg0: string, arg1: bigint, arg2: BonsaiRegistryEntry): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateRegistryEntryWithSecret(arg0, arg1, to_candid_BonsaiRegistryEntry_n1(this._uploadFile, this._downloadFile, arg2));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateRegistryEntryWithSecret(arg0, arg1, to_candid_BonsaiRegistryEntry_n1(this._uploadFile, this._downloadFile, arg2));
             return result;
         }
     }

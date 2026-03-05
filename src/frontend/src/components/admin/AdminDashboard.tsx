@@ -1,9 +1,13 @@
+import type { backendInterface } from "@/backend";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { allEntries, ecosystemGroups } from "@/data/registryData";
-import { useActor } from "@/hooks/useActor";
+import {
+  AdminActorProvider,
+  useAdminActorContext,
+} from "@/hooks/useAdminActorContext";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
@@ -22,12 +26,23 @@ import { EcosystemManager } from "./EcosystemManager";
 import { EntryTable } from "./EntryTable";
 
 interface AdminDashboardProps {
-  principal: string;
+  actor: backendInterface;
   onLogout: () => void;
 }
 
-export function AdminDashboard({ principal, onLogout }: AdminDashboardProps) {
-  const { actor } = useActor();
+export function AdminDashboard({
+  actor: actorProp,
+  onLogout,
+}: AdminDashboardProps) {
+  return (
+    <AdminActorProvider actor={actorProp}>
+      <AdminDashboardInner onLogout={onLogout} />
+    </AdminActorProvider>
+  );
+}
+
+function AdminDashboardInner({ onLogout }: { onLogout: () => void }) {
+  const actor = useAdminActorContext();
   const [activeTab, setActiveTab] = useState("entries");
   const [bulkImportOpen, setBulkImportOpen] = useState(false);
 
@@ -168,11 +183,11 @@ export function AdminDashboard({ principal, onLogout }: AdminDashboardProps) {
               Import
             </Button>
 
-            {/* Principal badge */}
+            {/* Admin badge */}
             <div className="hidden lg:flex items-center gap-1.5 px-2 py-1 rounded border border-primary/20 bg-primary/5">
               <ShieldCheck className="w-3 h-3 text-primary flex-shrink-0" />
-              <span className="font-mono text-[9px] text-muted-foreground max-w-[100px] truncate">
-                {principal.slice(0, 12)}...
+              <span className="font-mono text-[9px] text-muted-foreground">
+                Admin
               </span>
             </div>
 
