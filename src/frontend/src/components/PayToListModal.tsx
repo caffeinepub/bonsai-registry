@@ -28,10 +28,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { createActorWithConfig } from "@/config";
+import { createActorWithConfig, loadConfig } from "@/config";
 import { ecosystemGroups } from "@/data/registryData";
 import { useInternetIdentity } from "@/hooks/useInternetIdentity";
 import { useOisyWallet } from "@/hooks/useOisyWallet";
+import { IDL } from "@dfinity/candid";
+import { Principal } from "@dfinity/principal";
 import { useQuery } from "@tanstack/react-query";
 import {
   AlertCircle,
@@ -187,21 +189,16 @@ export function PayToListModal({ open, onClose }: PayToListModalProps) {
     setStep(3);
 
     try {
-      // Build ICRC-1 transfer args using a simplified encoding
-      // We'll use a base64-encoded empty arg and let OISY handle the display
-      // The actual transfer request is built as a JSON call for ICRC-49
+      // Get the backend canister ID (listing fee recipient)
+      const cfg = await loadConfig();
+      const backendCanisterId = cfg.backend_canister_id;
 
-      // For the ICRC-49 call, we encode the transfer request
-      // Since we can't import @dfinity/candid easily, we'll use a workaround:
-      // build the arg as base64-encoded Candid-encoded transfer record
-      // We'll build a minimal Candid encoding manually
-
-      // Simplified: encode as hex string memo and pass structured params
-      // OISY will show the user what they're signing
-
-      // Build Candid-encoded ICRC-1 transfer argument
+      // Properly encode the ICRC-1 transfer argument using @dfinity/candid.
+      // OISY uses this to fetch an ICRC-21 consent message from the ICP Ledger,
+      // which it displays to the user before asking for approval.
+      // A malformed/empty arg causes OISY error 2000 ("Not supported").
       const transferArg = encodeIcrc1TransferArg({
-        to: ICP_LEDGER_CANISTER_ID, // registry canister as recipient
+        to: backendCanisterId, // registry canister receives the listing fee
         amount: listingFeeE8s,
         memo: hexToBytes(memo),
       });
@@ -747,9 +744,22 @@ export function PayToListModal({ open, onClose }: PayToListModalProps) {
   );
 }
 
-// ── Minimal ICRC-1 transfer arg encoder ──────────────────────────────────────
-// Encodes a simplified icrc1_transfer request as base64 Candid
-// For OISY ICRC-49, we pass the arg as base64-encoded Candid
+// ── ICRC-1 transfer arg encoder using @dfinity/candid ────────────────────────
+// Properly encodes icrc1_transfer arguments so OISY can:
+//  1. Decode them to fetch an ICRC-21 consent message from the ICP Ledger
+//  2. Display the transfer details to the user before signing
+//
+// icrc1_transfer signature:
+//   transfer : (TransferArg) -> (TransferResult)
+//   type TransferArg = record {
+//     from_subaccount : opt blob;       // opt vec nat8 (32 bytes)
+//     to              : Account;        // record { owner: principal; subaccount: opt blob }
+//     amount          : nat;
+//     fee             : opt nat;
+//     memo            : opt blob;       // opt vec nat8
+//     created_at_time : opt nat64;
+//   }
+
 function hexToBytes(hex: string): Uint8Array {
   const bytes = new Uint8Array(hex.length / 2);
   for (let i = 0; i < hex.length; i += 2) {
@@ -758,27 +768,44 @@ function hexToBytes(hex: string): Uint8Array {
   return bytes;
 }
 
-function encodeIcrc1TransferArg(_params: {
-  to: string;
+function encodeIcrc1TransferArg(params: {
+  to: string; // principal text (canister ID that receives the fee)
   amount: bigint;
   memo: Uint8Array;
 }): string {
-  // We encode a minimal Candid record for icrc1_transfer
-  // This is a simplified encoding — OISY will decode and display it
-  // For the actual call, we build the proper Candid bytes
+  // Build the Candid IDL types matching the ICRC-1 ledger interface
+  const AccountType = IDL.Record({
+    owner: IDL.Principal,
+    subaccount: IDL.Opt(IDL.Vec(IDL.Nat8)),
+  });
 
-  // Build a minimal encoding that OISY can interpret
-  // The actual proper encoding would use @dfinity/candid but we keep it simple
-  // by encoding as a JSON string wrapped in a known format that OISY understands
+  const TransferArgType = IDL.Record({
+    from_subaccount: IDL.Opt(IDL.Vec(IDL.Nat8)),
+    to: AccountType,
+    amount: IDL.Nat,
+    fee: IDL.Opt(IDL.Nat),
+    memo: IDL.Opt(IDL.Vec(IDL.Nat8)),
+    created_at_time: IDL.Opt(IDL.Nat64),
+  });
 
-  // OISY's ICRC-49 expects a base64url-encoded Candid binary
-  // For a fee-less transfer: (record { to = ...; amount = ...; memo = ... })
+  const transferArg = {
+    from_subaccount: [], // None
+    to: {
+      owner: Principal.fromText(params.to),
+      subaccount: [], // None = default subaccount
+    },
+    amount: params.amount,
+    fee: [], // None = use default fee
+    memo: [Array.from(params.memo)], // Some(memo bytes)
+    created_at_time: [], // None
+  };
 
-  // We'll use a pre-built empty arg and rely on OISY's UI to fill in details
-  // This is the most compatible approach without the full Candid encoder
+  // Encode as Candid binary (returns ArrayBuffer)
+  const encoded = IDL.encode([TransferArgType], [transferArg]);
+  const bytes = new Uint8Array(encoded);
 
-  // Empty DIDL encoded bytes: 4449444c0001...
-  // For now, return empty Candid encoding (OISY will show a generic confirmation)
-  const emptyArg = new Uint8Array([0x44, 0x49, 0x44, 0x4c, 0x00, 0x00]);
-  return btoa(String.fromCharCode(...emptyArg));
+  // Convert to standard base64 (ICRC-49 spec uses base64-encoded blob)
+  let binary = "";
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary);
 }

@@ -20,6 +20,7 @@ import {
   AdminActorProvider,
   useAdminActorContext,
 } from "@/hooks/useAdminActorContext";
+import { useCanisterHealth } from "@/hooks/useCanisterHealth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
@@ -43,6 +44,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { AnalyticsTab } from "./AnalyticsTab";
 import { BulkImportModal } from "./BulkImportModal";
+import { CanisterHealthBadge } from "./CanisterHealthBadge";
 import { EcosystemManager } from "./EcosystemManager";
 import { EntryTable } from "./EntryTable";
 
@@ -463,6 +465,14 @@ function AdminDashboardInner({ onLogout }: { onLogout: () => void }) {
   const actor = useAdminActorContext();
   const [activeTab, setActiveTab] = useState("entries");
   const [bulkImportOpen, setBulkImportOpen] = useState(false);
+  const [healthBannerDismissed, setHealthBannerDismissed] = useState(false);
+
+  const {
+    status: healthStatus,
+    isChecking: healthChecking,
+    lastChecked: healthLastChecked,
+    retry: healthRetry,
+  } = useCanisterHealth(!!actor);
 
   const { data: totalBackendEntries } = useQuery({
     queryKey: ["registry-entries-count"],
@@ -587,6 +597,13 @@ function AdminDashboardInner({ onLogout }: { onLogout: () => void }) {
                   ecosystems
                 </span>
               </div>
+              {/* Canister health */}
+              <CanisterHealthBadge
+                status={healthStatus}
+                isChecking={healthChecking}
+                lastChecked={healthLastChecked}
+                onRetry={healthRetry}
+              />
             </div>
 
             {/* Bulk actions */}
@@ -673,6 +690,53 @@ function AdminDashboardInner({ onLogout }: { onLogout: () => void }) {
             Bulk Import
           </Button>
         </div>
+
+        {/* Canister health banner — shown when not online */}
+        {!healthBannerDismissed &&
+          (healthStatus === "starting" || healthStatus === "offline") && (
+            <div
+              data-ocid="admin.canister_health.banner"
+              className={[
+                "mb-4 flex items-start gap-3 rounded-lg border px-4 py-3 text-sm",
+                healthStatus === "starting"
+                  ? "border-amber-400/30 bg-amber-400/8 text-amber-300"
+                  : "border-destructive/30 bg-destructive/8 text-destructive",
+              ].join(" ")}
+            >
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-xs">
+                  {healthStatus === "starting"
+                    ? "Canister is starting up"
+                    : "Canister appears to be offline"}
+                </p>
+                <p className="text-[11px] opacity-80 mt-0.5">
+                  {healthStatus === "starting"
+                    ? "The backend is recovering after a recent deployment. Write operations (import, edit, delete) may return an error. Wait 30-60 seconds, then retry."
+                    : "The backend could not be reached. Save/import operations will fail until it recovers. Click retry to re-check."}
+                </p>
+                <div className="flex items-center gap-3 mt-2">
+                  <button
+                    type="button"
+                    data-ocid="admin.canister_health.retry_button"
+                    onClick={healthRetry}
+                    disabled={healthChecking}
+                    className="text-[11px] font-medium underline underline-offset-2 disabled:opacity-50"
+                  >
+                    {healthChecking ? "Checking..." : "Re-check now"}
+                  </button>
+                  <button
+                    type="button"
+                    data-ocid="admin.canister_health.dismiss_button"
+                    onClick={() => setHealthBannerDismissed(true)}
+                    className="text-[11px] opacity-60 hover:opacity-100"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
         {/* Listing Fee Settings */}
         <div className="mb-6">

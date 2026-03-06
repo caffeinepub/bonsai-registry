@@ -218,7 +218,7 @@ export function useOisyWallet(): UseOisyWalletReturn {
 
   // ── Send a JSON-RPC message to the OISY popup ─────────────────────────────
   const sendMessage = useCallback(
-    (method: string, params: unknown): Promise<unknown> => {
+    (method: string, params?: unknown): Promise<unknown> => {
       return new Promise((resolve, reject) => {
         const popup = popupRef.current;
         if (!popup || popup.closed) {
@@ -248,7 +248,10 @@ export function useOisyWallet(): UseOisyWalletReturn {
           },
         });
 
-        popup.postMessage({ jsonrpc: "2.0", id, method, params }, targetOrigin);
+        // Only include params if defined — some ICRC methods (icrc27_accounts) take no params
+        const msg: Record<string, unknown> = { jsonrpc: "2.0", id, method };
+        if (params !== undefined) msg.params = params;
+        popup.postMessage(msg, targetOrigin);
       });
     },
     [],
@@ -351,29 +354,27 @@ export function useOisyWallet(): UseOisyWalletReturn {
         startHeartbeat(popup, targetOrigin);
 
         // 3. Request permissions (ICRC-25)
+        // Only request what OISY actually supports — icrc31_get_principals
+        // is not universally supported so we derive the principal from accounts.
         await sendMessage("icrc25_request_permissions", {
           scopes: [
             { method: "icrc27_accounts" },
             { method: "icrc49_call_canister" },
-            { method: "icrc31_get_principals" },
           ],
         });
 
-        // 4. Get principals (ICRC-31)
-        const principalsResult = (await sendMessage(
-          "icrc31_get_principals",
-          {},
-        )) as { principals?: string[] } | null;
-
-        const principal = principalsResult?.principals?.[0] ?? null;
-
-        // 5. Get accounts (ICRC-27)
+        // 4. Get accounts (ICRC-27) — spec says no params (omit params entirely)
         const accountsResult = (await sendMessage(
-          "icrc27_get_accounts",
-          {},
-        )) as { accounts?: OisyAccount[] } | null;
+          "icrc27_accounts",
+          undefined,
+        )) as {
+          accounts?: OisyAccount[];
+        } | null;
 
         const accounts = accountsResult?.accounts ?? [];
+
+        // Derive principal from first account owner (no separate ICRC-31 call needed)
+        const principal = accounts[0]?.owner ?? null;
 
         const newState = {
           connected: true,
@@ -468,9 +469,8 @@ export function useOisyWallet(): UseOisyWalletReturn {
       try {
         const result = await sendMessage("icrc49_call_canister", {
           canisterId: params.canisterId,
-          sender: state.accounts[0]
-            ? { owner: state.accounts[0].owner, subaccount: null }
-            : undefined,
+          // ICRC-49: sender must be a plain principal text string, not an object
+          sender: state.accounts[0]?.owner ?? state.principal ?? undefined,
           method: params.method,
           arg: params.arg,
         });
@@ -481,7 +481,13 @@ export function useOisyWallet(): UseOisyWalletReturn {
         return { error: { code: -1, message } };
       }
     },
-    [sendMessage, waitForPopupReady, startHeartbeat, state.accounts],
+    [
+      sendMessage,
+      waitForPopupReady,
+      startHeartbeat,
+      state.accounts,
+      state.principal,
+    ],
   );
 
   return {

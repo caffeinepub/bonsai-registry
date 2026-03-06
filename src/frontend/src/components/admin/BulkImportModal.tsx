@@ -11,8 +11,15 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useAdminActorContext } from "@/hooks/useAdminActorContext";
+import { useCanisterHealth } from "@/hooks/useCanisterHealth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, CheckCircle2, Info, Loader2 } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Info,
+  Loader2,
+  RefreshCw,
+} from "lucide-react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
@@ -126,6 +133,12 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
   const [preview, setPreview] = useState<BonsaiRegistryEntry[]>([]);
   const [importedCount, setImportedCount] = useState<number | null>(null);
   const [skippedCount, setSkippedCount] = useState<number>(0);
+
+  const {
+    status: healthStatus,
+    isChecking: healthChecking,
+    retry: healthRetry,
+  } = useCanisterHealth(open && !!actor);
 
   const handleTextChange = useCallback((value: string) => {
     setJsonText(value);
@@ -260,6 +273,47 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
           )}
         </div>
 
+        {/* Canister health warning */}
+        {(healthStatus === "starting" || healthStatus === "offline") && (
+          <div
+            data-ocid="admin.bulk_import.health_warning"
+            className={[
+              "flex items-start gap-2 p-3 rounded border text-xs",
+              healthStatus === "starting"
+                ? "bg-amber-400/10 border-amber-400/30 text-amber-300"
+                : "bg-destructive/10 border-destructive/30 text-destructive",
+            ].join(" ")}
+          >
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-medium">
+                {healthStatus === "starting"
+                  ? "Canister is starting up — import may fail"
+                  : "Canister is offline — import will fail"}
+              </p>
+              <p className="opacity-80 mt-0.5">
+                {healthStatus === "starting"
+                  ? "The backend is recovering after a recent deployment. Wait 30-60 seconds before importing."
+                  : "The backend could not be reached. Please wait and retry."}
+              </p>
+              <button
+                type="button"
+                data-ocid="admin.bulk_import.health_retry_button"
+                onClick={healthRetry}
+                disabled={healthChecking}
+                className="mt-1.5 flex items-center gap-1 font-medium underline underline-offset-2 disabled:opacity-50"
+              >
+                {healthChecking ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-3 h-3" />
+                )}
+                {healthChecking ? "Checking..." : "Re-check canister status"}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Mutation error */}
         {mutation.isError && (
           <div className="flex items-center gap-2 p-3 rounded bg-destructive/10 border border-destructive/30 text-xs text-destructive">
@@ -309,7 +363,9 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
               mutation.isPending ||
               preview.length === 0 ||
               !!parseError ||
-              importedCount !== null
+              importedCount !== null ||
+              healthStatus === "offline" ||
+              healthStatus === "starting"
             }
           >
             {mutation.isPending ? (
