@@ -4,17 +4,25 @@
  * OISY is a browser-based ICP wallet (not an extension).
  * Communication uses window.open + postMessage (ICRC-29).
  *
- * Standards implemented:
+ * ICRC-29 protocol (per spec):
+ *  1. Relying party opens signer window.
+ *  2. Relying party REPEATEDLY sends icrc29_status pings with targetOrigin '*'.
+ *  3. Signer responds with { result: "ready" } once it is loaded.
+ *  4. Connection is established; relying party continues heartbeat pings.
+ *  5. All subsequent messages are sent to the signer window with targetOrigin
+ *     set to the origin received in the first "ready" response (establishedOrigin).
+ *  6. Incoming messages are only accepted if event.source === signerWindow AND
+ *     event.origin === establishedOrigin.
+ *
+ * Standards:
  * - ICRC-25: signer permissions
  * - ICRC-27: get accounts
- * - ICRC-29: window postMessage transport (ready handshake)
+ * - ICRC-29: window postMessage transport (ready handshake + heartbeat)
  * - ICRC-31: get principals
  * - ICRC-49: call canister (used for ICP transfer)
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const OISY_ORIGIN = "https://oisy.com";
-// OISY's ICRC-29 relying-party endpoint — must load this path for postMessage transport
 const OISY_SIGN_URL = "https://oisy.com/sign";
 
 export interface OisyAccount {
@@ -95,6 +103,10 @@ export function useOisyWallet(): UseOisyWalletReturn {
 
   const popupRef = useRef<Window | null>(null);
 
+  // The origin confirmed by OISY's first "ready" response.
+  // Per spec, we must send subsequent messages to this origin.
+  const establishedOriginRef = useRef<string | null>(null);
+
   // Map of pending JSON-RPC calls: id -> resolve/reject pair
   const pendingRef = useRef<
     Map<
@@ -106,13 +118,57 @@ export function useOisyWallet(): UseOisyWalletReturn {
     >
   >(new Map());
 
-  // Callback waiting for icrc29_status "ready"
+  // Callback waiting for icrc29_status "ready" during handshake
   const readyResolveRef = useRef<(() => void) | null>(null);
+
+  // Heartbeat interval (kept alive for connection maintenance per spec)
+  const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // ── Stop heartbeat ─────────────────────────────────────────────────────────
+  const stopHeartbeat = useCallback(() => {
+    if (heartbeatRef.current !== null) {
+      clearInterval(heartbeatRef.current);
+      heartbeatRef.current = null;
+    }
+  }, []);
+
+  // ── Start heartbeat (after connection established) ─────────────────────────
+  // Per ICRC-29 spec: relying party must keep sending icrc29_status pings
+  // so the signer knows the connection is still alive.
+  const startHeartbeat = useCallback(
+    (popup: Window, targetOrigin: string) => {
+      stopHeartbeat();
+      heartbeatRef.current = setInterval(() => {
+        if (!popup || popup.closed) {
+          stopHeartbeat();
+          return;
+        }
+        try {
+          popup.postMessage(
+            { jsonrpc: "2.0", id: uuid(), method: "icrc29_status" },
+            targetOrigin,
+          );
+        } catch {
+          // ignore cross-origin errors
+        }
+      }, 5_000); // every 5 seconds per spec recommendation
+    },
+    [stopHeartbeat],
+  );
 
   // ── postMessage handler ────────────────────────────────────────────────────
   const handleMessage = useCallback((event: MessageEvent) => {
-    // Only accept messages from OISY origin
-    if (event.origin !== OISY_ORIGIN) return;
+    const popup = popupRef.current;
+
+    // Per ICRC-29 spec:
+    // - During handshake: accept any origin (we haven't established yet),
+    //   but only from our popup window.
+    // - After handshake: only accept messages from establishedOrigin AND our popup.
+    if (!popup || popup.closed) return;
+    if (event.source !== popup) return; // must come from our window
+
+    const established = establishedOriginRef.current;
+    if (established && event.origin !== established) return;
 
     const msg = event.data as {
       jsonrpc?: "2.0";
@@ -124,18 +180,14 @@ export function useOisyWallet(): UseOisyWalletReturn {
 
     if (!msg || typeof msg !== "object") return;
 
-    // ICRC-29: OISY signals ready by sending a notification with method "icrc29_status"
-    // and params: { status: "ready" }  (no id on a notification)
-    // Also accept a response to our outbound icrc29_status ping.
-    const isReadyNotification =
-      msg.method === "icrc29_status" &&
-      (msg as { params?: { status?: string } }).params?.status === "ready";
-    const isReadyResponse =
-      !msg.method &&
-      ((msg.result as { status?: string })?.status === "ready" ||
-        msg.result === "ready");
+    // ICRC-29: signer responds to icrc29_status ping with { result: "ready" }
+    const isReadyResponse = !msg.method && msg.result === "ready";
 
-    if (isReadyNotification || isReadyResponse) {
+    if (isReadyResponse) {
+      // Record the established origin from the first ready response
+      if (!establishedOriginRef.current) {
+        establishedOriginRef.current = event.origin;
+      }
       if (readyResolveRef.current) {
         readyResolveRef.current();
         readyResolveRef.current = null;
@@ -174,6 +226,7 @@ export function useOisyWallet(): UseOisyWalletReturn {
           return;
         }
 
+        const targetOrigin = establishedOriginRef.current ?? "*";
         const id = uuid();
 
         // Timeout after 60s
@@ -195,15 +248,15 @@ export function useOisyWallet(): UseOisyWalletReturn {
           },
         });
 
-        popup.postMessage({ jsonrpc: "2.0", id, method, params }, OISY_ORIGIN);
+        popup.postMessage({ jsonrpc: "2.0", id, method, params }, targetOrigin);
       });
     },
     [],
   );
 
   // ── Wait for OISY popup to signal ready (ICRC-29) ────────────────────────
-  // OISY sends a postMessage with method "icrc29_status" or responds to our
-  // status ping when it has loaded and is ready to receive requests.
+  // Per spec: relying party sends icrc29_status pings with targetOrigin '*'
+  // until OISY responds with { result: "ready" }.
   const waitForPopupReady = useCallback((popup: Window): Promise<void> => {
     return new Promise((resolve, reject) => {
       const maxWait = 30_000; // 30s max
@@ -219,7 +272,8 @@ export function useOisyWallet(): UseOisyWalletReturn {
         }
       };
 
-      // Poll: send icrc29_status pings every 500ms
+      // Poll: send icrc29_status pings every 500ms with targetOrigin '*'
+      // This is per ICRC-29 spec — targetOrigin MUST be '*' during handshake
       const pingInterval = setInterval(() => {
         if (popup.closed) {
           clearInterval(pingInterval);
@@ -236,10 +290,10 @@ export function useOisyWallet(): UseOisyWalletReturn {
           return;
         }
         try {
-          // Send a status ping — OISY will respond when ready
+          // targetOrigin MUST be '*' per ICRC-29 spec during establishment
           popup.postMessage(
-            { jsonrpc: "2.0", id: uuid(), method: "icrc29_status", params: {} },
-            OISY_ORIGIN,
+            { jsonrpc: "2.0", id: uuid(), method: "icrc29_status" },
+            "*",
           );
         } catch {
           // Cross-origin error while page is loading — keep trying
@@ -256,8 +310,10 @@ export function useOisyWallet(): UseOisyWalletReturn {
     if (popupRef.current && !popupRef.current.closed) {
       popupRef.current.close();
     }
+    stopHeartbeat();
     readyResolveRef.current = null;
     pendingRef.current.clear();
+    establishedOriginRef.current = null;
 
     setState((s) => ({ ...s, isConnecting: true, error: null }));
 
@@ -290,7 +346,11 @@ export function useOisyWallet(): UseOisyWalletReturn {
         // 1. Wait for OISY to signal it's ready (ICRC-29 handshake)
         await waitForPopupReady(popup);
 
-        // 2. Request permissions (ICRC-25)
+        // 2. Start heartbeat to maintain connection per spec
+        const targetOrigin = establishedOriginRef.current ?? "*";
+        startHeartbeat(popup, targetOrigin);
+
+        // 3. Request permissions (ICRC-25)
         await sendMessage("icrc25_request_permissions", {
           scopes: [
             { method: "icrc27_accounts" },
@@ -299,7 +359,7 @@ export function useOisyWallet(): UseOisyWalletReturn {
           ],
         });
 
-        // 3. Get principals (ICRC-31)
+        // 4. Get principals (ICRC-31)
         const principalsResult = (await sendMessage(
           "icrc31_get_principals",
           {},
@@ -307,7 +367,7 @@ export function useOisyWallet(): UseOisyWalletReturn {
 
         const principal = principalsResult?.principals?.[0] ?? null;
 
-        // 4. Get accounts (ICRC-27)
+        // 5. Get accounts (ICRC-27)
         const accountsResult = (await sendMessage(
           "icrc27_get_accounts",
           {},
@@ -338,9 +398,16 @@ export function useOisyWallet(): UseOisyWalletReturn {
           error: message,
         }));
         clearPersistedState();
+        stopHeartbeat();
       }
     })();
-  }, [state.isConnecting, sendMessage, waitForPopupReady]);
+  }, [
+    state.isConnecting,
+    sendMessage,
+    waitForPopupReady,
+    startHeartbeat,
+    stopHeartbeat,
+  ]);
 
   // ── Disconnect ─────────────────────────────────────────────────────────────
   const disconnect = useCallback(() => {
@@ -350,6 +417,8 @@ export function useOisyWallet(): UseOisyWalletReturn {
     popupRef.current = null;
     pendingRef.current.clear();
     readyResolveRef.current = null;
+    establishedOriginRef.current = null;
+    stopHeartbeat();
     clearPersistedState();
     setState({
       connected: false,
@@ -358,7 +427,14 @@ export function useOisyWallet(): UseOisyWalletReturn {
       isConnecting: false,
       error: null,
     });
-  }, []);
+  }, [stopHeartbeat]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopHeartbeat();
+    };
+  }, [stopHeartbeat]);
 
   // ── ICRC-49: Call canister ─────────────────────────────────────────────────
   const sendCallCanisterRequest = useCallback(
@@ -383,7 +459,10 @@ export function useOisyWallet(): UseOisyWalletReturn {
           };
         }
         popupRef.current = popup;
+        establishedOriginRef.current = null;
         await waitForPopupReady(popup);
+        const targetOrigin = establishedOriginRef.current ?? "*";
+        startHeartbeat(popup, targetOrigin);
       }
 
       try {
@@ -402,7 +481,7 @@ export function useOisyWallet(): UseOisyWalletReturn {
         return { error: { code: -1, message } };
       }
     },
-    [sendMessage, waitForPopupReady, state.accounts],
+    [sendMessage, waitForPopupReady, startHeartbeat, state.accounts],
   );
 
   return {
