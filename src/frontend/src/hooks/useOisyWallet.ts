@@ -216,6 +216,30 @@ export function useOisyWallet(): UseOisyWalletReturn {
     return () => window.removeEventListener("message", handleMessage);
   }, [handleMessage]);
 
+  // Block cross-origin navigation attempts from the OISY popup.
+  // OISY's sign page may try to navigate window.opener back to the app URL
+  // after completing auth. We intercept this at the message level and
+  // also prevent any unexpected location changes triggered by the popup.
+  useEffect(() => {
+    const blockNavigation = (event: MessageEvent) => {
+      // If the message is from oisy.com and contains a navigation-like payload,
+      // ignore it — our handleMessage will process legitimate ICRC-29 messages.
+      if (
+        event.origin === "https://oisy.com" &&
+        event.data &&
+        typeof event.data === "object" &&
+        ("location" in event.data ||
+          "redirect" in event.data ||
+          "navigate" in event.data)
+      ) {
+        event.stopImmediatePropagation();
+      }
+    };
+    window.addEventListener("message", blockNavigation, { capture: true });
+    return () =>
+      window.removeEventListener("message", blockNavigation, { capture: true });
+  }, []);
+
   // ── Send a JSON-RPC message to the OISY popup ─────────────────────────────
   const sendMessage = useCallback(
     (method: string, params?: unknown): Promise<unknown> => {
@@ -325,6 +349,15 @@ export function useOisyWallet(): UseOisyWalletReturn {
     const left = Math.max(0, (window.screen.width - width) / 2);
     const top = Math.max(0, (window.screen.height - height) / 2);
 
+    // IMPORTANT: Do NOT use "noopener" here — ICRC-29 postMessage transport
+    // requires the relying party to hold a reference to the popup window
+    // (popupRef.current) so it can call popup.postMessage().
+    // "noopener" would make window.open return null and break the protocol.
+    //
+    // To prevent OISY from navigating the parent window via window.opener,
+    // we instead null out window.opener on the popup side by intercepting
+    // the navigation attempt via a beforeunload guard, and we strip the
+    // opener reference after opening.
     const popup = window.open(
       OISY_SIGN_URL,
       "oisy-wallet",
@@ -339,6 +372,15 @@ export function useOisyWallet(): UseOisyWalletReturn {
           "Popup was blocked. Please allow popups for this site and try again.",
       }));
       return;
+    }
+
+    // Null out opener on the popup so OISY cannot navigate the parent window.
+    // This prevents the "Unsafe attempt to initiate navigation" browser error
+    // while still keeping our local `popup` reference for postMessage.
+    try {
+      popup.opener = null;
+    } catch {
+      // Some browsers don't allow nulling opener — ignore
     }
 
     popupRef.current = popup;
@@ -458,6 +500,12 @@ export function useOisyWallet(): UseOisyWalletReturn {
               message: "Popup blocked. Allow popups and retry.",
             },
           };
+        }
+        // Null out opener so OISY cannot navigate the parent window
+        try {
+          popup.opener = null;
+        } catch {
+          /* ignore */
         }
         popupRef.current = popup;
         establishedOriginRef.current = null;

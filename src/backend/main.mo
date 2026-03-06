@@ -131,19 +131,52 @@ actor {
     };
   };
 
-  // Auto-register helper: ensures authenticated users are registered as #user
-  func ensureUserRegistered(caller : Principal) {
+  func requireAuthenticated(caller : Principal) {
+    if (caller.isAnonymous()) {
+      Runtime.trap("Unauthorized: Authentication required");
+    };
+  };
+
+  func ensureProfileExists(caller : Principal) {
     if (caller.isAnonymous()) {
       return;
     };
-    // Try to get the user role; if it traps, the user is not registered
-    // We catch this by using a try-catch pattern via checking if assignRole works
-    // Since we can't directly catch traps, we use assignRole which is idempotent
-    // and will register the user if they don't exist
-    ignore do ? {
-      // Attempt to assign the user role to themselves
-      // This will only work if they're already registered or we register them
-      AccessControl.assignRole(accessControlState, caller, caller, #user);
+
+    switch (userProfiles.get(caller)) {
+      case (?_) { /* Profile already exists */ };
+      case (null) {
+        // Create default profile for new authenticated user
+        let defaultSocialLinks = {
+          twitter = null;
+          github = null;
+          discord = null;
+          telegram = null;
+          website = null;
+        };
+        let defaultWalletAddresses = {
+          eth = null;
+          btc = null;
+          hbar = null;
+          sol = null;
+        };
+
+        let newProfile : PrivateUserProfile = {
+          username = "";
+          displayName = "New User";
+          bio = "";
+          bannerUrl = null;
+          avatarUrl = null;
+          socialLinks = defaultSocialLinks;
+          walletAddresses = defaultWalletAddresses;
+          joinedAt = Time.now();
+          pinnedNfts = [];
+          bookmarks = Set.empty<Nat>();
+          ratedEntries = [];
+          submittedEntries = [];
+          badges = [];
+        };
+        userProfiles.add(caller, newProfile);
+      };
     };
   };
 
@@ -206,20 +239,14 @@ actor {
   };
 
   public shared ({ caller }) func saveCallerUserProfile(profile : ExtendedUserProfile) : async () {
-    ensureUserRegistered(caller);
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
-    };
-
+    requireAuthenticated(caller);
     let privateProfile = fromExtendedUserProfile(profile);
     userProfiles.add(caller, privateProfile);
   };
 
   public shared ({ caller }) func bookmarkEntry(entryId : Nat) : async () {
-    ensureUserRegistered(caller);
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can bookmark entries");
-    };
+    requireAuthenticated(caller);
+    ensureProfileExists(caller);
 
     switch (userProfiles.get(caller)) {
       case (null) { Runtime.trap("Profile not found") };
@@ -234,10 +261,8 @@ actor {
   };
 
   public shared ({ caller }) func unbookmarkEntry(entryId : Nat) : async () {
-    ensureUserRegistered(caller);
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can unbookmark entries");
-    };
+    requireAuthenticated(caller);
+    ensureProfileExists(caller);
 
     switch (userProfiles.get(caller)) {
       case (null) { Runtime.trap("Profile not found") };
@@ -269,10 +294,8 @@ actor {
   };
 
   public shared ({ caller }) func submitProjectListing(entry : BonsaiRegistryEntry, paymentMemo : Text) : async Nat {
-    ensureUserRegistered(caller);
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can submit projects");
-    };
+    requireAuthenticated(caller);
+    ensureProfileExists(caller);
 
     let submissionId = nextId;
     let submission : PendingSubmission = {
@@ -288,38 +311,7 @@ actor {
     nextId += 1;
 
     switch (userProfiles.get(caller)) {
-      case (null) {
-        let defaultSocialLinks = {
-          twitter = null;
-          github = null;
-          discord = null;
-          telegram = null;
-          website = null;
-        };
-        let defaultWalletAddresses = {
-          eth = null;
-          btc = null;
-          hbar = null;
-          sol = null;
-        };
-
-        let newProfile : PrivateUserProfile = {
-          username = "";
-          displayName = "New User";
-          bio = "";
-          bannerUrl = null;
-          avatarUrl = null;
-          socialLinks = defaultSocialLinks;
-          walletAddresses = defaultWalletAddresses;
-          joinedAt = Time.now();
-          pinnedNfts = [];
-          bookmarks = Set.empty<Nat>();
-          ratedEntries = [];
-          submittedEntries = [submissionId];
-          badges = [];
-        };
-        userProfiles.add(caller, newProfile);
-      };
+      case (null) { Runtime.trap("Profile not found") };
       case (?profile) {
         let updatedSubmittedEntries = profile.submittedEntries.concat([submissionId]);
         let updatedProfile = {
@@ -516,10 +508,8 @@ actor {
   };
 
   public shared ({ caller }) func rateEntry(entryId : Nat, rating : Nat) : async () {
-    ensureUserRegistered(caller);
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can rate entries");
-    };
+    requireAuthenticated(caller);
+    ensureProfileExists(caller);
 
     if (rating < 1 or rating > 5) {
       Runtime.trap("Invalid rating value: Must be between 1 and 5");
