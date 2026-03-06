@@ -9,16 +9,36 @@ export interface None {
 export type Option<T> = Some<T> | None;
 export interface ExtendedUserProfile {
     bio: string;
+    ratedEntries: Array<EntryRating>;
     submittedEntries: Array<bigint>;
+    username: string;
     displayName: string;
     pinnedNfts: Array<{
         tokenId: bigint;
         collectionId: string;
     }>;
+    socialLinks: SocialLinks;
+    badges: Array<string>;
+    joinedAt: Time;
+    walletAddresses: WalletAddresses;
+    bookmarks: Array<bigint>;
     avatarUrl?: string;
-    walletPrincipal?: Principal;
+    bannerUrl?: string;
 }
 export type Time = bigint;
+export interface WalletAddresses {
+    btc?: string;
+    eth?: string;
+    sol?: string;
+    hbar?: string;
+}
+export interface SocialLinks {
+    twitter?: string;
+    website?: string;
+    discord?: string;
+    telegram?: string;
+    github?: string;
+}
 export interface PendingSubmission {
     id: bigint;
     status: Variant_pending_approved_rejected;
@@ -41,6 +61,10 @@ export interface BonsaiRegistryEntry {
 export interface EntryRatingStats {
     count: bigint;
     average: number;
+}
+export interface EntryRating {
+    entryId: bigint;
+    rating: bigint;
 }
 export enum Category {
     nft = "nft",
@@ -67,9 +91,11 @@ export interface backendInterface {
     addRegistryEntryWithSecret(secret: string, entry: BonsaiRegistryEntry): Promise<bigint>;
     approvePendingSubmissionWithSecret(secret: string, submissionId: bigint): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    bookmarkEntry(entryId: bigint): Promise<void>;
     bulkImportEntries(entries: Array<BonsaiRegistryEntry>): Promise<Array<bigint>>;
     bulkImportEntriesWithSecret(secret: string, entries: Array<BonsaiRegistryEntry>): Promise<Array<bigint>>;
     fullTextSearch(arg0: string, arg1: bigint, arg2: bigint): Promise<Array<BonsaiRegistryEntry>>;
+    getAllBookmarkedEntries(): Promise<Array<bigint>>;
     getAllEntryRatings(): Promise<Array<[bigint, EntryRatingStats]>>;
     getAllRegistryEntries(offset: bigint, limit: bigint): Promise<Array<BonsaiRegistryEntry>>;
     getCallerAllRatings(): Promise<Array<[bigint, bigint]>>;
@@ -91,6 +117,7 @@ export interface backendInterface {
     saveCallerUserProfile(profile: ExtendedUserProfile): Promise<void>;
     setListingFeeWithSecret(secret: string, fee: bigint): Promise<void>;
     submitProjectListing(entry: BonsaiRegistryEntry, paymentMemo: string): Promise<bigint>;
+    unbookmarkEntry(entryId: bigint): Promise<void>;
     updateRegistryEntry(id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
     updateRegistryEntryWithSecret(secret: string, id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
 }

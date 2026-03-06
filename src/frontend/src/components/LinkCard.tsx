@@ -1,4 +1,5 @@
 import type { RegistryEntry } from "@/data/registryData";
+import type { LocalRatingStats } from "@/hooks/useLocalRatings";
 import { recordEvent } from "@/utils/analytics";
 import { ExternalLink } from "lucide-react";
 import type { EntryRatingStats } from "../backend.d";
@@ -29,11 +30,16 @@ const TAG_LABELS: Record<string, string> = {
 interface LinkCardProps {
   entry: RegistryEntry;
   index: number;
+  // Backend entry rating props (on-chain)
   stats?: EntryRatingStats | null;
   userRating?: number | null;
   onRate?: (entryId: string, rating: number) => void;
   isAuthenticated?: boolean;
   isRatingLoading?: boolean;
+  // Local (static entry) rating props
+  localStats?: LocalRatingStats | null;
+  localUserRating?: number | null;
+  onLocalRate?: (url: string, rating: number) => void;
 }
 
 export function LinkCard({
@@ -44,6 +50,9 @@ export function LinkCard({
   onRate,
   isAuthenticated = false,
   isRatingLoading = false,
+  localStats,
+  localUserRating,
+  onLocalRate,
 }: LinkCardProps) {
   const domain = (() => {
     try {
@@ -53,7 +62,8 @@ export function LinkCard({
     }
   })();
 
-  // Only show rating UI for backend-managed entries (they have numeric backend IDs)
+  // Determine whether this is a backend-managed entry (on-chain ratings)
+  // or a static entry (localStorage ratings)
   const isBackendEntry = entry.id.startsWith("backend-");
 
   return (
@@ -120,17 +130,17 @@ export function LinkCard({
         ))}
       </div>
 
-      {/* ── Rating ── (backend entries only) */}
-      {isBackendEntry && (
-        // fieldset prevents the anchor from capturing clicks on interactive star buttons
-        <fieldset
-          aria-label="Rate this project"
-          className="mt-1 pt-1.5 border-t border-border/50 border-0 p-0 m-0"
-          onClick={(e) => e.preventDefault()}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") e.preventDefault();
-          }}
-        >
+      {/* ── Rating ── (all entries) */}
+      {/* fieldset prevents the anchor from capturing clicks on interactive star buttons */}
+      <fieldset
+        aria-label="Rate this project"
+        className="mt-1 pt-1.5 border-t border-border/50 border-0 p-0 m-0"
+        onClick={(e) => e.preventDefault()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") e.preventDefault();
+        }}
+      >
+        {isBackendEntry ? (
           <StarRating
             entryId={entry.id}
             stats={stats ?? null}
@@ -138,9 +148,25 @@ export function LinkCard({
             onRate={(rating) => onRate?.(entry.id, rating)}
             isAuthenticated={isAuthenticated}
             isLoading={isRatingLoading}
+            showSignInNudge={true}
           />
-        </fieldset>
-      )}
+        ) : (
+          <StarRating
+            entryId={entry.id}
+            stats={
+              localStats
+                ? { average: localStats.average, count: localStats.count }
+                : null
+            }
+            userRating={localUserRating ?? null}
+            onRate={(rating) => onLocalRate?.(entry.url, rating)}
+            isAuthenticated={true}
+            isLoading={false}
+            showSignInNudge={false}
+            isLocal={true}
+          />
+        )}
+      </fieldset>
     </a>
   );
 }

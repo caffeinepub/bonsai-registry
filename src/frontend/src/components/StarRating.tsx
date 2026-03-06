@@ -4,20 +4,28 @@ import { useState } from "react";
  * StarRating — community rating UI for registry entries.
  *
  * Shows 5 interactive stars. When authenticated, users can click to rate.
- * When not authenticated, clicking shows a sign-in prompt.
+ * When not authenticated, hovering or clicking shows a sign-in prompt.
  * Shows average rating and vote count.
  * Top-rated badge appears when avg >= 4.0 AND count >= 3.
+ *
+ * showSignInNudge — when true, the sign-in prompt appears immediately on
+ * hover (not only on click) for unauthenticated users.
+ *
+ * isLocal — when true, shows a "Personal rating" label to distinguish from
+ * on-chain community ratings.
  */
 import type { EntryRatingStats } from "../backend.d";
 
 interface StarRatingProps {
   entryId: string;
-  stats: EntryRatingStats | null;
+  stats: EntryRatingStats | { average: number; count: number } | null;
   userRating: number | null;
   onRate: (rating: number) => void;
   isAuthenticated: boolean;
   isLoading: boolean;
   compact?: boolean;
+  showSignInNudge?: boolean;
+  isLocal?: boolean;
 }
 
 export function StarRating({
@@ -27,11 +35,17 @@ export function StarRating({
   isAuthenticated,
   isLoading,
   compact = false,
+  showSignInNudge = false,
+  isLocal = false,
 }: StarRatingProps) {
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [showSignInPrompt, setShowSignInPrompt] = useState(false);
 
-  const average = stats ? stats.average : 0;
+  const average = stats
+    ? typeof stats.average === "number"
+      ? stats.average
+      : Number(stats.average)
+    : 0;
   const count = stats ? Number(stats.count) : 0;
   const isTopRated = average >= 4.0 && count >= 3;
 
@@ -55,6 +69,23 @@ export function StarRating({
     }
     setShowSignInPrompt(false);
     onRate(rating);
+  }
+
+  function handleStarMouseEnter(starIndex: number) {
+    if (isAuthenticated) {
+      setHoverRating(starIndex);
+    } else if (showSignInNudge) {
+      // Show sign-in nudge immediately on hover for unauthenticated users
+      setShowSignInPrompt(true);
+    }
+  }
+
+  function handleStarsMouseLeave() {
+    setHoverRating(null);
+    if (!isAuthenticated && showSignInNudge) {
+      // Keep nudge visible briefly before hiding
+      setTimeout(() => setShowSignInPrompt(false), 1500);
+    }
   }
 
   if (compact) {
@@ -87,7 +118,7 @@ export function StarRating({
         {/* Stars row */}
         <div
           className="flex items-center gap-0.5"
-          onMouseLeave={() => setHoverRating(null)}
+          onMouseLeave={handleStarsMouseLeave}
         >
           {[1, 2, 3, 4, 5].map((starIndex) => {
             const fill = getStarFill(starIndex);
@@ -98,9 +129,7 @@ export function StarRating({
                 type="button"
                 data-ocid={`rating.star.${starIndex}`}
                 disabled={isLoading}
-                onMouseEnter={() =>
-                  isAuthenticated && setHoverRating(starIndex)
-                }
+                onMouseEnter={() => handleStarMouseEnter(starIndex)}
                 onClick={() => handleStarClick(starIndex)}
                 className={[
                   "relative w-4 h-4 flex-shrink-0 transition-transform duration-100",
@@ -193,9 +222,16 @@ export function StarRating({
             (your rating: {userRating}★)
           </span>
         )}
+
+        {/* Personal rating label for local (static entry) ratings */}
+        {isLocal && (
+          <span className="font-mono text-[9px] text-muted-foreground/40 leading-none italic">
+            personal
+          </span>
+        )}
       </div>
 
-      {/* Sign-in prompt */}
+      {/* Sign-in prompt — shown on hover (nudge) or click */}
       {showSignInPrompt && (
         <div className="absolute bottom-full left-0 mb-1.5 z-50">
           <div

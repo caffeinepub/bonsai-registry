@@ -1,5 +1,5 @@
 import { recordEvent } from "@/utils/analytics";
-import { ExternalLink, Heart, TreePine } from "lucide-react";
+import { ExternalLink, Heart, TreePine, Trophy } from "lucide-react";
 
 interface FooterProps {
   onTipOpen?: () => void;
@@ -158,6 +158,17 @@ export function Footer({ onTipOpen }: FooterProps) {
                 caffeine.ai
               </a>
             </p>
+            <button
+              type="button"
+              data-ocid="footer.leaderboard.link"
+              onClick={() => {
+                window.location.hash = "#leaderboard";
+              }}
+              className="flex items-center gap-1 text-[10px] text-muted-foreground/50 hover:text-primary transition-colors font-mono"
+            >
+              <Trophy className="w-3 h-3" />
+              Leaderboard
+            </button>
             <a
               href="#admin"
               data-ocid="footer.admin_link"

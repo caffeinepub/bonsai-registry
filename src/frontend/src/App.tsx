@@ -1,6 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
 import { Loader2 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { SortMode } from "./components/EcosystemSection";
 import { EcosystemSection } from "./components/EcosystemSection";
@@ -26,10 +26,12 @@ import {
 import { useBackendEntries } from "./hooks/useBackendEntries";
 import { useCallerRatings } from "./hooks/useCallerRatings";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
+import { useLocalRatings } from "./hooks/useLocalRatings";
 import { useOisyWallet } from "./hooks/useOisyWallet";
 import { useRatings } from "./hooks/useRatings";
 import { useRecordEvent } from "./hooks/useRecordEvent";
 import { useSubmitRating } from "./hooks/useSubmitRating";
+import { LeaderboardPage } from "./pages/LeaderboardPage";
 import { UserProfilePage } from "./pages/UserProfilePage";
 
 export default function App() {
@@ -69,6 +71,10 @@ export default function App() {
   // Rating submission mutation
   const submitRating = useSubmitRating();
 
+  // Local (localStorage) ratings for static entries
+  const { localRatingsMap, localMyRatingsMap, submitLocalRating } =
+    useLocalRatings();
+
   // Resolve the initial hash: if the URL contains an OAuth callback fragment
   // (from Internet Identity / Microsoft login), restore the saved return path
   // instead of treating the raw callback data as a route hash.
@@ -107,6 +113,26 @@ export default function App() {
   useEffect(() => {
     record("page_view", "registry");
   }, []);
+
+  // Show a welcome toast when the user first signs in (identity transition: null → present)
+  const prevIdentityRef = useRef<typeof identity>(undefined);
+  useEffect(() => {
+    const prev = prevIdentityRef.current;
+    // undefined = initial render (skip), null = known-logged-out, Identity = signed in
+    if (prev !== undefined && prev == null && identity) {
+      toast.success("Welcome to Bonsai Registry! 🌿", {
+        description: "You're signed in. Head to your profile to customize it.",
+        action: {
+          label: "View Profile",
+          onClick: () => {
+            window.location.hash = "#profile";
+            setCurrentHash("#profile");
+          },
+        },
+      });
+    }
+    prevIdentityRef.current = identity;
+  }, [identity]);
 
   // Record search queries (debounced via useRecordEvent)
   useEffect(() => {
@@ -267,10 +293,31 @@ export default function App() {
     );
   }
 
-  // Profile route: #profile or #profile/PRINCIPAL
+  // Leaderboard route
+  if (currentHash === "#leaderboard") {
+    return (
+      <>
+        <LeaderboardPage
+          onBack={() => {
+            window.location.hash = "";
+            setCurrentHash("");
+          }}
+        />
+        <Toaster />
+      </>
+    );
+  }
+
+  // Profile route: #profile, #profile/PRINCIPAL, or #profile/@username
   if (currentHash.startsWith("#profile")) {
     const parts = currentHash.split("/");
-    const targetPrincipal = parts[1] ?? null;
+    let rawTarget = parts[1] ?? null;
+    // Strip @ prefix if someone shares a username-based URL
+    // Future: resolve username -> principal; for now just strip the @
+    if (rawTarget?.startsWith("@")) {
+      rawTarget = rawTarget.slice(1);
+    }
+    const targetPrincipal = rawTarget;
     return (
       <>
         <UserProfilePage
@@ -279,6 +326,7 @@ export default function App() {
             window.location.hash = "";
             setCurrentHash("");
           }}
+          onLogin={login}
         />
         <Toaster />
       </>
@@ -291,7 +339,7 @@ export default function App() {
   return (
     <>
       {/* Onboarding — auto-shows on first visit */}
-      <OnboardingModal />
+      <OnboardingModal onLogin={login} />
 
       {/* Tip modal */}
       <TipModal open={tipOpen} onClose={() => setTipOpen(false)} />
@@ -465,6 +513,9 @@ export default function App() {
                     onRate={handleRate}
                     isAuthenticated={!!identity}
                     ratingLoadingId={ratingLoadingId}
+                    localRatingsMap={localRatingsMap}
+                    localMyRatingsMap={localMyRatingsMap}
+                    onLocalRate={submitLocalRating}
                   />
                 ))}
 

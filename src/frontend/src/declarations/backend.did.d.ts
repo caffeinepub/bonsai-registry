@@ -29,14 +29,22 @@ export type Category = { 'nft' : null } |
   { 'wallet' : null } |
   { 'commerce' : null } |
   { 'exchange' : null };
+export interface EntryRating { 'entryId' : bigint, 'rating' : bigint }
 export interface EntryRatingStats { 'count' : bigint, 'average' : number }
 export interface ExtendedUserProfile {
   'bio' : string,
+  'ratedEntries' : Array<EntryRating>,
   'submittedEntries' : Array<bigint>,
+  'username' : string,
   'displayName' : string,
   'pinnedNfts' : Array<{ 'tokenId' : bigint, 'collectionId' : string }>,
+  'socialLinks' : SocialLinks,
+  'badges' : Array<string>,
+  'joinedAt' : Time,
+  'walletAddresses' : WalletAddresses,
+  'bookmarks' : Array<bigint>,
   'avatarUrl' : [] | [string],
-  'walletPrincipal' : [] | [Principal],
+  'bannerUrl' : [] | [string],
 }
 export interface PendingSubmission {
   'id' : bigint,
@@ -48,10 +56,23 @@ export interface PendingSubmission {
   'entry' : BonsaiRegistryEntry,
   'paymentMemo' : string,
 }
+export interface SocialLinks {
+  'twitter' : [] | [string],
+  'website' : [] | [string],
+  'discord' : [] | [string],
+  'telegram' : [] | [string],
+  'github' : [] | [string],
+}
 export type Time = bigint;
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface WalletAddresses {
+  'btc' : [] | [string],
+  'eth' : [] | [string],
+  'sol' : [] | [string],
+  'hbar' : [] | [string],
+}
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addRegistryEntry' : ActorMethod<[BonsaiRegistryEntry], bigint>,
@@ -64,6 +85,7 @@ export interface _SERVICE {
     undefined
   >,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'bookmarkEntry' : ActorMethod<[bigint], undefined>,
   'bulkImportEntries' : ActorMethod<
     [Array<BonsaiRegistryEntry>],
     Array<bigint>
@@ -76,6 +98,7 @@ export interface _SERVICE {
     [string, bigint, bigint],
     Array<BonsaiRegistryEntry>
   >,
+  'getAllBookmarkedEntries' : ActorMethod<[], Array<bigint>>,
   'getAllEntryRatings' : ActorMethod<[], Array<[bigint, EntryRatingStats]>>,
   'getAllRegistryEntries' : ActorMethod<
     [bigint, bigint],
@@ -109,6 +132,7 @@ export interface _SERVICE {
   'saveCallerUserProfile' : ActorMethod<[ExtendedUserProfile], undefined>,
   'setListingFeeWithSecret' : ActorMethod<[string, bigint], undefined>,
   'submitProjectListing' : ActorMethod<[BonsaiRegistryEntry, string], bigint>,
+  'unbookmarkEntry' : ActorMethod<[bigint], undefined>,
   'updateRegistryEntry' : ActorMethod<[bigint, BonsaiRegistryEntry], undefined>,
   'updateRegistryEntryWithSecret' : ActorMethod<
     [string, bigint, BonsaiRegistryEntry],

@@ -8,6 +8,7 @@ import {
   Plus,
   Search,
   TreePine,
+  Trophy,
   User,
   X,
 } from "lucide-react";
@@ -70,6 +71,19 @@ export function Header({
             <span className="font-mono text-[10px] text-muted-foreground/60 uppercase tracking-widest">
               {totalEcosystems}+ Chains · {totalEntries}+ Projects
             </span>
+            {/* Leaderboard link */}
+            <span className="w-px h-3 bg-border hidden sm:block" />
+            <button
+              type="button"
+              data-ocid="header.leaderboard.link"
+              onClick={() => {
+                window.location.hash = "#leaderboard";
+              }}
+              className="hidden sm:flex items-center gap-1 font-mono text-[10px] text-muted-foreground/60 uppercase tracking-widest hover:text-primary transition-colors"
+            >
+              <Trophy className="w-2.5 h-2.5" />
+              <span>Leaderboard</span>
+            </button>
             {backendLoading && (
               <span
                 data-ocid="registry.loading_state"
@@ -136,8 +150,9 @@ export function Header({
                 data-ocid="header.signin_button"
                 onClick={onLogin}
                 disabled={isLoggingIn}
+                title="Sign in with Internet Identity (Web3 authentication)"
                 className={[
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded border text-[10px] font-mono uppercase transition-all duration-150",
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded border text-xs font-mono uppercase transition-all duration-150",
                   isLoggingIn
                     ? "border-border text-muted-foreground/50 cursor-wait"
                     : "border-primary/40 bg-primary/8 text-primary hover:bg-primary/15 hover:border-primary/70",
@@ -149,7 +164,14 @@ export function Header({
                 ) : (
                   <LogIn className="w-3 h-3" aria-hidden />
                 )}
-                <span>{isLoggingIn ? "Signing In…" : "Sign In"}</span>
+                <span className="sm:hidden">
+                  {isLoggingIn ? "Signing In…" : "Sign In"}
+                </span>
+                <span className="hidden sm:inline">
+                  {isLoggingIn
+                    ? "Signing In…"
+                    : "Sign In with Internet Identity"}
+                </span>
               </button>
             )}
 

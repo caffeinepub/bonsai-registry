@@ -8,15 +8,22 @@ import Time "mo:core/Time";
 import Iter "mo:core/Iter";
 import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
-
+import Set "mo:core/Set";
 
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
-
 actor {
-  public type Category =
-    { #gaming; #defi; #nft; #wallet; #exchange; #social; #tools; #commerce };
+  public type Category = {
+    #gaming;
+    #defi;
+    #nft;
+    #wallet;
+    #exchange;
+    #social;
+    #tools;
+    #commerce;
+  };
 
   public type BonsaiRegistryEntry = {
     id : Nat;
@@ -30,13 +37,40 @@ actor {
     createdAt : Time.Time;
   };
 
+  public type SocialLinks = {
+    twitter : ?Text;
+    github : ?Text;
+    discord : ?Text;
+    telegram : ?Text;
+    website : ?Text;
+  };
+
+  public type WalletAddresses = {
+    eth : ?Text;
+    btc : ?Text;
+    hbar : ?Text;
+    sol : ?Text;
+  };
+
+  public type EntryRating = {
+    entryId : Nat;
+    rating : Nat;
+  };
+
   public type ExtendedUserProfile = {
+    username : Text;
     displayName : Text;
     bio : Text;
+    bannerUrl : ?Text;
     avatarUrl : ?Text;
-    walletPrincipal : ?Principal;
+    socialLinks : SocialLinks;
+    walletAddresses : WalletAddresses;
+    joinedAt : Time.Time;
     pinnedNfts : [{ collectionId : Text; tokenId : Nat }];
+    bookmarks : [Nat];
+    ratedEntries : [EntryRating];
     submittedEntries : [Nat];
+    badges : [Text];
   };
 
   public type EntryRatingStats = {
@@ -53,6 +87,23 @@ actor {
     status : { #pending; #approved; #rejected };
   };
 
+  // Private mutable user profile for internal use
+  type PrivateUserProfile = {
+    username : Text;
+    displayName : Text;
+    bio : Text;
+    bannerUrl : ?Text;
+    avatarUrl : ?Text;
+    socialLinks : SocialLinks;
+    walletAddresses : WalletAddresses;
+    joinedAt : Time.Time;
+    pinnedNfts : [{ collectionId : Text; tokenId : Nat }];
+    bookmarks : Set.Set<Nat>;
+    ratedEntries : [EntryRating];
+    submittedEntries : [Nat];
+    badges : [Text];
+  };
+
   let ADMIN_SECRET : Text = "#WakeUp4";
 
   let bonsaiRegistryEntries = Map.empty<Nat, BonsaiRegistryEntry>();
@@ -62,7 +113,7 @@ actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
-  let userProfiles = Map.empty<Principal, ExtendedUserProfile>();
+  let userProfiles = Map.empty<Principal, PrivateUserProfile>();
   let pendingSubmissions = Map.empty<Nat, PendingSubmission>();
   var listingFeeE8s = 100_000_000 : Nat;
 
@@ -80,30 +131,135 @@ actor {
     };
   };
 
+  // Auto-register helper: ensures authenticated users are registered as #user
+  func ensureUserRegistered(caller : Principal) {
+    if (caller.isAnonymous()) {
+      return;
+    };
+    // Try to get the user role; if it traps, the user is not registered
+    // We catch this by using a try-catch pattern via checking if assignRole works
+    // Since we can't directly catch traps, we use assignRole which is idempotent
+    // and will register the user if they don't exist
+    ignore do ? {
+      // Attempt to assign the user role to themselves
+      // This will only work if they're already registered or we register them
+      AccessControl.assignRole(accessControlState, caller, caller, #user);
+    };
+  };
+
+  // Conversion functions
+  func toExtendedUserProfile(privateProfile : PrivateUserProfile) : ExtendedUserProfile {
+    {
+      username = privateProfile.username;
+      displayName = privateProfile.displayName;
+      bio = privateProfile.bio;
+      bannerUrl = privateProfile.bannerUrl;
+      avatarUrl = privateProfile.avatarUrl;
+      socialLinks = privateProfile.socialLinks;
+      walletAddresses = privateProfile.walletAddresses;
+      joinedAt = privateProfile.joinedAt;
+      pinnedNfts = privateProfile.pinnedNfts;
+      bookmarks = privateProfile.bookmarks.toArray();
+      ratedEntries = privateProfile.ratedEntries;
+      submittedEntries = privateProfile.submittedEntries;
+      badges = privateProfile.badges;
+    };
+  };
+
+  func fromExtendedUserProfile(profile : ExtendedUserProfile) : PrivateUserProfile {
+    let bookmarksSet = Set.empty<Nat>();
+    for (bookmark in profile.bookmarks.values()) {
+      bookmarksSet.add(bookmark);
+    };
+
+    {
+      username = profile.username;
+      displayName = profile.displayName;
+      bio = profile.bio;
+      bannerUrl = profile.bannerUrl;
+      avatarUrl = profile.avatarUrl;
+      socialLinks = profile.socialLinks;
+      walletAddresses = profile.walletAddresses;
+      joinedAt = profile.joinedAt;
+      pinnedNfts = profile.pinnedNfts;
+      bookmarks = bookmarksSet;
+      ratedEntries = profile.ratedEntries;
+      submittedEntries = profile.submittedEntries;
+      badges = profile.badges;
+    };
+  };
+
   // User profile functions
   public query ({ caller }) func getCallerUserProfile() : async ?ExtendedUserProfile {
-    // Allow all authenticated users to access their own profile
-    userProfiles.get(caller);
+    if (caller.isAnonymous()) { return null };
+    switch (userProfiles.get(caller)) {
+      case (null) { null };
+      case (?profile) { ?toExtendedUserProfile(profile) };
+    };
   };
 
   public query ({ caller }) func getPublicUserProfile(user : Principal) : async ?ExtendedUserProfile {
-    // Publicly readable, no auth check
-    userProfiles.get(user);
+    switch (userProfiles.get(user)) {
+      case (null) { null };
+      case (?profile) { ?toExtendedUserProfile(profile) };
+    };
   };
 
   public shared ({ caller }) func saveCallerUserProfile(profile : ExtendedUserProfile) : async () {
+    ensureUserRegistered(caller);
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save profiles");
     };
-    userProfiles.add(
-      caller,
-      profile,
-    );
+
+    let privateProfile = fromExtendedUserProfile(profile);
+    userProfiles.add(caller, privateProfile);
   };
 
-  // Project listing functions
+  public shared ({ caller }) func bookmarkEntry(entryId : Nat) : async () {
+    ensureUserRegistered(caller);
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can bookmark entries");
+    };
+
+    switch (userProfiles.get(caller)) {
+      case (null) { Runtime.trap("Profile not found") };
+      case (?profile) {
+        if (profile.bookmarks.contains(entryId)) {
+          Runtime.trap("Entry already bookmarked");
+        };
+        profile.bookmarks.add(entryId);
+        userProfiles.add(caller, profile);
+      };
+    };
+  };
+
+  public shared ({ caller }) func unbookmarkEntry(entryId : Nat) : async () {
+    ensureUserRegistered(caller);
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can unbookmark entries");
+    };
+
+    switch (userProfiles.get(caller)) {
+      case (null) { Runtime.trap("Profile not found") };
+      case (?profile) {
+        if (not profile.bookmarks.contains(entryId)) {
+          Runtime.trap("Bookmark does not exist");
+        };
+        profile.bookmarks.remove(entryId);
+        userProfiles.add(caller, profile);
+      };
+    };
+  };
+
+  public query ({ caller }) func getAllBookmarkedEntries() : async [Nat] {
+    if (caller.isAnonymous()) { return [] };
+    switch (userProfiles.get(caller)) {
+      case (null) { [] };
+      case (?profile) { profile.bookmarks.toArray() };
+    };
+  };
+
   public query ({ caller }) func getListingFee() : async Nat {
-    // Publicly readable
     listingFeeE8s;
   };
 
@@ -113,12 +269,11 @@ actor {
   };
 
   public shared ({ caller }) func submitProjectListing(entry : BonsaiRegistryEntry, paymentMemo : Text) : async Nat {
-    // Check user permissions
+    ensureUserRegistered(caller);
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can submit projects");
     };
 
-    // Create pending submission
     let submissionId = nextId;
     let submission : PendingSubmission = {
       id = submissionId;
@@ -132,17 +287,36 @@ actor {
     pendingSubmissions.add(submissionId, submission);
     nextId += 1;
 
-    // Update user's submitted entries
     switch (userProfiles.get(caller)) {
       case (null) {
-        // Create new profile if it doesn't exist
-        let newProfile : ExtendedUserProfile = {
+        let defaultSocialLinks = {
+          twitter = null;
+          github = null;
+          discord = null;
+          telegram = null;
+          website = null;
+        };
+        let defaultWalletAddresses = {
+          eth = null;
+          btc = null;
+          hbar = null;
+          sol = null;
+        };
+
+        let newProfile : PrivateUserProfile = {
+          username = "";
           displayName = "New User";
           bio = "";
+          bannerUrl = null;
           avatarUrl = null;
-          walletPrincipal = null;
+          socialLinks = defaultSocialLinks;
+          walletAddresses = defaultWalletAddresses;
+          joinedAt = Time.now();
           pinnedNfts = [];
+          bookmarks = Set.empty<Nat>();
+          ratedEntries = [];
           submittedEntries = [submissionId];
+          badges = [];
         };
         userProfiles.add(caller, newProfile);
       };
@@ -191,15 +365,12 @@ actor {
     };
   };
 
-  // Entry and rating functions (existing logic)
   public query ({ caller }) func getAllRegistryEntries(offset : Nat, limit : Nat) : async [BonsaiRegistryEntry] {
-    // Publicly readable
     let allEntries = bonsaiRegistryEntries.values().toArray();
     allEntries.sliceToArray(offset, Nat.min(offset + limit, allEntries.size()));
   };
 
   public query ({ caller }) func getEntriesByEcosystem(ecosystem : Text, offset : Nat, limit : Nat) : async [BonsaiRegistryEntry] {
-    // Publicly readable
     let filteredEntries = bonsaiRegistryEntries.values().toArray().filter(
       func(entry) { Text.equal(entry.ecosystem, ecosystem) }
     );
@@ -207,7 +378,6 @@ actor {
   };
 
   public query ({ caller }) func getEntriesByCategory(category : Category, offset : Nat, limit : Nat) : async [BonsaiRegistryEntry] {
-    // Publicly readable
     let filteredEntries = bonsaiRegistryEntries.values().toArray().filter(
       func(entry) {
         entry.categories.any(
@@ -219,7 +389,6 @@ actor {
   };
 
   public query ({ caller }) func fullTextSearch(_ : Text, _ : Nat, _ : Nat) : async [BonsaiRegistryEntry] {
-    // Publicly readable (though not implemented)
     Runtime.trap("Full-text search not yet implemented. Please filter by ecosystem, category, or use pagination for now.");
   };
 
@@ -280,7 +449,6 @@ actor {
   };
 
   public query ({ caller }) func getTotalEntriesCount() : async Nat {
-    // Publicly readable
     bonsaiRegistryEntries.size();
   };
 
@@ -347,24 +515,20 @@ actor {
     idList.toArray();
   };
 
-  // Rating-related functions
   public shared ({ caller }) func rateEntry(entryId : Nat, rating : Nat) : async () {
-    // Only authenticated users with user permission can rate
+    ensureUserRegistered(caller);
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can rate entries");
     };
 
-    // Ratings must be between 1 and 5
     if (rating < 1 or rating > 5) {
       Runtime.trap("Invalid rating value: Must be between 1 and 5");
     };
 
-    // Check that entry exists
     if (not bonsaiRegistryEntries.containsKey(entryId)) {
       Runtime.trap("Entry not found");
     };
 
-    // Create composite key
     let compositeKey = caller.toText() # ":" # entryId.toText();
     ratings.add(compositeKey, rating);
   };
@@ -401,12 +565,10 @@ actor {
   };
 
   public query ({ caller }) func getEntryRating(entryId : Nat) : async EntryRatingStats {
-    // Publicly readable
     calculateEntryRating(entryId);
   };
 
   public query ({ caller }) func getAllEntryRatings() : async [(Nat, EntryRatingStats)] {
-    // Publicly readable
     let entries = bonsaiRegistryEntries.values().toArray();
     entries.map(
       func(entry) {
@@ -416,7 +578,6 @@ actor {
   };
 
   public query ({ caller }) func getCallerRating(entryId : Nat) : async ?Nat {
-    // If anonymous, always return null
     if (caller.isAnonymous()) {
       return null;
     };
@@ -425,7 +586,6 @@ actor {
   };
 
   public query ({ caller }) func getCallerAllRatings() : async [(Nat, Nat)] {
-    // If anonymous, always return empty array
     if (caller.isAnonymous()) {
       return [];
     };

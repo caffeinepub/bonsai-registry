@@ -1,5 +1,9 @@
 import type { EcosystemGroup, RegistryEntry } from "@/data/registryData";
 import type { CallerRatingsMap } from "@/hooks/useCallerRatings";
+import type {
+  LocalMyRatingsMap,
+  LocalRatingsMap,
+} from "@/hooks/useLocalRatings";
 import type { RatingsMap } from "@/hooks/useRatings";
 import { recordEvent } from "@/utils/analytics";
 import { ChevronDown } from "lucide-react";
@@ -42,6 +46,10 @@ interface EcosystemSectionProps {
   onRate?: (entryId: string, rating: number) => void;
   isAuthenticated?: boolean;
   ratingLoadingId?: string | null;
+  // Local rating props for static entries
+  localRatingsMap?: LocalRatingsMap;
+  localMyRatingsMap?: LocalMyRatingsMap;
+  onLocalRate?: (url: string, rating: number) => void;
 }
 
 export function EcosystemSection({
@@ -55,6 +63,9 @@ export function EcosystemSection({
   onRate,
   isAuthenticated = false,
   ratingLoadingId = null,
+  localRatingsMap = new Map(),
+  localMyRatingsMap = new Map(),
+  onLocalRate,
 }: EcosystemSectionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -66,19 +77,23 @@ export function EcosystemSection({
     }
   };
 
-  // Sort entries based on sortMode
+  // Sort entries based on sortMode, combining both backend and local ratings
   const sortedEntries = useMemo<RegistryEntry[]>(() => {
     if (sortMode === "default") return filteredEntries;
 
     return [...filteredEntries].sort((a, b) => {
       const aId = getBackendId(a.id);
       const bId = getBackendId(b.id);
-      const aStats: EntryRatingStats | undefined = aId
-        ? ratingsMap.get(aId)
-        : undefined;
-      const bStats: EntryRatingStats | undefined = bId
-        ? ratingsMap.get(bId)
-        : undefined;
+
+      // Get stats: prefer backend stats for backend entries, local for static
+      const aStats:
+        | EntryRatingStats
+        | { average: number; count: number }
+        | undefined = aId ? ratingsMap.get(aId) : localRatingsMap.get(a.url);
+      const bStats:
+        | EntryRatingStats
+        | { average: number; count: number }
+        | undefined = bId ? ratingsMap.get(bId) : localRatingsMap.get(b.url);
 
       if (sortMode === "top-rated") {
         const aAvg = aStats?.average ?? 0;
@@ -101,7 +116,7 @@ export function EcosystemSection({
 
       return 0;
     });
-  }, [filteredEntries, sortMode, ratingsMap]);
+  }, [filteredEntries, sortMode, ratingsMap, localRatingsMap]);
 
   if (filteredEntries.length === 0) return null;
 
@@ -176,6 +191,13 @@ export function EcosystemSection({
                 const userRating = backendId
                   ? (callerRatingsMap.get(backendId) ?? null)
                   : null;
+                // Local (static entry) ratings
+                const localStats = !backendId
+                  ? (localRatingsMap.get(entry.url) ?? null)
+                  : null;
+                const localUserRating = !backendId
+                  ? (localMyRatingsMap.get(entry.url) ?? null)
+                  : null;
                 return (
                   <LinkCard
                     key={entry.id}
@@ -186,6 +208,9 @@ export function EcosystemSection({
                     onRate={onRate}
                     isAuthenticated={isAuthenticated}
                     isRatingLoading={ratingLoadingId === entry.id}
+                    localStats={localStats}
+                    localUserRating={localUserRating}
+                    onLocalRate={onLocalRate}
                   />
                 );
               })}

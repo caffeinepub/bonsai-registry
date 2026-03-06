@@ -39,15 +39,39 @@ export const EntryRatingStats = IDL.Record({
   'count' : IDL.Nat,
   'average' : IDL.Float64,
 });
+export const EntryRating = IDL.Record({
+  'entryId' : IDL.Nat,
+  'rating' : IDL.Nat,
+});
+export const SocialLinks = IDL.Record({
+  'twitter' : IDL.Opt(IDL.Text),
+  'website' : IDL.Opt(IDL.Text),
+  'discord' : IDL.Opt(IDL.Text),
+  'telegram' : IDL.Opt(IDL.Text),
+  'github' : IDL.Opt(IDL.Text),
+});
+export const WalletAddresses = IDL.Record({
+  'btc' : IDL.Opt(IDL.Text),
+  'eth' : IDL.Opt(IDL.Text),
+  'sol' : IDL.Opt(IDL.Text),
+  'hbar' : IDL.Opt(IDL.Text),
+});
 export const ExtendedUserProfile = IDL.Record({
   'bio' : IDL.Text,
+  'ratedEntries' : IDL.Vec(EntryRating),
   'submittedEntries' : IDL.Vec(IDL.Nat),
+  'username' : IDL.Text,
   'displayName' : IDL.Text,
   'pinnedNfts' : IDL.Vec(
     IDL.Record({ 'tokenId' : IDL.Nat, 'collectionId' : IDL.Text })
   ),
+  'socialLinks' : SocialLinks,
+  'badges' : IDL.Vec(IDL.Text),
+  'joinedAt' : Time,
+  'walletAddresses' : WalletAddresses,
+  'bookmarks' : IDL.Vec(IDL.Nat),
   'avatarUrl' : IDL.Opt(IDL.Text),
-  'walletPrincipal' : IDL.Opt(IDL.Principal),
+  'bannerUrl' : IDL.Opt(IDL.Text),
 });
 export const PendingSubmission = IDL.Record({
   'id' : IDL.Nat,
@@ -72,6 +96,7 @@ export const idlService = IDL.Service({
     ),
   'approvePendingSubmissionWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'bookmarkEntry' : IDL.Func([IDL.Nat], [], []),
   'bulkImportEntries' : IDL.Func(
       [IDL.Vec(BonsaiRegistryEntry)],
       [IDL.Vec(IDL.Nat)],
@@ -87,6 +112,7 @@ export const idlService = IDL.Service({
       [IDL.Vec(BonsaiRegistryEntry)],
       ['query'],
     ),
+  'getAllBookmarkedEntries' : IDL.Func([], [IDL.Vec(IDL.Nat)], ['query']),
   'getAllEntryRatings' : IDL.Func(
       [],
       [IDL.Vec(IDL.Tuple(IDL.Nat, EntryRatingStats))],
@@ -144,6 +170,7 @@ export const idlService = IDL.Service({
       [IDL.Nat],
       [],
     ),
+  'unbookmarkEntry' : IDL.Func([IDL.Nat], [], []),
   'updateRegistryEntry' : IDL.Func([IDL.Nat, BonsaiRegistryEntry], [], []),
   'updateRegistryEntryWithSecret' : IDL.Func(
       [IDL.Text, IDL.Nat, BonsaiRegistryEntry],
@@ -186,15 +213,36 @@ export const idlFactory = ({ IDL }) => {
     'count' : IDL.Nat,
     'average' : IDL.Float64,
   });
+  const EntryRating = IDL.Record({ 'entryId' : IDL.Nat, 'rating' : IDL.Nat });
+  const SocialLinks = IDL.Record({
+    'twitter' : IDL.Opt(IDL.Text),
+    'website' : IDL.Opt(IDL.Text),
+    'discord' : IDL.Opt(IDL.Text),
+    'telegram' : IDL.Opt(IDL.Text),
+    'github' : IDL.Opt(IDL.Text),
+  });
+  const WalletAddresses = IDL.Record({
+    'btc' : IDL.Opt(IDL.Text),
+    'eth' : IDL.Opt(IDL.Text),
+    'sol' : IDL.Opt(IDL.Text),
+    'hbar' : IDL.Opt(IDL.Text),
+  });
   const ExtendedUserProfile = IDL.Record({
     'bio' : IDL.Text,
+    'ratedEntries' : IDL.Vec(EntryRating),
     'submittedEntries' : IDL.Vec(IDL.Nat),
+    'username' : IDL.Text,
     'displayName' : IDL.Text,
     'pinnedNfts' : IDL.Vec(
       IDL.Record({ 'tokenId' : IDL.Nat, 'collectionId' : IDL.Text })
     ),
+    'socialLinks' : SocialLinks,
+    'badges' : IDL.Vec(IDL.Text),
+    'joinedAt' : Time,
+    'walletAddresses' : WalletAddresses,
+    'bookmarks' : IDL.Vec(IDL.Nat),
     'avatarUrl' : IDL.Opt(IDL.Text),
-    'walletPrincipal' : IDL.Opt(IDL.Principal),
+    'bannerUrl' : IDL.Opt(IDL.Text),
   });
   const PendingSubmission = IDL.Record({
     'id' : IDL.Nat,
@@ -223,6 +271,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'bookmarkEntry' : IDL.Func([IDL.Nat], [], []),
     'bulkImportEntries' : IDL.Func(
         [IDL.Vec(BonsaiRegistryEntry)],
         [IDL.Vec(IDL.Nat)],
@@ -238,6 +287,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(BonsaiRegistryEntry)],
         ['query'],
       ),
+    'getAllBookmarkedEntries' : IDL.Func([], [IDL.Vec(IDL.Nat)], ['query']),
     'getAllEntryRatings' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Nat, EntryRatingStats))],
@@ -295,6 +345,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Nat],
         [],
       ),
+    'unbookmarkEntry' : IDL.Func([IDL.Nat], [], []),
     'updateRegistryEntry' : IDL.Func([IDL.Nat, BonsaiRegistryEntry], [], []),
     'updateRegistryEntryWithSecret' : IDL.Func(
         [IDL.Text, IDL.Nat, BonsaiRegistryEntry],

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { recordEvent } from "@/utils/analytics";
+import { LogIn } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 
@@ -20,7 +21,11 @@ const ECOSYSTEMS = [
 
 const TOTAL_STEPS = 3;
 
-export function OnboardingModal() {
+interface OnboardingModalProps {
+  onLogin?: () => void;
+}
+
+export function OnboardingModal({ onLogin }: OnboardingModalProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [selected, setSelected] = useState<string[]>([]);
@@ -104,7 +109,7 @@ export function OnboardingModal() {
             {step === 2 && (
               <StepInterests selected={selected} onToggle={toggleInterest} />
             )}
-            {step === 3 && <StepAllSet />}
+            {step === 3 && <StepAllSet onLogin={onLogin} onClose={complete} />}
           </motion.div>
         </AnimatePresence>
 
@@ -287,7 +292,12 @@ function StepInterests({ selected, onToggle }: StepInterestsProps) {
   );
 }
 
-function StepAllSet() {
+interface StepAllSetProps {
+  onLogin?: () => void;
+  onClose?: () => void;
+}
+
+function StepAllSet({ onLogin, onClose }: StepAllSetProps) {
   return (
     <div className="space-y-4 text-center">
       <div className="flex justify-center">
@@ -335,6 +345,26 @@ function StepAllSet() {
           </div>
         </div>
       </div>
+
+      {/* Sign in CTA */}
+      {onLogin && (
+        <div className="pt-1 max-w-xs mx-auto">
+          <Button
+            data-ocid="onboarding.signin_button"
+            onClick={() => {
+              onClose?.();
+              onLogin();
+            }}
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-display font-bold gap-2 text-xs h-9"
+          >
+            <LogIn className="w-3.5 h-3.5" aria-hidden />
+            Sign In with Internet Identity
+          </Button>
+          <p className="mt-2 text-[10px] text-muted-foreground/50">
+            Decentralized — no password needed
+          </p>
+        </div>
+      )}
     </div>
   );
 }
