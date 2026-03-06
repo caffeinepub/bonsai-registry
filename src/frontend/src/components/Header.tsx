@@ -5,11 +5,13 @@ import {
   LogIn,
   LogOut,
   Menu,
+  Plus,
   Search,
   TreePine,
   User,
   X,
 } from "lucide-react";
+import { OisyConnectButton } from "./OisyConnectButton";
 
 interface HeaderProps {
   searchQuery: string;
@@ -25,6 +27,10 @@ interface HeaderProps {
   isInitializing?: boolean;
   onLogin?: () => void;
   onLogout?: () => void;
+  // List Your Project
+  onListProject?: () => void;
+  onViewProfile?: () => void;
+  oisyConnected?: boolean;
 }
 
 export function Header({
@@ -40,6 +46,9 @@ export function Header({
   isInitializing = false,
   onLogin,
   onLogout,
+  onListProject,
+  onViewProfile,
+  oisyConnected = false,
 }: HeaderProps) {
   const isSignedIn = !!identity;
   const principal = identity?.getPrincipal().toString();
@@ -73,6 +82,23 @@ export function Header({
           </div>
 
           <div className="flex items-center gap-2">
+            {/* ── OISY Wallet connect button ── */}
+            <OisyConnectButton onViewProfile={onViewProfile} />
+
+            {/* ── List Your Project button ── */}
+            {(identity || oisyConnected) && onListProject && (
+              <button
+                type="button"
+                data-ocid="header.list_project_button"
+                onClick={onListProject}
+                className="flex items-center gap-1 px-2.5 py-1 rounded border border-primary/40 bg-primary/10 text-primary text-[10px] font-mono uppercase hover:bg-primary/20 hover:border-primary/60 transition-all duration-150 shadow-[0_0_6px_oklch(0.60_0.235_27/15%)] hidden sm:flex"
+                aria-label="List your project"
+              >
+                <Plus className="w-3 h-3" aria-hidden />
+                <span>List Project</span>
+              </button>
+            )}
+
             {/* ── Internet Identity Auth button ── */}
             {isInitializing ? (
               <span className="flex items-center gap-1 px-2.5 py-1 rounded border border-border text-muted-foreground/40 text-[10px] font-mono">

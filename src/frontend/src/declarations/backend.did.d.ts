@@ -30,8 +30,25 @@ export type Category = { 'nft' : null } |
   { 'commerce' : null } |
   { 'exchange' : null };
 export interface EntryRatingStats { 'count' : bigint, 'average' : number }
+export interface ExtendedUserProfile {
+  'bio' : string,
+  'submittedEntries' : Array<bigint>,
+  'displayName' : string,
+  'pinnedNfts' : Array<{ 'tokenId' : bigint, 'collectionId' : string }>,
+  'avatarUrl' : [] | [string],
+  'walletPrincipal' : [] | [Principal],
+}
+export interface PendingSubmission {
+  'id' : bigint,
+  'status' : { 'pending' : null } |
+    { 'approved' : null } |
+    { 'rejected' : null },
+  'submitter' : Principal,
+  'submittedAt' : Time,
+  'entry' : BonsaiRegistryEntry,
+  'paymentMemo' : string,
+}
 export type Time = bigint;
-export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
@@ -41,6 +58,10 @@ export interface _SERVICE {
   'addRegistryEntryWithSecret' : ActorMethod<
     [string, BonsaiRegistryEntry],
     bigint
+  >,
+  'approvePendingSubmissionWithSecret' : ActorMethod<
+    [string, bigint],
+    undefined
   >,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'bulkImportEntries' : ActorMethod<
@@ -62,7 +83,7 @@ export interface _SERVICE {
   >,
   'getCallerAllRatings' : ActorMethod<[], Array<[bigint, bigint]>>,
   'getCallerRating' : ActorMethod<[bigint], [] | [bigint]>,
-  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [ExtendedUserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getEntriesByCategory' : ActorMethod<
     [Category, bigint, bigint],
@@ -73,13 +94,21 @@ export interface _SERVICE {
     Array<BonsaiRegistryEntry>
   >,
   'getEntryRating' : ActorMethod<[bigint], EntryRatingStats>,
+  'getListingFee' : ActorMethod<[], bigint>,
+  'getPendingSubmissions' : ActorMethod<[string], Array<PendingSubmission>>,
+  'getPublicUserProfile' : ActorMethod<[Principal], [] | [ExtendedUserProfile]>,
   'getTotalEntriesCount' : ActorMethod<[], bigint>,
-  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'rateEntry' : ActorMethod<[bigint, bigint], undefined>,
+  'rejectPendingSubmissionWithSecret' : ActorMethod<
+    [string, bigint],
+    undefined
+  >,
   'removeRegistryEntry' : ActorMethod<[bigint], undefined>,
   'removeRegistryEntryWithSecret' : ActorMethod<[string, bigint], undefined>,
-  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'saveCallerUserProfile' : ActorMethod<[ExtendedUserProfile], undefined>,
+  'setListingFeeWithSecret' : ActorMethod<[string, bigint], undefined>,
+  'submitProjectListing' : ActorMethod<[BonsaiRegistryEntry, string], bigint>,
   'updateRegistryEntry' : ActorMethod<[bigint, BonsaiRegistryEntry], undefined>,
   'updateRegistryEntryWithSecret' : ActorMethod<
     [string, bigint, BonsaiRegistryEntry],

@@ -39,7 +39,28 @@ export const EntryRatingStats = IDL.Record({
   'count' : IDL.Nat,
   'average' : IDL.Float64,
 });
-export const UserProfile = IDL.Record({ 'name' : IDL.Text });
+export const ExtendedUserProfile = IDL.Record({
+  'bio' : IDL.Text,
+  'submittedEntries' : IDL.Vec(IDL.Nat),
+  'displayName' : IDL.Text,
+  'pinnedNfts' : IDL.Vec(
+    IDL.Record({ 'tokenId' : IDL.Nat, 'collectionId' : IDL.Text })
+  ),
+  'avatarUrl' : IDL.Opt(IDL.Text),
+  'walletPrincipal' : IDL.Opt(IDL.Principal),
+});
+export const PendingSubmission = IDL.Record({
+  'id' : IDL.Nat,
+  'status' : IDL.Variant({
+    'pending' : IDL.Null,
+    'approved' : IDL.Null,
+    'rejected' : IDL.Null,
+  }),
+  'submitter' : IDL.Principal,
+  'submittedAt' : Time,
+  'entry' : BonsaiRegistryEntry,
+  'paymentMemo' : IDL.Text,
+});
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -49,6 +70,7 @@ export const idlService = IDL.Service({
       [IDL.Nat],
       [],
     ),
+  'approvePendingSubmissionWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'bulkImportEntries' : IDL.Func(
       [IDL.Vec(BonsaiRegistryEntry)],
@@ -81,7 +103,11 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getCallerRating' : IDL.Func([IDL.Nat], [IDL.Opt(IDL.Nat)], ['query']),
-  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getCallerUserProfile' : IDL.Func(
+      [],
+      [IDL.Opt(ExtendedUserProfile)],
+      ['query'],
+    ),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getEntriesByCategory' : IDL.Func(
       [Category, IDL.Nat, IDL.Nat],
@@ -94,17 +120,30 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getEntryRating' : IDL.Func([IDL.Nat], [EntryRatingStats], ['query']),
-  'getTotalEntriesCount' : IDL.Func([], [IDL.Nat], ['query']),
-  'getUserProfile' : IDL.Func(
-      [IDL.Principal],
-      [IDL.Opt(UserProfile)],
+  'getListingFee' : IDL.Func([], [IDL.Nat], ['query']),
+  'getPendingSubmissions' : IDL.Func(
+      [IDL.Text],
+      [IDL.Vec(PendingSubmission)],
       ['query'],
     ),
+  'getPublicUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(ExtendedUserProfile)],
+      ['query'],
+    ),
+  'getTotalEntriesCount' : IDL.Func([], [IDL.Nat], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'rateEntry' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
+  'rejectPendingSubmissionWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   'removeRegistryEntry' : IDL.Func([IDL.Nat], [], []),
   'removeRegistryEntryWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
-  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'saveCallerUserProfile' : IDL.Func([ExtendedUserProfile], [], []),
+  'setListingFeeWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
+  'submitProjectListing' : IDL.Func(
+      [BonsaiRegistryEntry, IDL.Text],
+      [IDL.Nat],
+      [],
+    ),
   'updateRegistryEntry' : IDL.Func([IDL.Nat, BonsaiRegistryEntry], [], []),
   'updateRegistryEntryWithSecret' : IDL.Func(
       [IDL.Text, IDL.Nat, BonsaiRegistryEntry],
@@ -147,7 +186,28 @@ export const idlFactory = ({ IDL }) => {
     'count' : IDL.Nat,
     'average' : IDL.Float64,
   });
-  const UserProfile = IDL.Record({ 'name' : IDL.Text });
+  const ExtendedUserProfile = IDL.Record({
+    'bio' : IDL.Text,
+    'submittedEntries' : IDL.Vec(IDL.Nat),
+    'displayName' : IDL.Text,
+    'pinnedNfts' : IDL.Vec(
+      IDL.Record({ 'tokenId' : IDL.Nat, 'collectionId' : IDL.Text })
+    ),
+    'avatarUrl' : IDL.Opt(IDL.Text),
+    'walletPrincipal' : IDL.Opt(IDL.Principal),
+  });
+  const PendingSubmission = IDL.Record({
+    'id' : IDL.Nat,
+    'status' : IDL.Variant({
+      'pending' : IDL.Null,
+      'approved' : IDL.Null,
+      'rejected' : IDL.Null,
+    }),
+    'submitter' : IDL.Principal,
+    'submittedAt' : Time,
+    'entry' : BonsaiRegistryEntry,
+    'paymentMemo' : IDL.Text,
+  });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -155,6 +215,11 @@ export const idlFactory = ({ IDL }) => {
     'addRegistryEntryWithSecret' : IDL.Func(
         [IDL.Text, BonsaiRegistryEntry],
         [IDL.Nat],
+        [],
+      ),
+    'approvePendingSubmissionWithSecret' : IDL.Func(
+        [IDL.Text, IDL.Nat],
+        [],
         [],
       ),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
@@ -189,7 +254,11 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getCallerRating' : IDL.Func([IDL.Nat], [IDL.Opt(IDL.Nat)], ['query']),
-    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getCallerUserProfile' : IDL.Func(
+        [],
+        [IDL.Opt(ExtendedUserProfile)],
+        ['query'],
+      ),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getEntriesByCategory' : IDL.Func(
         [Category, IDL.Nat, IDL.Nat],
@@ -202,17 +271,30 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getEntryRating' : IDL.Func([IDL.Nat], [EntryRatingStats], ['query']),
-    'getTotalEntriesCount' : IDL.Func([], [IDL.Nat], ['query']),
-    'getUserProfile' : IDL.Func(
-        [IDL.Principal],
-        [IDL.Opt(UserProfile)],
+    'getListingFee' : IDL.Func([], [IDL.Nat], ['query']),
+    'getPendingSubmissions' : IDL.Func(
+        [IDL.Text],
+        [IDL.Vec(PendingSubmission)],
         ['query'],
       ),
+    'getPublicUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(ExtendedUserProfile)],
+        ['query'],
+      ),
+    'getTotalEntriesCount' : IDL.Func([], [IDL.Nat], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'rateEntry' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
+    'rejectPendingSubmissionWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
     'removeRegistryEntry' : IDL.Func([IDL.Nat], [], []),
     'removeRegistryEntryWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
-    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'saveCallerUserProfile' : IDL.Func([ExtendedUserProfile], [], []),
+    'setListingFeeWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
+    'submitProjectListing' : IDL.Func(
+        [BonsaiRegistryEntry, IDL.Text],
+        [IDL.Nat],
+        [],
+      ),
     'updateRegistryEntry' : IDL.Func([IDL.Nat, BonsaiRegistryEntry], [], []),
     'updateRegistryEntryWithSecret' : IDL.Func(
         [IDL.Text, IDL.Nat, BonsaiRegistryEntry],

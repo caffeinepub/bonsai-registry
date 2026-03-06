@@ -89,6 +89,26 @@ export class ExternalBlob {
         return this;
     }
 }
+export interface ExtendedUserProfile {
+    bio: string;
+    submittedEntries: Array<bigint>;
+    displayName: string;
+    pinnedNfts: Array<{
+        tokenId: bigint;
+        collectionId: string;
+    }>;
+    avatarUrl?: string;
+    walletPrincipal?: Principal;
+}
+export type Time = bigint;
+export interface PendingSubmission {
+    id: bigint;
+    status: Variant_pending_approved_rejected;
+    submitter: Principal;
+    submittedAt: Time;
+    entry: BonsaiRegistryEntry;
+    paymentMemo: string;
+}
 export interface BonsaiRegistryEntry {
     id: bigint;
     url: string;
@@ -100,13 +120,9 @@ export interface BonsaiRegistryEntry {
     description: string;
     logoUrl?: string;
 }
-export type Time = bigint;
 export interface EntryRatingStats {
     count: bigint;
     average: number;
-}
-export interface UserProfile {
-    name: string;
 }
 export enum Category {
     nft = "nft",
@@ -123,10 +139,16 @@ export enum UserRole {
     user = "user",
     guest = "guest"
 }
+export enum Variant_pending_approved_rejected {
+    pending = "pending",
+    approved = "approved",
+    rejected = "rejected"
+}
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     addRegistryEntry(entry: BonsaiRegistryEntry): Promise<bigint>;
     addRegistryEntryWithSecret(secret: string, entry: BonsaiRegistryEntry): Promise<bigint>;
+    approvePendingSubmissionWithSecret(secret: string, submissionId: bigint): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     bulkImportEntries(entries: Array<BonsaiRegistryEntry>): Promise<Array<bigint>>;
     bulkImportEntriesWithSecret(secret: string, entries: Array<BonsaiRegistryEntry>): Promise<Array<bigint>>;
@@ -135,22 +157,27 @@ export interface backendInterface {
     getAllRegistryEntries(offset: bigint, limit: bigint): Promise<Array<BonsaiRegistryEntry>>;
     getCallerAllRatings(): Promise<Array<[bigint, bigint]>>;
     getCallerRating(entryId: bigint): Promise<bigint | null>;
-    getCallerUserProfile(): Promise<UserProfile | null>;
+    getCallerUserProfile(): Promise<ExtendedUserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getEntriesByCategory(category: Category, offset: bigint, limit: bigint): Promise<Array<BonsaiRegistryEntry>>;
     getEntriesByEcosystem(ecosystem: string, offset: bigint, limit: bigint): Promise<Array<BonsaiRegistryEntry>>;
     getEntryRating(entryId: bigint): Promise<EntryRatingStats>;
+    getListingFee(): Promise<bigint>;
+    getPendingSubmissions(secret: string): Promise<Array<PendingSubmission>>;
+    getPublicUserProfile(user: Principal): Promise<ExtendedUserProfile | null>;
     getTotalEntriesCount(): Promise<bigint>;
-    getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     rateEntry(entryId: bigint, rating: bigint): Promise<void>;
+    rejectPendingSubmissionWithSecret(secret: string, submissionId: bigint): Promise<void>;
     removeRegistryEntry(id: bigint): Promise<void>;
     removeRegistryEntryWithSecret(secret: string, id: bigint): Promise<void>;
-    saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    saveCallerUserProfile(profile: ExtendedUserProfile): Promise<void>;
+    setListingFeeWithSecret(secret: string, fee: bigint): Promise<void>;
+    submitProjectListing(entry: BonsaiRegistryEntry, paymentMemo: string): Promise<bigint>;
     updateRegistryEntry(id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
     updateRegistryEntryWithSecret(secret: string, id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
 }
-import type { BonsaiRegistryEntry as _BonsaiRegistryEntry, Category as _Category, Time as _Time, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
+import type { BonsaiRegistryEntry as _BonsaiRegistryEntry, Category as _Category, ExtendedUserProfile as _ExtendedUserProfile, PendingSubmission as _PendingSubmission, Time as _Time, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
@@ -192,6 +219,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.addRegistryEntryWithSecret(arg0, to_candid_BonsaiRegistryEntry_n1(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async approvePendingSubmissionWithSecret(arg0: string, arg1: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.approvePendingSubmissionWithSecret(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.approvePendingSubmissionWithSecret(arg0, arg1);
             return result;
         }
     }
@@ -307,7 +348,7 @@ export class Backend implements backendInterface {
             return from_candid_opt_n16(this._uploadFile, this._downloadFile, result);
         }
     }
-    async getCallerUserProfile(): Promise<UserProfile | null> {
+    async getCallerUserProfile(): Promise<ExtendedUserProfile | null> {
         if (this.processError) {
             try {
                 const result = await this.actor.getCallerUserProfile();
@@ -325,14 +366,14 @@ export class Backend implements backendInterface {
         if (this.processError) {
             try {
                 const result = await this.actor.getCallerUserRole();
-                return from_candid_UserRole_n18(this._uploadFile, this._downloadFile, result);
+                return from_candid_UserRole_n21(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n18(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserRole_n21(this._uploadFile, this._downloadFile, result);
         }
     }
     async getEntriesByCategory(arg0: Category, arg1: bigint, arg2: bigint): Promise<Array<BonsaiRegistryEntry>> {
@@ -377,6 +418,48 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getListingFee(): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getListingFee();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getListingFee();
+            return result;
+        }
+    }
+    async getPendingSubmissions(arg0: string): Promise<Array<PendingSubmission>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getPendingSubmissions(arg0);
+                return from_candid_vec_n23(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getPendingSubmissions(arg0);
+            return from_candid_vec_n23(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getPublicUserProfile(arg0: Principal): Promise<ExtendedUserProfile | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getPublicUserProfile(arg0);
+                return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getPublicUserProfile(arg0);
+            return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async getTotalEntriesCount(): Promise<bigint> {
         if (this.processError) {
             try {
@@ -389,20 +472,6 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getTotalEntriesCount();
             return result;
-        }
-    }
-    async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getUserProfile(arg0);
-                return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getUserProfile(arg0);
-            return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
         }
     }
     async isCallerAdmin(): Promise<boolean> {
@@ -430,6 +499,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.rateEntry(arg0, arg1);
+            return result;
+        }
+    }
+    async rejectPendingSubmissionWithSecret(arg0: string, arg1: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.rejectPendingSubmissionWithSecret(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.rejectPendingSubmissionWithSecret(arg0, arg1);
             return result;
         }
     }
@@ -461,17 +544,45 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
+    async saveCallerUserProfile(arg0: ExtendedUserProfile): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.saveCallerUserProfile(arg0);
+                const result = await this.actor.saveCallerUserProfile(to_candid_ExtendedUserProfile_n27(this._uploadFile, this._downloadFile, arg0));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.saveCallerUserProfile(arg0);
+            const result = await this.actor.saveCallerUserProfile(to_candid_ExtendedUserProfile_n27(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
+    async setListingFeeWithSecret(arg0: string, arg1: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.setListingFeeWithSecret(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.setListingFeeWithSecret(arg0, arg1);
+            return result;
+        }
+    }
+    async submitProjectListing(arg0: BonsaiRegistryEntry, arg1: string): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.submitProjectListing(to_candid_BonsaiRegistryEntry_n1(this._uploadFile, this._downloadFile, arg0), arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.submitProjectListing(to_candid_BonsaiRegistryEntry_n1(this._uploadFile, this._downloadFile, arg0), arg1);
             return result;
         }
     }
@@ -510,8 +621,14 @@ function from_candid_BonsaiRegistryEntry_n10(_uploadFile: (file: ExternalBlob) =
 function from_candid_Category_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Category): Category {
     return from_candid_variant_n14(_uploadFile, _downloadFile, value);
 }
-function from_candid_UserRole_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
-    return from_candid_variant_n19(_uploadFile, _downloadFile, value);
+function from_candid_ExtendedUserProfile_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _ExtendedUserProfile): ExtendedUserProfile {
+    return from_candid_record_n19(_uploadFile, _downloadFile, value);
+}
+function from_candid_PendingSubmission_n24(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _PendingSubmission): PendingSubmission {
+    return from_candid_record_n25(_uploadFile, _downloadFile, value);
+}
+function from_candid_UserRole_n21(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
+    return from_candid_variant_n22(_uploadFile, _downloadFile, value);
 }
 function from_candid_opt_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
     return value.length === 0 ? null : value[0];
@@ -519,7 +636,10 @@ function from_candid_opt_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8A
 function from_candid_opt_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_opt_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
+function from_candid_opt_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_ExtendedUserProfile]): ExtendedUserProfile | null {
+    return value.length === 0 ? null : from_candid_ExtendedUserProfile_n18(_uploadFile, _downloadFile, value[0]);
+}
+function from_candid_opt_n20(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [Principal]): Principal | null {
     return value.length === 0 ? null : value[0];
 }
 function from_candid_record_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
@@ -555,6 +675,66 @@ function from_candid_record_n11(_uploadFile: (file: ExternalBlob) => Promise<Uin
         logoUrl: record_opt_to_undefined(from_candid_opt_n15(_uploadFile, _downloadFile, value.logoUrl))
     };
 }
+function from_candid_record_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    bio: string;
+    submittedEntries: Array<bigint>;
+    displayName: string;
+    pinnedNfts: Array<{
+        tokenId: bigint;
+        collectionId: string;
+    }>;
+    avatarUrl: [] | [string];
+    walletPrincipal: [] | [Principal];
+}): {
+    bio: string;
+    submittedEntries: Array<bigint>;
+    displayName: string;
+    pinnedNfts: Array<{
+        tokenId: bigint;
+        collectionId: string;
+    }>;
+    avatarUrl?: string;
+    walletPrincipal?: Principal;
+} {
+    return {
+        bio: value.bio,
+        submittedEntries: value.submittedEntries,
+        displayName: value.displayName,
+        pinnedNfts: value.pinnedNfts,
+        avatarUrl: record_opt_to_undefined(from_candid_opt_n15(_uploadFile, _downloadFile, value.avatarUrl)),
+        walletPrincipal: record_opt_to_undefined(from_candid_opt_n20(_uploadFile, _downloadFile, value.walletPrincipal))
+    };
+}
+function from_candid_record_n25(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: bigint;
+    status: {
+        pending: null;
+    } | {
+        approved: null;
+    } | {
+        rejected: null;
+    };
+    submitter: Principal;
+    submittedAt: _Time;
+    entry: _BonsaiRegistryEntry;
+    paymentMemo: string;
+}): {
+    id: bigint;
+    status: Variant_pending_approved_rejected;
+    submitter: Principal;
+    submittedAt: Time;
+    entry: BonsaiRegistryEntry;
+    paymentMemo: string;
+} {
+    return {
+        id: value.id,
+        status: from_candid_variant_n26(_uploadFile, _downloadFile, value.status),
+        submitter: value.submitter,
+        submittedAt: value.submittedAt,
+        entry: from_candid_BonsaiRegistryEntry_n10(_uploadFile, _downloadFile, value.entry),
+        paymentMemo: value.paymentMemo
+    };
+}
 function from_candid_variant_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     nft: null;
 } | {
@@ -574,7 +754,7 @@ function from_candid_variant_n14(_uploadFile: (file: ExternalBlob) => Promise<Ui
 }): Category {
     return "nft" in value ? Category.nft : "tools" in value ? Category.tools : "social" in value ? Category.social : "defi" in value ? Category.defi : "gaming" in value ? Category.gaming : "wallet" in value ? Category.wallet : "commerce" in value ? Category.commerce : "exchange" in value ? Category.exchange : value;
 }
-function from_candid_variant_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_variant_n22(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     admin: null;
 } | {
     user: null;
@@ -583,8 +763,20 @@ function from_candid_variant_n19(_uploadFile: (file: ExternalBlob) => Promise<Ui
 }): UserRole {
     return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
 }
+function from_candid_variant_n26(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    pending: null;
+} | {
+    approved: null;
+} | {
+    rejected: null;
+}): Variant_pending_approved_rejected {
+    return "pending" in value ? Variant_pending_approved_rejected.pending : "approved" in value ? Variant_pending_approved_rejected.approved : "rejected" in value ? Variant_pending_approved_rejected.rejected : value;
+}
 function from_candid_vec_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Category>): Array<Category> {
     return value.map((x)=>from_candid_Category_n13(_uploadFile, _downloadFile, x));
+}
+function from_candid_vec_n23(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_PendingSubmission>): Array<PendingSubmission> {
+    return value.map((x)=>from_candid_PendingSubmission_n24(_uploadFile, _downloadFile, x));
 }
 function from_candid_vec_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_BonsaiRegistryEntry>): Array<BonsaiRegistryEntry> {
     return value.map((x)=>from_candid_BonsaiRegistryEntry_n10(_uploadFile, _downloadFile, x));
@@ -594,6 +786,9 @@ function to_candid_BonsaiRegistryEntry_n1(_uploadFile: (file: ExternalBlob) => P
 }
 function to_candid_Category_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Category): _Category {
     return to_candid_variant_n5(_uploadFile, _downloadFile, value);
+}
+function to_candid_ExtendedUserProfile_n27(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: ExtendedUserProfile): _ExtendedUserProfile {
+    return to_candid_record_n28(_uploadFile, _downloadFile, value);
 }
 function to_candid_UserRole_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): _UserRole {
     return to_candid_variant_n7(_uploadFile, _downloadFile, value);
@@ -629,6 +824,36 @@ function to_candid_record_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8A
         ecosystem: value.ecosystem,
         description: value.description,
         logoUrl: value.logoUrl ? candid_some(value.logoUrl) : candid_none()
+    };
+}
+function to_candid_record_n28(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    bio: string;
+    submittedEntries: Array<bigint>;
+    displayName: string;
+    pinnedNfts: Array<{
+        tokenId: bigint;
+        collectionId: string;
+    }>;
+    avatarUrl?: string;
+    walletPrincipal?: Principal;
+}): {
+    bio: string;
+    submittedEntries: Array<bigint>;
+    displayName: string;
+    pinnedNfts: Array<{
+        tokenId: bigint;
+        collectionId: string;
+    }>;
+    avatarUrl: [] | [string];
+    walletPrincipal: [] | [Principal];
+} {
+    return {
+        bio: value.bio,
+        submittedEntries: value.submittedEntries,
+        displayName: value.displayName,
+        pinnedNfts: value.pinnedNfts,
+        avatarUrl: value.avatarUrl ? candid_some(value.avatarUrl) : candid_none(),
+        walletPrincipal: value.walletPrincipal ? candid_some(value.walletPrincipal) : candid_none()
     };
 }
 function to_candid_variant_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Category): {

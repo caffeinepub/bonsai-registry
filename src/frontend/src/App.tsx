@@ -9,6 +9,7 @@ import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { NewsSection } from "./components/NewsSection";
 import { OnboardingModal } from "./components/OnboardingModal";
+import { PayToListModal } from "./components/PayToListModal";
 import { Sidebar } from "./components/Sidebar";
 import { TipButton } from "./components/TipButton";
 import { TipModal } from "./components/TipModal";
@@ -25,9 +26,11 @@ import {
 import { useBackendEntries } from "./hooks/useBackendEntries";
 import { useCallerRatings } from "./hooks/useCallerRatings";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
+import { useOisyWallet } from "./hooks/useOisyWallet";
 import { useRatings } from "./hooks/useRatings";
 import { useRecordEvent } from "./hooks/useRecordEvent";
 import { useSubmitRating } from "./hooks/useSubmitRating";
+import { UserProfilePage } from "./pages/UserProfilePage";
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,6 +40,10 @@ export default function App() {
   const [sortMode, setSortMode] = useState<SortMode>("default");
   const [ratingLoadingId, setRatingLoadingId] = useState<string | null>(null);
   const [tipOpen, setTipOpen] = useState(false);
+  const [payToListOpen, setPayToListOpen] = useState(false);
+
+  // OISY wallet
+  const { connected: oisyConnected } = useOisyWallet();
 
   // Anonymous analytics
   const record = useRecordEvent();
@@ -260,6 +267,24 @@ export default function App() {
     );
   }
 
+  // Profile route: #profile or #profile/PRINCIPAL
+  if (currentHash.startsWith("#profile")) {
+    const parts = currentHash.split("/");
+    const targetPrincipal = parts[1] ?? null;
+    return (
+      <>
+        <UserProfilePage
+          targetPrincipal={targetPrincipal}
+          onBack={() => {
+            window.location.hash = "";
+            setCurrentHash("");
+          }}
+        />
+        <Toaster />
+      </>
+    );
+  }
+
   // Handle tip modal open
   const handleTipOpen = () => setTipOpen(true);
 
@@ -270,6 +295,12 @@ export default function App() {
 
       {/* Tip modal */}
       <TipModal open={tipOpen} onClose={() => setTipOpen(false)} />
+
+      {/* Pay to List modal */}
+      <PayToListModal
+        open={payToListOpen}
+        onClose={() => setPayToListOpen(false)}
+      />
 
       {/* Floating tip button */}
       <TipButton onClick={handleTipOpen} />
@@ -289,6 +320,12 @@ export default function App() {
           isInitializing={isInitializing}
           onLogin={login}
           onLogout={logout}
+          onListProject={() => setPayToListOpen(true)}
+          onViewProfile={() => {
+            window.location.hash = "#profile";
+            setCurrentHash("#profile");
+          }}
+          oisyConnected={oisyConnected}
         />
 
         {/* Filter bar */}
