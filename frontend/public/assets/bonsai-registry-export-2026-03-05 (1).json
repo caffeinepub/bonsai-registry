@@ -1,0 +1,4700 @@
+[
+  {
+    "name": "Ordinals Protocol",
+    "description": "NFT inscriptions on Bitcoin",
+    "url": "https://ordinals.com/",
+    "ecosystem": "bitcoin",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Gamma",
+    "description": "Bitcoin Ordinals marketplace",
+    "url": "https://gamma.io/",
+    "ecosystem": "bitcoin",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Magic Eden Ordinals",
+    "description": "Cross-chain NFT marketplace for Ordinals",
+    "url": "https://magiceden.io/ordinals",
+    "ecosystem": "bitcoin",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "UniSat",
+    "description": "Ordinals wallet and marketplace",
+    "url": "https://unisat.io/",
+    "ecosystem": "bitcoin",
+    "categories": [
+      "nft",
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Bisq DEX",
+    "description": "P2P decentralized exchange for Bitcoin",
+    "url": "https://bisq.network/",
+    "ecosystem": "bitcoin",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Lightning Network",
+    "description": "Layer 2 instant payment protocol",
+    "url": "https://lightning.network/",
+    "ecosystem": "bitcoin",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Sparrow Wallet",
+    "description": "Feature-rich desktop Bitcoin wallet",
+    "url": "https://sparrowwallet.com/",
+    "ecosystem": "bitcoin",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Mempool Explorer",
+    "description": "Bitcoin mempool and blockchain explorer",
+    "url": "https://mempool.space/",
+    "ecosystem": "bitcoin",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Stacks (STX)",
+    "description": "Bitcoin L2 enabling smart contracts",
+    "url": "https://www.stacks.co/",
+    "ecosystem": "bitcoin",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Rootstock (RSK)",
+    "description": "Bitcoin sidechain for DeFi",
+    "url": "https://www.rootstock.io/",
+    "ecosystem": "bitcoin",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Axie Infinity",
+    "description": "P2E battle game with NFT creatures",
+    "url": "https://www.axieinfinity.com/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Decentraland",
+    "description": "3D virtual metaverse on Ethereum",
+    "url": "https://www.decentraland.org/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "The Sandbox",
+    "description": "Metaverse builder and gaming platform",
+    "url": "https://sandbox.game/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Gods Unchained",
+    "description": "Trading card game with true ownership",
+    "url": "https://godsunchained.com/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "OpenSea",
+    "description": "Largest NFT marketplace on Ethereum",
+    "url": "https://opensea.io/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Blur",
+    "description": "Pro NFT trading platform for power users",
+    "url": "https://blur.io/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Rarible",
+    "description": "NFT marketplace and creator tools",
+    "url": "https://rarible.com/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Foundation",
+    "description": "Curated digital art platform",
+    "url": "https://foundation.app/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "SuperRare",
+    "description": "Premium digital art marketplace",
+    "url": "https://superrare.com/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Uniswap",
+    "description": "Leading decentralized exchange AMM",
+    "url": "https://uniswap.org/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Aave",
+    "description": "Decentralized lending protocol",
+    "url": "https://aave.com/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Compound",
+    "description": "Algorithmic money market protocol",
+    "url": "https://compound.finance/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "MakerDAO",
+    "description": "DAI stablecoin and governance protocol",
+    "url": "https://makerdao.com/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Curve Finance",
+    "description": "Optimized stablecoin DEX",
+    "url": "https://curve.fi/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Lido Finance",
+    "description": "Liquid staking for Ethereum",
+    "url": "https://lido.fi/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "MetaMask",
+    "description": "Industry-standard browser wallet",
+    "url": "https://metamask.io/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Ledger",
+    "description": "Hardware cold storage wallet",
+    "url": "https://www.ledger.com/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Rainbow Wallet",
+    "description": "Beautiful mobile Ethereum wallet",
+    "url": "https://rainbow.me/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Etherscan",
+    "description": "Ethereum blockchain explorer",
+    "url": "https://etherscan.io/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hardhat",
+    "description": "Professional Ethereum dev environment",
+    "url": "https://hardhat.org/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "ENS Domains",
+    "description": "Ethereum Name Service for Web3 identity",
+    "url": "https://ens.domains/",
+    "ecosystem": "ethereum",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hedera",
+    "description": "Official Hedera Hashgraph network",
+    "url": "https://hedera.com/",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "HBAR Foundation",
+    "description": "Ecosystem fund and grant program",
+    "url": "https://hbarfoundation.org/",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hedera Consensus Service",
+    "description": "Verifiable ordered data logging on Hedera",
+    "url": "https://hedera.com/consensus-service",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hedera Token Service",
+    "description": "Native token issuance on Hedera",
+    "url": "https://hedera.com/token-service",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hedera Smart Contracts",
+    "description": "EVM-compatible smart contracts on Hedera",
+    "url": "https://hedera.com/smart-contract",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hashgraph Association",
+    "description": "European Hedera ecosystem organization",
+    "url": "https://www.hashgraph-association.com/",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hedera Governing Council",
+    "description": "Enterprise governance by world leaders",
+    "url": "https://hedera.com/council",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "HashPack Wallet",
+    "description": "Leading HBAR and HTS wallet",
+    "url": "https://www.hashpack.app/",
+    "ecosystem": "hedera",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Blade Wallet",
+    "description": "HBAR and HTS token wallet",
+    "url": "https://www.bladewallet.io/",
+    "ecosystem": "hedera",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Kabila",
+    "description": "Hedera NFT marketplace and creator platform",
+    "url": "https://www.kabila.app/",
+    "ecosystem": "hedera",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Zuse Market",
+    "description": "NFT marketplace on Hedera",
+    "url": "https://zuse.market/",
+    "ecosystem": "hedera",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "SentX",
+    "description": "Hedera NFT marketplace",
+    "url": "https://sentx.io/",
+    "ecosystem": "hedera",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "NFTToolkit",
+    "description": "Comprehensive Hedera NFT tools",
+    "url": "https://nftoolkit.io/",
+    "ecosystem": "hedera",
+    "categories": [
+      "nft",
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "SaucerSwap",
+    "description": "Leading Hedera AMM and DEX",
+    "url": "https://www.saucerswap.finance/",
+    "ecosystem": "hedera",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "HeliSwap",
+    "description": "Hedera decentralized exchange",
+    "url": "https://heliswap.io/",
+    "ecosystem": "hedera",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "HSUITE",
+    "description": "Full DeFi suite on Hedera",
+    "url": "https://www.hsuite.finance/",
+    "ecosystem": "hedera",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Pangolin on Hedera",
+    "description": "Avalanche AMM ported to Hedera",
+    "url": "https://app.pangolin.exchange/",
+    "ecosystem": "hedera",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hashaxis",
+    "description": "Hedera network analytics dashboard",
+    "url": "https://hashaxis.com/",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hedera Portal",
+    "description": "Official developer portal and faucet",
+    "url": "https://portal.hedera.com/",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Playible",
+    "description": "Fantasy sports NFT game on Hedera",
+    "url": "https://playible.io/",
+    "ecosystem": "hedera",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "LaLiga NFT on Hedera",
+    "description": "Official LaLiga sports NFT cards",
+    "url": "https://laligacard.com/",
+    "ecosystem": "hedera",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Stadio Plus",
+    "description": "Sports fan token platform on Hedera",
+    "url": "https://stadioplus.com/",
+    "ecosystem": "hedera",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Toko",
+    "description": "Real-world asset tokenization on Hedera",
+    "url": "https://toko.network/",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "SwirldsLabs",
+    "description": "Core Hedera technology company",
+    "url": "https://swirldslabs.com/",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "GRAIL Finance",
+    "description": "Hedera DeFi yield protocol",
+    "url": "https://www.grail.finance/",
+    "ecosystem": "hedera",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hashgraph Online",
+    "description": "Hedera ecosystem news and resources",
+    "url": "https://hashgraphonline.com/",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hedera Developer Docs",
+    "description": "Official Hedera developer documentation",
+    "url": "https://docs.hedera.com/",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Mirror Node Explorer",
+    "description": "Hedera network mirror node explorer",
+    "url": "https://hashscan.io/",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hedera SDKs",
+    "description": "Official SDKs for Java, JS, Go and more",
+    "url": "https://github.com/hashgraph",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hedera Community",
+    "description": "Official Hedera community forum",
+    "url": "https://community.hedera.com/",
+    "ecosystem": "hedera",
+    "categories": [
+      "social"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Turtle Moon",
+    "description": "Hedera NFT art collective and marketplace",
+    "url": "https://turtlemoon.io/",
+    "ecosystem": "hedera",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "HashAxis Analytics",
+    "description": "DeFi analytics for Hedera ecosystem",
+    "url": "https://hashaxis.com/",
+    "ecosystem": "hedera",
+    "categories": [
+      "tools",
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Star Atlas",
+    "description": "Epic space MMO metaverse on Solana",
+    "url": "https://staratlas.com/",
+    "ecosystem": "solana",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Aurory",
+    "description": "Immersive RPG adventure game",
+    "url": "https://aurory.io/",
+    "ecosystem": "solana",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "DeFi Land",
+    "description": "Gamified DeFi farming simulator",
+    "url": "https://defiland.app/",
+    "ecosystem": "solana",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "StepN",
+    "description": "Move-to-earn fitness blockchain app",
+    "url": "https://stepn.com/",
+    "ecosystem": "solana",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Magic Eden",
+    "description": "Largest Solana NFT marketplace",
+    "url": "https://magiceden.io/",
+    "ecosystem": "solana",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Solanart",
+    "description": "Premier Solana NFT marketplace",
+    "url": "https://solanart.io/",
+    "ecosystem": "solana",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Tensor",
+    "description": "Pro Solana NFT trading platform",
+    "url": "https://www.tensor.trade/",
+    "ecosystem": "solana",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Famous Fox Federation",
+    "description": "Iconic Solana NFT collection",
+    "url": "https://famousfoxes.com/",
+    "ecosystem": "solana",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Raydium",
+    "description": "Full-featured Solana AMM and DEX",
+    "url": "https://raydium.io/",
+    "ecosystem": "solana",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Orca",
+    "description": "User-friendly Solana DEX",
+    "url": "https://www.orca.so/",
+    "ecosystem": "solana",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Serum DEX",
+    "description": "Central limit orderbook on Solana",
+    "url": "https://dex.projectserum.com/",
+    "ecosystem": "solana",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Solend",
+    "description": "Solana lending and borrowing protocol",
+    "url": "https://solend.fi/",
+    "ecosystem": "solana",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Phantom Wallet",
+    "description": "Most popular Solana ecosystem wallet",
+    "url": "https://phantom.app/",
+    "ecosystem": "solana",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Solflare",
+    "description": "Full-featured web and mobile Solana wallet",
+    "url": "https://solflare.com/",
+    "ecosystem": "solana",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Backpack Wallet",
+    "description": "xNFT wallet for Solana ecosystem",
+    "url": "https://www.backpack.app/",
+    "ecosystem": "solana",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Solana Beach",
+    "description": "Solana blockchain explorer",
+    "url": "https://solanabeach.io/",
+    "ecosystem": "solana",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Metaplex",
+    "description": "NFT infrastructure and standards on Solana",
+    "url": "https://www.metaplex.com/",
+    "ecosystem": "solana",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Solana Foundation",
+    "description": "Ecosystem foundation and grants",
+    "url": "https://solana.org/",
+    "ecosystem": "solana",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Jupiter Aggregator",
+    "description": "Best-rate Solana DEX aggregator",
+    "url": "https://jup.ag/",
+    "ecosystem": "solana",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Marinade Finance",
+    "description": "Liquid staking for Solana (mSOL)",
+    "url": "https://marinade.finance/",
+    "ecosystem": "solana",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Drift Protocol",
+    "description": "Perpetuals DEX on Solana",
+    "url": "https://www.drift.trade/",
+    "ecosystem": "solana",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Crabada",
+    "description": "Idle crab battle game on Avalanche",
+    "url": "https://www.crabada.com/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Shrapnel",
+    "description": "AAA military FPS with blockchain rewards",
+    "url": "https://www.shrapnel.com/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Off The Grid",
+    "description": "Battle royale game on Avalanche",
+    "url": "https://www.othegame.com/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Trader Joe",
+    "description": "One-stop DEX on Avalanche",
+    "url": "https://traderjoexyz.com/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Pangolin",
+    "description": "Community-driven DEX on Avalanche",
+    "url": "https://pangolin.exchange/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Platypus Finance",
+    "description": "Single-sided stableswap on AVAX",
+    "url": "https://platypus.finance/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Benqi",
+    "description": "Liquid staking and lending on AVAX",
+    "url": "https://benqi.fi/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Joepegs",
+    "description": "NFT marketplace by Trader Joe",
+    "url": "https://joepegs.com/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Kalao",
+    "description": "VR NFT marketplace on Avalanche",
+    "url": "https://kalao.io/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Core Wallet",
+    "description": "Native Avalanche browser wallet",
+    "url": "https://core.app/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Avalanche Bridge",
+    "description": "Official cross-chain bridge",
+    "url": "https://bridge.avax.network/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "SnowTrace",
+    "description": "Avalanche blockchain explorer",
+    "url": "https://snowtrace.io/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "GMX",
+    "description": "Decentralized perpetuals trading",
+    "url": "https://gmx.io/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Beefy Finance AVAX",
+    "description": "Yield optimizer vaults on AVAX",
+    "url": "https://beefy.finance/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "DeFi Kingdoms",
+    "description": "GameFi RPG on Avalanche",
+    "url": "https://defikingdoms.com/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Avvy Domains",
+    "description": "AVAX name service for Web3 identity",
+    "url": "https://avvy.domains/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Yield Yak",
+    "description": "Auto-compounder and aggregator on AVAX",
+    "url": "https://yieldyak.com/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Steakhut Finance",
+    "description": "Concentrated liquidity management",
+    "url": "https://www.steakhut.finance/",
+    "ecosystem": "avalanche",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "PancakeSwap",
+    "description": "Largest DEX on BNB Chain",
+    "url": "https://pancakeswap.finance/",
+    "ecosystem": "bnb",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Venus Protocol",
+    "description": "BNB Chain algorithmic lending",
+    "url": "https://venus.io/",
+    "ecosystem": "bnb",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "BNB NFT Marketplace",
+    "description": "Official Binance NFT platform",
+    "url": "https://www.binance.com/en/nft/home",
+    "ecosystem": "bnb",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "MOBOX",
+    "description": "GameFi platform and NFT ecosystem",
+    "url": "https://www.mobox.io/",
+    "ecosystem": "bnb",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Bomb Crypto",
+    "description": "Play-to-earn explosive NFT game",
+    "url": "https://bombcrypto.io/",
+    "ecosystem": "bnb",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "BNB Chain dApps",
+    "description": "Official BNB Chain dApp discovery portal",
+    "url": "https://dappbay.bnbchain.org/",
+    "ecosystem": "bnb",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "BNB Greenfield",
+    "description": "Decentralized storage on BNB Chain",
+    "url": "https://greenfield.bnbchain.org/",
+    "ecosystem": "bnb",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Trust Wallet",
+    "description": "Official BNB Chain mobile wallet",
+    "url": "https://trustwallet.com/",
+    "ecosystem": "bnb",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "BscScan",
+    "description": "BNB Chain blockchain explorer",
+    "url": "https://bscscan.com/",
+    "ecosystem": "bnb",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "BSC Station",
+    "description": "DeFi launchpad on BNB Chain",
+    "url": "https://bscstation.finance/",
+    "ecosystem": "bnb",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Alpaca Finance",
+    "description": "Leveraged yield farming on BNB",
+    "url": "https://www.alpacafinance.org/",
+    "ecosystem": "bnb",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Biswap",
+    "description": "Multi-type DEX on BNB Chain",
+    "url": "https://biswap.org/",
+    "ecosystem": "bnb",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "CryptoBlades",
+    "description": "RPG play-to-earn blockchain game",
+    "url": "https://www.cryptoblades.io/",
+    "ecosystem": "bnb",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Alien Worlds",
+    "description": "Intergalactic mining metaverse game",
+    "url": "https://alienworlds.io/",
+    "ecosystem": "bnb",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "1inch on BNB",
+    "description": "DEX aggregator on BNB Chain",
+    "url": "https://app.1inch.io/#/56",
+    "ecosystem": "bnb",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Beefy Finance",
+    "description": "Multi-chain yield optimizer vault",
+    "url": "https://beefy.finance/",
+    "ecosystem": "bnb",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Ellipsis Finance",
+    "description": "Stableswap protocol on BNB Chain",
+    "url": "https://ellipsis.finance/",
+    "ecosystem": "bnb",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Axo",
+    "description": "Programmable orders DEX on Cardano",
+    "url": "https://www.axo.trade/",
+    "ecosystem": "cardano",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Minswap",
+    "description": "Community-driven Cardano DEX",
+    "url": "https://minswap.org/",
+    "ecosystem": "cardano",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "JPEG Store",
+    "description": "Leading Cardano NFT marketplace",
+    "url": "https://www.jpg.store/",
+    "ecosystem": "cardano",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "SpaceBudz",
+    "description": "OG Cardano NFT collection",
+    "url": "https://spacebudz.io/",
+    "ecosystem": "cardano",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Clay Nation",
+    "description": "Cardano NFT character collection",
+    "url": "https://www.claynation.io/",
+    "ecosystem": "cardano",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Nami Wallet",
+    "description": "Lightweight Cardano browser wallet",
+    "url": "https://namiwallet.io/",
+    "ecosystem": "cardano",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Eternl Wallet",
+    "description": "Full-featured multi-account ADA wallet",
+    "url": "https://eternl.io/",
+    "ecosystem": "cardano",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Cardano Scan",
+    "description": "Cardano blockchain explorer",
+    "url": "https://cardanoscan.io/",
+    "ecosystem": "cardano",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Meld",
+    "description": "Gold-backed digital assets on Cardano",
+    "url": "https://www.meld.gold/",
+    "ecosystem": "cardano",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "WorldMobile",
+    "description": "Decentralized mobile network on Cardano",
+    "url": "https://worldmobile.io/",
+    "ecosystem": "cardano",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Iagon",
+    "description": "Decentralized cloud storage on Cardano",
+    "url": "https://iagon.com/",
+    "ecosystem": "cardano",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Tether",
+    "description": "World's largest stablecoin issuer",
+    "url": "https://tether.to/",
+    "ecosystem": "tether",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "USDT on Ethereum",
+    "description": "ERC-20 USDT token on Ethereum",
+    "url": "https://etherscan.io/token/0xdac17f958d2ee523a2206206994597c13d831ec7",
+    "ecosystem": "tether",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "USDT on Tron",
+    "description": "TRC-20 USDT token on Tron",
+    "url": "https://tronscan.org/#/token20/TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+    "ecosystem": "tether",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Curve USDT Pools",
+    "description": "Deep stablecoin liquidity pools",
+    "url": "https://curve.fi/",
+    "ecosystem": "tether",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "1inch USDT Swaps",
+    "description": "Best-rate DEX aggregator for USDT",
+    "url": "https://1inch.io/",
+    "ecosystem": "tether",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "XUMM Wallet",
+    "description": "Official XRP Ledger mobile wallet",
+    "url": "https://xumm.app/",
+    "ecosystem": "xrp",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "XRP Toolkit",
+    "description": "Advanced XRPL trading and management",
+    "url": "https://www.xrptoolkit.com/",
+    "ecosystem": "xrp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Sologenic",
+    "description": "DEX and tokenization on XRP Ledger",
+    "url": "https://www.sologenic.com/",
+    "ecosystem": "xrp",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "XRP Ledger Foundation",
+    "description": "Non-profit supporting XRPL ecosystem",
+    "url": "https://xrplf.org/",
+    "ecosystem": "xrp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Ripple",
+    "description": "Enterprise blockchain payment solutions",
+    "url": "https://ripple.com/",
+    "ecosystem": "xrp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "XRP Ledger",
+    "description": "Official XRPL documentation and resources",
+    "url": "https://xrpl.org/",
+    "ecosystem": "xrp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "First Ledger",
+    "description": "NFT platform on XRP Ledger",
+    "url": "https://firstledger.net/",
+    "ecosystem": "xrp",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "XRP NFT",
+    "description": "NFT marketplace on XRP Ledger",
+    "url": "https://xrpnft.com/",
+    "ecosystem": "xrp",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Chainlink",
+    "description": "Decentralized oracle network",
+    "url": "https://chain.link/",
+    "ecosystem": "chainlink",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Chainlink VRF",
+    "description": "Verifiable random function for smart contracts",
+    "url": "https://docs.chain.link/vrf/v2/introduction",
+    "ecosystem": "chainlink",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Chainlink Automation",
+    "description": "Decentralized smart contract automation",
+    "url": "https://automation.chain.link/",
+    "ecosystem": "chainlink",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Chainlink CCIP",
+    "description": "Cross-chain interoperability protocol",
+    "url": "https://docs.chain.link/ccip",
+    "ecosystem": "chainlink",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Chainlink Data Streams",
+    "description": "Real-time market data feeds",
+    "url": "https://docs.chain.link/data-streams",
+    "ecosystem": "chainlink",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Chainlink Functions",
+    "description": "Serverless compute for Web3",
+    "url": "https://functions.chain.link/",
+    "ecosystem": "chainlink",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Chainlink Staking",
+    "description": "LINK staking for network security",
+    "url": "https://staking.chain.link/",
+    "ecosystem": "chainlink",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "SmartCon",
+    "description": "Annual Chainlink developers conference",
+    "url": "https://smartcon.chain.link/",
+    "ecosystem": "chainlink",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Stellar",
+    "description": "Fast, low-cost payment network",
+    "url": "https://stellar.org/",
+    "ecosystem": "stellar",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Stellar DEX",
+    "description": "Built-in DEX via StellarTerm",
+    "url": "https://stellarterm.com/",
+    "ecosystem": "stellar",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "LOBSTR Wallet",
+    "description": "Popular Stellar mobile wallet",
+    "url": "https://lobstr.co/",
+    "ecosystem": "stellar",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Freighter Wallet",
+    "description": "Stellar browser extension wallet",
+    "url": "https://www.freighter.app/",
+    "ecosystem": "stellar",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Lumenswap",
+    "description": "Stellar AMM and DEX",
+    "url": "https://lumenswap.io/",
+    "ecosystem": "stellar",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "StellarExpert",
+    "description": "Comprehensive Stellar explorer",
+    "url": "https://stellar.expert/",
+    "ecosystem": "stellar",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "AQUA Token",
+    "description": "Stellar liquidity reward program",
+    "url": "https://aqua.network/",
+    "ecosystem": "stellar",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Dogecoin Foundation",
+    "description": "Official Dogecoin non-profit foundation",
+    "url": "https://foundation.dogecoin.com/",
+    "ecosystem": "dogecoin",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "DogeChain",
+    "description": "Dogecoin EVM-compatible layer 2",
+    "url": "https://dogechain.dog/",
+    "ecosystem": "dogecoin",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "PawSwap",
+    "description": "DEX on Dogecoin ecosystem",
+    "url": "https://pawswap.exchange/",
+    "ecosystem": "dogecoin",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "MultiDoge",
+    "description": "Open-source Dogecoin wallet",
+    "url": "https://multidoge.org/",
+    "ecosystem": "dogecoin",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Dogecoin.com",
+    "description": "Official Dogecoin website",
+    "url": "https://dogecoin.com/",
+    "ecosystem": "dogecoin",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "GoodDollar",
+    "description": "Universal basic income on blockchain",
+    "url": "https://www.gooddollar.org/",
+    "ecosystem": "dogecoin",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "JustLend",
+    "description": "TRON's premier lending protocol",
+    "url": "https://justlend.org/",
+    "ecosystem": "tron",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "SunSwap",
+    "description": "TRON decentralized exchange",
+    "url": "https://sun.io/",
+    "ecosystem": "tron",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "APENFT",
+    "description": "NFT marketplace on TRON",
+    "url": "https://apenft.io/",
+    "ecosystem": "tron",
+    "categories": [
+      "nft"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "BitTorrent Token",
+    "description": "Decentralized file sharing ecosystem",
+    "url": "https://bt.io/",
+    "ecosystem": "tron",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "TronLink Wallet",
+    "description": "Official TRON browser wallet",
+    "url": "https://www.tronlink.org/",
+    "ecosystem": "tron",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "TronScan",
+    "description": "TRON blockchain explorer",
+    "url": "https://tronscan.org/",
+    "ecosystem": "tron",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "JustSwap",
+    "description": "TRON automated market maker",
+    "url": "https://justswap.io/",
+    "ecosystem": "tron",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "WINk",
+    "description": "Gaming and entertainment platform on TRON",
+    "url": "https://wink.org/",
+    "ecosystem": "tron",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Mantle Network",
+    "description": "Ethereum Layer 2 scaling solution",
+    "url": "https://www.mantle.xyz/",
+    "ecosystem": "mantle",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "FusionX Finance",
+    "description": "Native DEX on Mantle Network",
+    "url": "https://fusionx.finance/",
+    "ecosystem": "mantle",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Agni Finance",
+    "description": "Concentrated liquidity DEX on Mantle",
+    "url": "https://agni.finance/",
+    "ecosystem": "mantle",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Mantle Staking",
+    "description": "mETH liquid staking protocol",
+    "url": "https://meth.mantle.xyz/",
+    "ecosystem": "mantle",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Mantle Bridge",
+    "description": "Official Mantle cross-chain bridge",
+    "url": "https://bridge.mantle.xyz/",
+    "ecosystem": "mantle",
+    "categories": [
+      "tools"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Merchant Moe",
+    "description": "Liquidity Book DEX on Mantle",
+    "url": "https://merchantmoe.com/",
+    "ecosystem": "mantle",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Lendle",
+    "description": "Lending and borrowing on Mantle",
+    "url": "https://lendle.xyz/",
+    "ecosystem": "mantle",
+    "categories": [
+      "defi"
+    ],
+    "tier": 1,
+    "logoUrl": ""
+  },
+  {
+    "name": "Treasure DAO",
+    "description": "Gaming ecosystem and NFT marketplace",
+    "url": "https://treasure.lol/",
+    "ecosystem": "arbitrum",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "GMX",
+    "description": "Decentralized perpetuals trading on ARB",
+    "url": "https://gmx.io/",
+    "ecosystem": "arbitrum",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Camelot DEX",
+    "description": "Arbitrum-native liquidity protocol",
+    "url": "https://camelot.exchange/",
+    "ecosystem": "arbitrum",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Arbitrum Bridge",
+    "description": "Official Arbitrum cross-chain bridge",
+    "url": "https://bridge.arbitrum.io/",
+    "ecosystem": "arbitrum",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Arbitrum One",
+    "description": "Ethereum L2 Optimistic Rollup network",
+    "url": "https://arbitrum.io/",
+    "ecosystem": "arbitrum",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Radiant Capital",
+    "description": "Cross-chain money market lending",
+    "url": "https://radiant.capital/",
+    "ecosystem": "arbitrum",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Jones DAO",
+    "description": "Options yield strategies on Arbitrum",
+    "url": "https://jonesdao.io/",
+    "ecosystem": "arbitrum",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Vela Exchange",
+    "description": "Decentralized perpetuals DEX",
+    "url": "https://vela.exchange/",
+    "ecosystem": "arbitrum",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Gains Network",
+    "description": "Decentralized leveraged trading",
+    "url": "https://gainsnetwork.io/",
+    "ecosystem": "arbitrum",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Arbiscan",
+    "description": "Arbitrum blockchain explorer",
+    "url": "https://arbiscan.io/",
+    "ecosystem": "arbitrum",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Skyweaver",
+    "description": "Trading card game on Polygon",
+    "url": "https://www.skyweaver.net/",
+    "ecosystem": "polygon",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Aavegotchi",
+    "description": "DeFi-backed ghost NFT game",
+    "url": "https://www.aavegotchi.com/",
+    "ecosystem": "polygon",
+    "categories": [
+      "gaming",
+      "nft"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Decentral Games",
+    "description": "Metaverse casino on Polygon",
+    "url": "https://decentral.games/",
+    "ecosystem": "polygon",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Quickswap",
+    "description": "Leading Polygon-native DEX",
+    "url": "https://quickswap.exchange/",
+    "ecosystem": "polygon",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Polymarket",
+    "description": "Decentralized prediction market",
+    "url": "https://polymarket.com/",
+    "ecosystem": "polygon",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Lens Protocol",
+    "description": "Decentralized social graph on Polygon",
+    "url": "https://lens.xyz/",
+    "ecosystem": "polygon",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "PolygonScan",
+    "description": "Polygon blockchain explorer",
+    "url": "https://polygonscan.com/",
+    "ecosystem": "polygon",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Polygon Bridge",
+    "description": "Official Polygon asset bridge",
+    "url": "https://wallet.polygon.technology/",
+    "ecosystem": "polygon",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Polygon ID",
+    "description": "Decentralized identity on Polygon",
+    "url": "https://polygon.technology/polygon-id",
+    "ecosystem": "polygon",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Base",
+    "description": "Coinbase-backed Ethereum L2 network",
+    "url": "https://base.org/",
+    "ecosystem": "base",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Aerodrome Finance",
+    "description": "Native ve(3,3) DEX on Base",
+    "url": "https://aerodrome.finance/",
+    "ecosystem": "base",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "BaseSwap",
+    "description": "Uniswap fork DEX on Base chain",
+    "url": "https://baseswap.fi/",
+    "ecosystem": "base",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Friend.tech",
+    "description": "Social token trading platform",
+    "url": "https://www.friend.tech/",
+    "ecosystem": "base",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Optimism",
+    "description": "Ethereum L2 Optimistic Rollup",
+    "url": "https://www.optimism.io/",
+    "ecosystem": "optimism",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Velodrome Finance",
+    "description": "Native ve(3,3) DEX on Optimism",
+    "url": "https://velodrome.finance/",
+    "ecosystem": "optimism",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Synthetix",
+    "description": "Synthetic asset protocol on Optimism",
+    "url": "https://synthetix.io/",
+    "ecosystem": "optimism",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Perpetual Protocol",
+    "description": "Decentralized perpetuals DEX",
+    "url": "https://perp.com/",
+    "ecosystem": "optimism",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Guild of Guardians",
+    "description": "Mobile RPG with NFT heroes",
+    "url": "https://www.guildofguardians.com/",
+    "ecosystem": "immutable",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Illuvium",
+    "description": "Open-world creature RPG",
+    "url": "https://illuvium.io/",
+    "ecosystem": "immutable",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Ember Sword",
+    "description": "Free-to-play MMORPG on IMX",
+    "url": "https://embersword.com/",
+    "ecosystem": "immutable",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Shardbound",
+    "description": "Strategy card game on Immutable",
+    "url": "https://shardbound.com/",
+    "ecosystem": "immutable",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Planet Mojo",
+    "description": "Ecosystem of connected blockchain games",
+    "url": "https://www.planetmojo.io/",
+    "ecosystem": "immutable",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Metalcore",
+    "description": "Mech combat game on Immutable",
+    "url": "https://metalcoregame.com/",
+    "ecosystem": "immutable",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "IMX Marketplace",
+    "description": "Official Immutable NFT marketplace",
+    "url": "https://market.immutable.com/",
+    "ecosystem": "immutable",
+    "categories": [
+      "nft"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "TokenTrove",
+    "description": "Third-party IMX NFT marketplace",
+    "url": "https://tokentrove.com/",
+    "ecosystem": "immutable",
+    "categories": [
+      "nft"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Immutable Passport",
+    "description": "Unified gaming identity wallet",
+    "url": "https://www.immutable.com/products/passport",
+    "ecosystem": "immutable",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Immutable zkEVM",
+    "description": "Zero-knowledge gaming blockchain",
+    "url": "https://www.immutable.com/products/immutable-zkevm",
+    "ecosystem": "immutable",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Immutable Hub",
+    "description": "Developer portal and tools hub",
+    "url": "https://hub.immutable.com/",
+    "ecosystem": "immutable",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "NEAR Protocol",
+    "description": "Sharded proof-of-stake Layer 1 blockchain",
+    "url": "https://near.org/",
+    "ecosystem": "near",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Ref Finance",
+    "description": "Multi-purpose DEX on NEAR",
+    "url": "https://ref.finance/",
+    "ecosystem": "near",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Paras",
+    "description": "NEAR Protocol NFT marketplace",
+    "url": "https://paras.id/",
+    "ecosystem": "near",
+    "categories": [
+      "nft"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Mintbase",
+    "description": "NFT minting and distribution on NEAR",
+    "url": "https://www.mintbase.xyz/",
+    "ecosystem": "near",
+    "categories": [
+      "nft"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "NEAR Wallet",
+    "description": "Official NEAR Protocol wallet",
+    "url": "https://wallet.near.org/",
+    "ecosystem": "near",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Injective",
+    "description": "Cosmos Layer 1 optimized for DeFi",
+    "url": "https://injective.com/",
+    "ecosystem": "injective",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Helix Exchange",
+    "description": "Orderbook DEX on Injective",
+    "url": "https://helixapp.com/",
+    "ecosystem": "injective",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Mito Finance",
+    "description": "Automated strategy vaults on INJ",
+    "url": "https://mito.fi/",
+    "ecosystem": "injective",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hydro Protocol",
+    "description": "Lending and borrowing on Injective",
+    "url": "https://hydroprotocol.finance/",
+    "ecosystem": "injective",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Worldcoin",
+    "description": "Global digital identity and currency",
+    "url": "https://worldcoin.org/",
+    "ecosystem": "worldcoin",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "World App",
+    "description": "Official Worldcoin wallet app",
+    "url": "https://worldcoin.org/world-app",
+    "ecosystem": "worldcoin",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "World ID",
+    "description": "Cryptographic proof of humanity",
+    "url": "https://worldcoin.org/world-id",
+    "ecosystem": "worldcoin",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Cosmos Hub",
+    "description": "Hub of the IBC interchain ecosystem",
+    "url": "https://cosmos.network/",
+    "ecosystem": "cosmos",
+    "categories": [
+      "tools"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Osmosis",
+    "description": "Advanced AMM DEX in the Cosmos ecosystem",
+    "url": "https://osmosis.zone/",
+    "ecosystem": "cosmos",
+    "categories": [
+      "defi",
+      "exchange"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Keplr Wallet",
+    "description": "Universal Cosmos ecosystem wallet",
+    "url": "https://wallet.keplr.app/",
+    "ecosystem": "cosmos",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Stargaze",
+    "description": "NFT marketplace on Cosmos",
+    "url": "https://www.stargaze.zone/",
+    "ecosystem": "cosmos",
+    "categories": [
+      "nft"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "AlgoFi",
+    "description": "DeFi lending and borrowing on Algorand",
+    "url": "https://algofi.org/",
+    "ecosystem": "algorand",
+    "categories": [
+      "defi"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Tinyman",
+    "description": "Algorand decentralized exchange",
+    "url": "https://tinyman.org/",
+    "ecosystem": "algorand",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "AlgoNFT",
+    "description": "Algorand NFT tools and marketplace",
+    "url": "https://algonft.tools/",
+    "ecosystem": "algorand",
+    "categories": [
+      "nft"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Pera Wallet",
+    "description": "Official Algorand mobile wallet",
+    "url": "https://perawallet.app/",
+    "ecosystem": "algorand",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "VeChain",
+    "description": "Enterprise supply chain blockchain",
+    "url": "https://vechain.org/",
+    "ecosystem": "vechain",
+    "categories": [
+      "tools"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "WorldOfV",
+    "description": "VeChain NFT marketplace",
+    "url": "https://worldofv.art/",
+    "ecosystem": "vechain",
+    "categories": [
+      "nft"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Sync2 Wallet",
+    "description": "Official VeChain desktop wallet",
+    "url": "https://sync.vecha.in/",
+    "ecosystem": "vechain",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Filecoin",
+    "description": "Decentralized storage network",
+    "url": "https://filecoin.io/",
+    "ecosystem": "filecoin",
+    "categories": [
+      "tools"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "FVM",
+    "description": "Filecoin Virtual Machine for smart contracts",
+    "url": "https://fvm.filecoin.io/",
+    "ecosystem": "filecoin",
+    "categories": [
+      "tools"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "NFT.Storage",
+    "description": "Free decentralized NFT storage",
+    "url": "https://nft.storage/",
+    "ecosystem": "filecoin",
+    "categories": [
+      "nft",
+      "tools"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Lotus",
+    "description": "Primary Filecoin node implementation",
+    "url": "https://lotus.filecoin.io/",
+    "ecosystem": "filecoin",
+    "categories": [
+      "tools"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "fxhash",
+    "description": "Generative art minting on Tezos",
+    "url": "https://www.fxhash.xyz/",
+    "ecosystem": "tezos",
+    "categories": [
+      "nft"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Objkt",
+    "description": "Leading Tezos NFT marketplace",
+    "url": "https://objkt.com/",
+    "ecosystem": "tezos",
+    "categories": [
+      "nft"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Quipuswap",
+    "description": "Tezos decentralized exchange",
+    "url": "https://quipuswap.com/",
+    "ecosystem": "tezos",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Temple Wallet",
+    "description": "Popular Tezos browser wallet",
+    "url": "https://templewallet.com/",
+    "ecosystem": "tezos",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Gala Games",
+    "description": "Web3 game publisher with true ownership",
+    "url": "https://gala.games/",
+    "ecosystem": "gala",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "GALA Music",
+    "description": "Decentralized music streaming platform",
+    "url": "https://music.gala.com/",
+    "ecosystem": "gala",
+    "categories": [
+      "social"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Gala Film",
+    "description": "Decentralized film distribution platform",
+    "url": "https://film.gala.com/",
+    "ecosystem": "gala",
+    "categories": [
+      "commerce"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Gala Node",
+    "description": "Decentralized infrastructure node network",
+    "url": "https://app.gala.games/",
+    "ecosystem": "gala",
+    "categories": [
+      "tools"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Enjin",
+    "description": "NFT gaming ecosystem platform",
+    "url": "https://enjin.io/",
+    "ecosystem": "enjin",
+    "categories": [
+      "gaming",
+      "nft"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "NFT.io",
+    "description": "Enjin NFT marketplace",
+    "url": "https://nft.io/",
+    "ecosystem": "enjin",
+    "categories": [
+      "nft"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Efinity",
+    "description": "Polkadot parachain for Enjin NFTs",
+    "url": "https://efinity.io/",
+    "ecosystem": "enjin",
+    "categories": [
+      "tools"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Socios.com",
+    "description": "Fan token platform for sports clubs",
+    "url": "https://www.socios.com/",
+    "ecosystem": "chiliz",
+    "categories": [
+      "social"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Chiliz Chain",
+    "description": "Sports and entertainment blockchain",
+    "url": "https://www.chiliz.com/",
+    "ecosystem": "chiliz",
+    "categories": [
+      "tools"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "Chiliz Exchange",
+    "description": "CHZ fan token exchange",
+    "url": "https://exchange.chiliz.com/",
+    "ecosystem": "chiliz",
+    "categories": [
+      "exchange"
+    ],
+    "tier": 4,
+    "logoUrl": ""
+  },
+  {
+    "name": "RealT",
+    "description": "Tokenized real estate on blockchain",
+    "url": "https://realt.co/",
+    "ecosystem": "rwa",
+    "categories": [
+      "commerce"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Masterworks",
+    "description": "Fractional art investment platform",
+    "url": "https://www.masterworks.com/",
+    "ecosystem": "rwa",
+    "categories": [
+      "commerce"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Centrifuge",
+    "description": "Real-world asset DeFi protocol",
+    "url": "https://centrifuge.io/",
+    "ecosystem": "rwa",
+    "categories": [
+      "defi",
+      "commerce"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Tokeny",
+    "description": "Enterprise security token platform",
+    "url": "https://tokeny.com/",
+    "ecosystem": "rwa",
+    "categories": [
+      "commerce"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Polymath",
+    "description": "Security token issuance platform",
+    "url": "https://polymath.network/",
+    "ecosystem": "rwa",
+    "categories": [
+      "commerce"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Goldfinch",
+    "description": "Decentralized credit for real world",
+    "url": "https://goldfinch.finance/",
+    "ecosystem": "rwa",
+    "categories": [
+      "defi"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Maple Finance",
+    "description": "Institutional on-chain lending",
+    "url": "https://www.maple.finance/",
+    "ecosystem": "rwa",
+    "categories": [
+      "defi"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Ondo Finance",
+    "description": "Tokenized US Treasuries and bonds",
+    "url": "https://ondo.finance/",
+    "ecosystem": "rwa",
+    "categories": [
+      "defi",
+      "commerce"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Art Blocks",
+    "description": "Algorithmic generative art platform",
+    "url": "https://www.artblocks.io/",
+    "ecosystem": "creator",
+    "categories": [
+      "nft"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Manifold",
+    "description": "Creator-owned smart contract NFT tools",
+    "url": "https://manifold.xyz/",
+    "ecosystem": "creator",
+    "categories": [
+      "nft",
+      "tools"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Zora",
+    "description": "Permissionless NFT creation protocol",
+    "url": "https://zora.co/",
+    "ecosystem": "creator",
+    "categories": [
+      "nft"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Mirror.xyz",
+    "description": "Web3 publishing and crowdfunding",
+    "url": "https://mirror.xyz/",
+    "ecosystem": "creator",
+    "categories": [
+      "social"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Catalog",
+    "description": "Single-edition music NFT platform",
+    "url": "https://catalog.works/",
+    "ecosystem": "creator",
+    "categories": [
+      "nft"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Sound.xyz",
+    "description": "Music NFT collaboration platform",
+    "url": "https://www.sound.xyz/",
+    "ecosystem": "creator",
+    "categories": [
+      "nft"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Royal.io",
+    "description": "Music royalty token platform",
+    "url": "https://royal.io/",
+    "ecosystem": "creator",
+    "categories": [
+      "nft",
+      "commerce"
+    ],
+    "tier": 5,
+    "logoUrl": ""
+  },
+  {
+    "name": "Infinity Swap",
+    "description": "$1.5M Invested PolyChain Capital + a16z",
+    "url": "https://74iy7-xqaaa-aaaaf-qagra-cai.ic0.app/",
+    "ecosystem": "icp",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICP website",
+    "description": "Working MVP",
+    "url": "https://infinityswap.one/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Seers",
+    "description": "10,000 users + TVL",
+    "url": "https://github.com/InternetComputerOG/ntagle-core",
+    "ecosystem": "icp",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Funded",
+    "description": "75,000+ ICP funded",
+    "url": "https://seers.social/",
+    "ecosystem": "icp",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICDex",
+    "description": "Supports ckBTC",
+    "url": "https://funded.app/",
+    "ecosystem": "icp",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Dank",
+    "description": "Thriving community",
+    "url": "https://avjzx-pyaaa-aaaaj-aadmq-cai.raw.ic0.app/ICDex",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Origyn",
+    "description": "27,000+ ICP volume",
+    "url": "https://plethora.game/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICPulse",
+    "description": "50 000+ users | 10 000+ videos",
+    "url": "https://e5owu-aaaaa-aaaah-abs5a-cai.raw.ic0.app/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "SLY",
+    "description": "$1.5M+ Raised",
+    "url": "https://hotornot.wtf/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICP Explorer",
+    "description": "1 000 000+",
+    "url": "https://tyhcm-sqaaa-aaaah-abjya-cai.raw.ic0.app/#/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Azle",
+    "description": "$360,000+ TVL",
+    "url": "https://identity.ic0.app/",
+    "ecosystem": "icp",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Lo-Fi Player",
+    "description": "Warp Speed Hackathon Award",
+    "url": "https://sonic.ooo/",
+    "ecosystem": "icp",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICA Dashboard",
+    "description": "100 000 users",
+    "url": "https://github.com/rocklabs-io/ic-py",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Fleek",
+    "description": "1 000+ websites",
+    "url": "https://plugwallet.ooo/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "glue",
+    "description": "3,000 unique users",
+    "url": "https://fleek.co/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICP Project",
+    "description": "ICP Project",
+    "url": "https://github.com/teambonsai/bonsai_dapp",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Kinic",
+    "description": "Kinic",
+    "url": "https://github.com/Factland",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Motoko Bootcamp #1",
+    "description": "Lectures and materials for the first Motoko Bootcamp in 2022.",
+    "url": "https://github.com/motoko-bootcamp/bootcamp-2022",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Motoko Bootcamp #2",
+    "description": "Lectures and materials for the second Motoko Bootcamp in 2023.",
+    "url": "https://github.com/motoko-bootcamp/motokobootcamp-2023",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "The Complete Web Development Bootcamp",
+    "description": "Udemy course with a complete section on web3 development using the Internet Computer.",
+    "url": "https://www.udemy.com/course/the-complete-web-development-bootcamp/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Web3, Blockchain and the Internet Computer",
+    "description": "Youtube series (excerpt from The Complete Web Development Bootcamp).",
+    "url": "https://www.youtube.com/playlist?list=PLSzsOkUDsvdubXF5XGGPffyQJ5CVU_9_c",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "DFINITY Examples Repo",
+    "description": "Code samples from DFINITY.",
+    "url": "https://github.com/dfinity/examples",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Internet Computer Developer Hub",
+    "description": "The main entry point to documentation, guides and references.",
+    "url": "https://internetcomputer.org/docs/current/home",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Internet Computer Sample Dapps",
+    "description": "DFINITY-maintained and community-contributed samples and tutorials.",
+    "url": "https://internetcomputer.org/samples",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Considerations for NFT Developers",
+    "description": "Discussion of best practices for NFT developers.",
+    "url": "https://internetcomputer.org/docs/current/developer-docs/best-practices/considerations-for-nft-devs",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Video: Overview of the Developer Grants Program",
+    "description": "A video that explains the objective and the process of the DFINITY Developer Grants program.",
+    "url": "https://www.youtube.com/watch?v=hoYo-c9SMfQ",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Languages on the IC",
+    "description": "Guide on how to select the programming language for the IC.",
+    "url": "https://medium.com/code-state/which-language-should-you-choose-to-build-on-the-internet-computer-%EF%B8%8F-851c31e9c28",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Rust + React (Typescript) + Internet Identity",
+    "description": "Tutorial on setting up a project with Rust, React and Internet Identity.",
+    "url": "https://medium.com/@ilbert/rust-react-typescript-internet-identity-on-the-internet-computer-35331ae2a4be",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Access control",
+    "description": "Demonstrator for access control patterns on the IC.",
+    "url": "https://github.com/domwoe/access_control",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Backup and Restore",
+    "description": "Tutorial with code on backup and restore of canister state.",
+    "url": "https://github.com/Factland/ic-factland/blob/main/backup/backup_restore.md",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Canister guard in Rust",
+    "description": "Tutorial on the guard pattern for access control.",
+    "url": "https://medium.com/@daviddalbusco/canister-guard-in-rust-on-the-internet-computer-c896f75e0cef",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Environments",
+    "description": "How to work with different environments (dev/staging/prod).",
+    "url": "https://medium.com/@Catalyze.One/working-with-environments-on-the-internet-computer-59ed3d2a5763",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Hosting ERC 721 metadata",
+    "description": "Tutorial on hosting metadata and assets for ERC-721 NFTs on the IC.",
+    "url": "https://github.com/domwoe/erc-721-ic-assets",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Migration from Motoko to Rust",
+    "description": "How to Migrate Canister Smart Contracts from Motoko to Rust.",
+    "url": "https://medium.com/dfinity/how-to-migrate-canister-smart-contracts-from-motoko-to-rust-3446a4b0c2ff",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Converting ICP into Cycles",
+    "description": "How to programmatically convert ICP into Cycles in NodeJS.",
+    "url": "https://medium.com/dfinity/converting-icp-into-cycles-javascript-9b0dba8d8e00",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Social Platform Previews and SEO",
+    "description": "Tutorial on how to configure dapps for social platform previews and SEO.",
+    "url": "https://medium.com/dfinity/how-to-configure-dapps-for-social-platform-previews-and-seo-62a55ee63d33",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "create-ic",
+    "description": "A simple command line tool to quickly create projects for the IC.",
+    "url": "https://github.com/peterpeterparker/create-ic",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "create-ic-app",
+    "description": "Modern, unopinionated templates for React, Vue & Svelte powered by [Vite](https://vitejs.dev/).",
+    "url": "https://github.com/MioQuispe/create-ic-app",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ic-rust-starter",
+    "description": "Starter for a Rust backend-only canister project.",
+    "url": "https://github.com/ocluf/ic-rust-starter",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "vite-react-motoko",
+    "description": "Full-Stack React/Motoko starter with live reload.",
+    "url": "https://github.com/rvanasa/vite-react-motoko",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "agent-js",
+    "description": "Collection of libraries to interact with the IC using JavaScript.",
+    "url": "https://github.com/dfinity/agent-js",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ic-js",
+    "description": "Collection of libraries for interfacing with core canisters on the Network Nervous System (NNS).",
+    "url": "https://github.com/dfinity/ic-js",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "icblast",
+    "description": "Communicate with IC directly using NodeJS. Automatic service discovery.",
+    "url": "https://github.com/infu/icblast",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "node-ic0",
+    "description": "The ic0 package is a simple, straightforward way to interact with canisters running on the IC.",
+    "url": "https://github.com/dfinity/node-ic0",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "agent-rs",
+    "description": "Collection of libraries and tools for interfacing with the IC using Rust.",
+    "url": "https://github.com/dfinity/agent-rs",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "dfx",
+    "description": "Commandline tool to interact with the IC written in Rust.",
+    "url": "https://github.com/dfinity/sdk",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "agent_dart",
+    "description": "Framework to build mobile applications.",
+    "url": "https://github.com/AstroxNetwork/agent_dart",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ic_tools_dart",
+    "description": "Dart library of Candid.",
+    "url": "https://github.com/levifeldman/ic_tools_dart",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "agent-go",
+    "description": "Libraries for interfacing with the IC using Go.",
+    "url": "https://github.com/aviate-labs/agent-go",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ic-go",
+    "description": "Libraries for interfacing with the IC using Go.",
+    "url": "https://github.com/mix-labs/IC-Go",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "agent-unity",
+    "description": "Wrapper of agent-rs to be used in unity projects.",
+    "url": "https://github.com/ShikuLabs/agent-unity",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICP.NET",
+    "description": "Native Implementation in C# (Unity compatible).",
+    "url": "https://github.com/edjCase/ICP.NET",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "CDK Framework",
+    "description": "Framework to build CDKs which has been used for Azle and Kybra.",
+    "url": "https://github.com/demergent-labs/cdk_framework",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "canister-sdk",
+    "description": "SDK for writing and testing canisters for the Internet Computer in Rust.",
+    "url": "https://github.com/infinity-swap/canister-sdk",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ic-cdk",
+    "description": "Rust CDK maintained by DFINITY",
+    "url": "https://crates.io/crates/ic-cdk",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Kybra",
+    "description": "Python CDK.",
+    "url": "https://github.com/demergent-labs/kybra",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Chico",
+    "description": "C/C++ CDK.",
+    "url": "https://github.com/ICPorts-labs/chico",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "icpp",
+    "description": "Modern C++ for the IC.",
+    "url": "https://github.com/icppWorld/icpp",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "cdk-as",
+    "description": "AssemblyScript CDK.",
+    "url": "https://github.com/rckprtr/cdk-as",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Ego",
+    "description": "Framework to build wallet apps, i.e. user-controlled canisters.",
+    "url": "https://github.com/EgoDevs/ego",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Juno",
+    "description": "Build Web3 apps like it's Web2.",
+    "url": "https://juno.build/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Developer Tooling Landing page",
+    "description": "Overview of tooling in the Internet Computer ecosystem.",
+    "url": "https://internetcomputer.org/tooling",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "IC Inspector",
+    "description": "Chrome extension to decode IC requests and responses.",
+    "url": "https://chrome.google.com/webstore/detail/ic-inspector/meaadkenfkhjakkkdapaallimhbdofck",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ic-nix",
+    "description": "Build IC projects with Nix.",
+    "url": "https://github.com/ninegua/ic-nix",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "canister-profiling",
+    "description": "Code & scripts for collecting performance data for canisters.",
+    "url": "https://github.com/dfinity/canister-profiling",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ic-repl",
+    "description": "A REPL environment to communicate with canisters. Allows to write E2E integration tests.",
+    "url": "https://github.com/chenyan2002/ic-repl",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICPipeline",
+    "description": "CI/CD framework to simply IC release management.",
+    "url": "https://www.icpipeline.com/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Launchtrail",
+    "description": "Simple and Secure Release Management for Internet Computer Projects.",
+    "url": "https://github.com/spinner-cash/launchtrail",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Canistergeek",
+    "description": "Open-source tool to track your project canisters cycles and memory status.",
+    "url": "https://cusyh-iyaaa-aaaah-qcpba-cai.raw.ic0.app/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Canister monitoring",
+    "description": "Example of using Prometheus to collect metrics from a canister.",
+    "url": "https://github.com/domwoe/canister-monitoring",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ic-blackhole",
+    "description": "Canister to publicly expose canister status information.",
+    "url": "https://github.com/ninegua/ic-blackhole",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Metrics encoder",
+    "description": "Library to encode metrics in Prometheus text exposition format.",
+    "url": "https://lib.rs/crates/ic-metrics-encoder",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Awesome Motoko",
+    "description": "Awesome list focused on Motoko.",
+    "url": "https://github.com/motoko-unofficial/awesome-motoko",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Blocks",
+    "description": "Online low-code editor for Motoko.",
+    "url": "https://github.com/Blocks-Editor/blocks",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Embed Motoko",
+    "description": "Embed an interactive Motoko code snippet on your website.",
+    "url": "https://embed.smartcontracts.org/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Motoko Formatter",
+    "description": "A configurable Prettier plugin for Motoko.",
+    "url": "https://github.com/dfinity/prettier-plugin-motoko",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Motoko GitHub Repository",
+    "description": "The home of the Motoko language.",
+    "url": "https://github.com/dfinity/motoko",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Motoko Playground",
+    "description": "An online playground environment for Motoko.",
+    "url": "https://m7sm4-2iaaa-aaaab-qabra-cai.ic0.app/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Motoko VS code",
+    "description": "Motoko language support for Visual Studio Code.",
+    "url": "https://marketplace.visualstudio.com/items?itemName=dfinity-foundation.vscode-motoko",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Motoko.js",
+    "description": "Compile and run Motoko in Node.js and the browser.",
+    "url": "https://www.npmjs.com/package/motoko",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "MOPS",
+    "description": "Package manager for Motoko with fully on-chain package registry.",
+    "url": "https://mops.one/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Vessel",
+    "description": "Package manager for the Motoko programming language.",
+    "url": "https://github.com/dfinity/vessel",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Candid GitHub Repo",
+    "description": "The home of Candid.",
+    "url": "https://github.com/dfinity/candid",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Candid UI",
+    "description": "Canister generates a front-end UI for any canister.",
+    "url": "https://github.com/dfinity/candid/blob/master/tools/ui",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "didc",
+    "description": "A multi-purpose tool for Candid.",
+    "url": "https://github.com/dfinity/candid/tree/master/tools/didc",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "idl2json",
+    "description": "Command line tool for converting Candid to JSON.",
+    "url": "https://github.com/dfinity/idl2json",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Intellij Candid Plugin",
+    "description": "A Candid language plugin for editing .did files.",
+    "url": "https://github.com/Alaanor/candid-intellij-plugin",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "cdk-as candid",
+    "description": "AssemblyScript library of Candid.",
+    "url": "https://github.com/rckprtr/cdk-as/tree/master/packages/cdk/assembly/candid",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICP.NET candid",
+    "description": "C# library of Candid.",
+    "url": "https://github.com/edjCase/ICP.NET/tree/main/src/Candid",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "candid_dart",
+    "description": "Dart library of Candid.",
+    "url": "https://github.com/AstroxNetwork/candid_dart",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ic-elm",
+    "description": "A template for using Elm to develop frontend user interface for the Internet Computer.",
+    "url": "https://github.com/chenyan2002/ic-elm/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "haskell-candid",
+    "description": "Haskell library for Candid to Haskell.",
+    "url": "https://github.com/nomeata/haskell-candid",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ic4j-candid",
+    "description": "Java library for Candid.",
+    "url": "https://github.com/ic4j/ic4j-candid",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "@dfinity/candid",
+    "description": "JavaScript and TypeScript library for Candid.",
+    "url": "https://github.com/dfinity/agent-js/tree/main/packages/candid",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "candid-kt",
+    "description": "Kotlin library for Candid.",
+    "url": "https://github.com/seniorjoinu/candid-kt",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "motoko_candid",
+    "description": "Library that enables encoding/decoding of bytes to candid values.",
+    "url": "https://github.com/edjcase/motoko_candid",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "CanDB",
+    "description": "Flexible, performant, and horizontally scalable non-relational multi-canister database built in Motoko.",
+    "url": "https://www.canscale.dev/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ic-sqlite",
+    "description": "SQLite on the IC.",
+    "url": "https://github.com/froghub-io/ic-sqlite",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ic-stable-memory",
+    "description": "Stable memory collections for Rust.",
+    "url": "https://github.com/seniorjoinu/ic-stable-memory",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "stable-structures",
+    "description": "A collection of scalable and upgrade-safe data structures for Rust maintained by DFINITY.",
+    "url": "https://github.com/dfinity/stable-structures",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICRC-1",
+    "description": "Base fungible token standard.",
+    "url": "https://github.com/dfinity/ICRC-1/blob/main/standards/ICRC-1/README.md",
+    "ecosystem": "icp",
+    "categories": [
+      "nft"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICRC-2",
+    "description": "Extension to support `approve` and `transfer_from`.",
+    "url": "https://github.com/dfinity/ICRC-1/blob/main/standards/ICRC-2/README.md",
+    "ecosystem": "icp",
+    "categories": [
+      "nft"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "DIP20",
+    "description": "Fungible token standard inspired by the ERC20 standard.",
+    "url": "https://github.com/Psychedelic/DIP20",
+    "ecosystem": "icp",
+    "categories": [
+      "nft"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "DIP721",
+    "description": "NFT standard inspired the ERC721 standard.",
+    "url": "https://github.com/Psychedelic/DIP721",
+    "ecosystem": "icp",
+    "categories": [
+      "nft"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "EXT",
+    "description": "The extendable token standard inspired by ERC1155.",
+    "url": "https://github.com/Toniq-Labs/extendable-token",
+    "ecosystem": "icp",
+    "categories": [
+      "nft"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Origyn NFT",
+    "description": "Origyn NFT standard.",
+    "url": "https://github.com/origyn-sa/origyn_nft",
+    "ecosystem": "icp",
+    "categories": [
+      "nft"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Messity",
+    "description": "An open and nonproprietary decentralized messaging protocol.",
+    "url": "https://www.messity.com/",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "OpenChat",
+    "description": "An open chat app.",
+    "url": "https://github.com/open-ic/open-chat",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "W3NS",
+    "description": "An Interner Computer service for notifications.",
+    "url": "https://github.com/ArgonStudiosXYZ/w3ns",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "DeSwap Orderbook",
+    "description": "An Order Matching Engine Module for Dex in Motoko.",
+    "url": "https://github.com/iclighthouse/DeSwap-Orderbook",
+    "ecosystem": "icp",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Spinner",
+    "description": "Private transactions using zkSNARKs.",
+    "url": "https://github.com/spinner-cash/spinner",
+    "ecosystem": "icp",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICTC",
+    "description": "Distributed transaction framework for DeFi applications.",
+    "url": "https://github.com/iclighthouse/ICTC",
+    "ecosystem": "icp",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Exchange Rate Canister",
+    "description": "Oracle service for cryptocurrency and fiat currency exchange rates.",
+    "url": "https://github.com/dfinity/exchange-rate-canister",
+    "ecosystem": "icp",
+    "categories": [
+      "defi"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Axon",
+    "description": "A multi-user, multi-neuron management canister.",
+    "url": "https://github.com/icdevs/axon",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Service Nervous System",
+    "description": "Framework inspired by the Network Nervous System.",
+    "url": "https://internetcomputer.org/sns",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "WebGL Sample",
+    "description": "Example of how to host a WebGL game on the IC.",
+    "url": "https://internetcomputer.org/docs/current/samples/host-a-webgame",
+    "ecosystem": "icp",
+    "categories": [
+      "gaming"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "AstroX Me",
+    "description": "Canister-based mobile/web multi-chain wallet.",
+    "url": "https://astrox.me/#/",
+    "ecosystem": "icp",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Bitfinity",
+    "description": "Chrome extension.",
+    "url": "https://wallet.infinityswap.one/",
+    "ecosystem": "icp",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "NFID",
+    "description": "Digital identity for signing in to applications privately and securely.",
+    "url": "https://nfid.one/",
+    "ecosystem": "icp",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Stoic",
+    "description": "Web wallet.",
+    "url": "https://www.stoicwallet.com/",
+    "ecosystem": "icp",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "connect2ic",
+    "description": "A frontend auth library & toolkit for the Internet Computer.",
+    "url": "https://connect2ic.github.io/docs/",
+    "ecosystem": "icp",
+    "categories": [
+      "wallet"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Canlista",
+    "description": "Canister registry.",
+    "url": "https://k7gat-daaaa-aaaae-qaahq-cai.ic0.app/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Cyql",
+    "description": "Curated project registry.",
+    "url": "https://n7ib3-4qaaa-aaaai-qagnq-cai.raw.ic0.app/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICLighthouse Explorer",
+    "description": "Explorer.",
+    "url": "https://637g5-siaaa-aaaaj-aasja-cai.raw.ic0.app/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICSCAN",
+    "description": "Explorer.",
+    "url": "https://icscan.io/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Internet Computer Ecosystem Showcase",
+    "description": "Curated project registry.",
+    "url": "https://internetcomputer.org/ecosystem",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Bitcoin Integration",
+    "description": "Landing page of the direct integration with the Bitcoin network.",
+    "url": "https://internetcomputer.org/bitcoin-integration",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Chain-key ECDSA",
+    "description": "Tech that allows creating transactions targeting various chains from canisters on the Internet Computer.",
+    "url": "https://internetcomputer.org/how-it-works/threshold-ecdsa-signing/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "EVM Utility Canister",
+    "description": "Utility canister to create and parse EVM-compliant transactions.",
+    "url": "https://github.com/icopen/evm_utils_ic",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ic-web3",
+    "description": "RPC client for canisters on the Internet Computer to access EVM networks.",
+    "url": "https://github.com/rocklabs-io/ic-web3",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "No key wallet",
+    "description": "Example project of a canister-based Ethereum wallet.",
+    "url": "https://github.com/nikolas-con/ic-evm-sign-starter",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Omnic",
+    "description": "Cross-chain messaging protocol to connect EVM-compatible chains via the Internet Computer.",
+    "url": "https://github.com/rocklabs-io/omnic",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Orally",
+    "description": "Cross-chain oracle factory built on HTTPS Outcalls and Chain-key ECDSA.",
+    "url": "https://github.com/orally-network/oracle",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Terabethia",
+    "description": "Bridge and communication protocol between Ethereum and the Interner Computer.",
+    "url": "https://terabethia.ooo/",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Internet Computer for Geeks",
+    "description": "Whitepaper written by the DFINITY team.",
+    "url": "https://internetcomputer.org/whitepaper.pdf",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Internet Computer Wiki",
+    "description": "General knowledge resource about the Internet Computer.",
+    "url": "https://wiki.internetcomputer.org/wiki/Internet_Computer_wiki",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "How it works",
+    "description": "Learn how the IC realizes the vision of the World Computer.",
+    "url": "https://internetcomputer.org/how-it-works",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "B.Lynnity",
+    "description": "Ben Lynn's Blog about development on the IC using C.",
+    "url": "https://fxa77-fiaaa-aaaae-aaana-cai.raw.ic0.app/",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "David dal Busco's blog",
+    "description": "Blog with many hands-on articles on IC development.",
+    "url": "https://daviddalbusco.com/blog/",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICP Analysis",
+    "description": "Kyle Langham's writings about data analysis on the IC ecosystem.",
+    "url": "https://kylelangham.substack.com/",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Joachim Breitner's blog",
+    "description": "Articles on IC development and Candid.",
+    "url": "https://www.joachim-breitner.de/blog/tag/Internet_Computer",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Kyle Peacocks's blog",
+    "description": "Notes on IC development and more.",
+    "url": "https://kyle-peacock.com/blog/",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "mmapped",
+    "description": "Roman Kashitsyn's blog about IC internals and development.",
+    "url": "https://mmapped.blog/",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "DFINITY Developer Forum",
+    "description": "Main forum about the Internet Computer.",
+    "url": "https://forum.dfinity.org/",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "IC Developer Community Discord",
+    "description": "Developer-oriented community Discord.",
+    "url": "https://discord.gg/jnjVVQaE2C",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICP Discord",
+    "description": "Multi-language server for the broader community.",
+    "url": "https://discord.gg/FygMb5VyCQ",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICP League",
+    "description": "Fostering a world-class community for Internet Computer Ecosystem.",
+    "url": "https://qbw7d-giaaa-aaaaj-aalta-cai.ic0.app/",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Internet Computer Academy",
+    "description": "Open-source and community-driven knowledge base about the IC.",
+    "url": "https://internetcomputer.academy/",
+    "ecosystem": "icp",
+    "categories": [
+      "social"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "DFINITY Developer Grants and Bounties",
+    "description": "/ [Requests and Discussions](https://github.com/dfinity/grant-rfps/discussions) - Developer Grant and Bounty program provided by the DFINITY foundation.",
+    "url": "http://dfinity.org/grants",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "Requests for Startups",
+    "description": "A list of ideas for startups to build on the Internet Computer.",
+    "url": "https://github.com/dfinity/grant-rfps/blob/main/requests-for-startups.md",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  },
+  {
+    "name": "ICDevs Bounties",
+    "description": "Code bounties by the ICDevs organization.",
+    "url": "https://icdevs.org/bounties.html",
+    "ecosystem": "icp",
+    "categories": [
+      "tools"
+    ],
+    "tier": 2,
+    "logoUrl": ""
+  }
+]
