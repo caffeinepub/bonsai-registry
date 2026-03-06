@@ -7,13 +7,15 @@
  * Standards implemented:
  * - ICRC-25: signer permissions
  * - ICRC-27: get accounts
- * - ICRC-29: window postMessage transport
+ * - ICRC-29: window postMessage transport (ready handshake)
  * - ICRC-31: get principals
  * - ICRC-49: call canister (used for ICP transfer)
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const OISY_ORIGIN = "https://oisy.com";
+// OISY's ICRC-29 relying-party endpoint — must load this path for postMessage transport
+const OISY_SIGN_URL = "https://oisy.com/sign";
 
 export interface OisyAccount {
   owner: string;
@@ -92,6 +94,7 @@ export function useOisyWallet(): UseOisyWalletReturn {
   });
 
   const popupRef = useRef<Window | null>(null);
+
   // Map of pending JSON-RPC calls: id -> resolve/reject pair
   const pendingRef = useRef<
     Map<
@@ -103,23 +106,44 @@ export function useOisyWallet(): UseOisyWalletReturn {
     >
   >(new Map());
 
+  // Callback waiting for icrc29_status "ready"
+  const readyResolveRef = useRef<(() => void) | null>(null);
+
   // ── postMessage handler ────────────────────────────────────────────────────
   const handleMessage = useCallback((event: MessageEvent) => {
+    // Only accept messages from OISY origin
     if (event.origin !== OISY_ORIGIN) return;
-    const popup = popupRef.current;
-    if (!popup || event.source !== popup) return;
 
     const msg = event.data as {
-      jsonrpc: "2.0";
+      jsonrpc?: "2.0";
       id?: string;
       method?: string;
       result?: unknown;
       error?: { code: number; message: string };
     };
 
-    if (!msg || msg.jsonrpc !== "2.0") return;
+    if (!msg || typeof msg !== "object") return;
 
-    // Resolve a pending call
+    // ICRC-29: OISY signals ready by sending a notification with method "icrc29_status"
+    // and params: { status: "ready" }  (no id on a notification)
+    // Also accept a response to our outbound icrc29_status ping.
+    const isReadyNotification =
+      msg.method === "icrc29_status" &&
+      (msg as { params?: { status?: string } }).params?.status === "ready";
+    const isReadyResponse =
+      !msg.method &&
+      ((msg.result as { status?: string })?.status === "ready" ||
+        msg.result === "ready");
+
+    if (isReadyNotification || isReadyResponse) {
+      if (readyResolveRef.current) {
+        readyResolveRef.current();
+        readyResolveRef.current = null;
+      }
+      return;
+    }
+
+    // Resolve a pending call by id
     if (msg.id) {
       const pending = pendingRef.current.get(msg.id);
       if (pending) {
@@ -151,7 +175,6 @@ export function useOisyWallet(): UseOisyWalletReturn {
         }
 
         const id = uuid();
-        pendingRef.current.set(id, { resolve, reject });
 
         // Timeout after 60s
         const timer = setTimeout(() => {
@@ -161,18 +184,16 @@ export function useOisyWallet(): UseOisyWalletReturn {
           }
         }, 60_000);
 
-        // Clean up timer on resolve
-        const wrapped = pendingRef.current.get(id)!;
-        const originalResolve = wrapped.resolve;
-        const originalReject = wrapped.reject;
-        wrapped.resolve = (v) => {
-          clearTimeout(timer);
-          originalResolve(v);
-        };
-        wrapped.reject = (e) => {
-          clearTimeout(timer);
-          originalReject(e);
-        };
+        pendingRef.current.set(id, {
+          resolve: (v) => {
+            clearTimeout(timer);
+            resolve(v);
+          },
+          reject: (e) => {
+            clearTimeout(timer);
+            reject(e);
+          },
+        });
 
         popup.postMessage({ jsonrpc: "2.0", id, method, params }, OISY_ORIGIN);
       });
@@ -180,48 +201,50 @@ export function useOisyWallet(): UseOisyWalletReturn {
     [],
   );
 
-  // ── Wait for popup to be ready (polls for up to 15s) ─────────────────────
-  const waitForPopupReady = useCallback((): Promise<void> => {
+  // ── Wait for OISY popup to signal ready (ICRC-29) ────────────────────────
+  // OISY sends a postMessage with method "icrc29_status" or responds to our
+  // status ping when it has loaded and is ready to receive requests.
+  const waitForPopupReady = useCallback((popup: Window): Promise<void> => {
     return new Promise((resolve, reject) => {
+      const maxWait = 30_000; // 30s max
       const start = Date.now();
-      const interval = setInterval(() => {
-        const popup = popupRef.current;
-        if (!popup || popup.closed) {
-          clearInterval(interval);
-          reject(new Error("OISY popup was closed before connection"));
+      let resolved = false;
+
+      // Store resolve so message handler can trigger it
+      readyResolveRef.current = () => {
+        if (!resolved) {
+          resolved = true;
+          clearInterval(pingInterval);
+          resolve();
+        }
+      };
+
+      // Poll: send icrc29_status pings every 500ms
+      const pingInterval = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(pingInterval);
+          readyResolveRef.current = null;
+          if (!resolved)
+            reject(new Error("OISY popup was closed before connecting"));
           return;
         }
-        if (Date.now() - start > 15_000) {
-          clearInterval(interval);
-          reject(new Error("OISY popup took too long to load"));
+        if (Date.now() - start > maxWait) {
+          clearInterval(pingInterval);
+          readyResolveRef.current = null;
+          if (!resolved)
+            reject(new Error("OISY popup took too long to respond"));
           return;
         }
-        // Try posting a ping — OISY will respond once ready
         try {
-          const pingId = uuid();
+          // Send a status ping — OISY will respond when ready
           popup.postMessage(
-            {
-              jsonrpc: "2.0",
-              id: pingId,
-              method: "icrc29_status",
-              params: {},
-            },
+            { jsonrpc: "2.0", id: uuid(), method: "icrc29_status", params: {} },
             OISY_ORIGIN,
           );
-          // Give it 500ms to respond
-          const timeout = setTimeout(() => {}, 400);
-          clearTimeout(timeout);
-          // We'll resolve once we successfully get the ready response below
         } catch {
-          // cross-origin before load — keep waiting
+          // Cross-origin error while page is loading — keep trying
         }
-      }, 800);
-
-      // We use a simpler approach: just wait 3s for OISY to load
-      setTimeout(() => {
-        clearInterval(interval);
-        resolve();
-      }, 3000);
+      }, 500);
     });
   }, []);
 
@@ -233,6 +256,8 @@ export function useOisyWallet(): UseOisyWalletReturn {
     if (popupRef.current && !popupRef.current.closed) {
       popupRef.current.close();
     }
+    readyResolveRef.current = null;
+    pendingRef.current.clear();
 
     setState((s) => ({ ...s, isConnecting: true, error: null }));
 
@@ -242,7 +267,7 @@ export function useOisyWallet(): UseOisyWalletReturn {
     const top = Math.max(0, (window.screen.height - height) / 2);
 
     const popup = window.open(
-      OISY_ORIGIN,
+      OISY_SIGN_URL,
       "oisy-wallet",
       `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`,
     );
@@ -262,8 +287,8 @@ export function useOisyWallet(): UseOisyWalletReturn {
     // Run connection flow asynchronously
     (async () => {
       try {
-        // 1. Wait for OISY to load
-        await waitForPopupReady();
+        // 1. Wait for OISY to signal it's ready (ICRC-29 handshake)
+        await waitForPopupReady(popup);
 
         // 2. Request permissions (ICRC-25)
         await sendMessage("icrc25_request_permissions", {
@@ -324,6 +349,7 @@ export function useOisyWallet(): UseOisyWalletReturn {
     }
     popupRef.current = null;
     pendingRef.current.clear();
+    readyResolveRef.current = null;
     clearPersistedState();
     setState({
       connected: false,
@@ -344,7 +370,7 @@ export function useOisyWallet(): UseOisyWalletReturn {
         const left = Math.max(0, (window.screen.width - width) / 2);
         const top = Math.max(0, (window.screen.height - height) / 2);
         const popup = window.open(
-          OISY_ORIGIN,
+          OISY_SIGN_URL,
           "oisy-wallet",
           `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`,
         );
@@ -357,7 +383,7 @@ export function useOisyWallet(): UseOisyWalletReturn {
           };
         }
         popupRef.current = popup;
-        await waitForPopupReady();
+        await waitForPopupReady(popup);
       }
 
       try {
