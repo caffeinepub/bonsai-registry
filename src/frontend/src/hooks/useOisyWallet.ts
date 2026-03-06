@@ -181,7 +181,11 @@ export function useOisyWallet(): UseOisyWalletReturn {
     if (!msg || typeof msg !== "object") return;
 
     // ICRC-29: signer responds to icrc29_status ping with { result: "ready" }
-    const isReadyResponse = !msg.method && msg.result === "ready";
+    // Accept with or without an id field — OISY may omit the id on status responses.
+    const isReadyResponse =
+      !msg.method &&
+      (msg.result === "ready" ||
+        (msg as { result?: unknown }).result === "ready");
 
     if (isReadyResponse) {
       // Record the established origin from the first ready response
@@ -374,14 +378,10 @@ export function useOisyWallet(): UseOisyWalletReturn {
       return;
     }
 
-    // Null out opener on the popup so OISY cannot navigate the parent window.
-    // This prevents the "Unsafe attempt to initiate navigation" browser error
-    // while still keeping our local `popup` reference for postMessage.
-    try {
-      popup.opener = null;
-    } catch {
-      // Some browsers don't allow nulling opener — ignore
-    }
+    // NOTE: Do NOT null out popup.opener. OISY's /sign page uses window.opener
+    // to route postMessage replies back to the relying party. Nulling it breaks
+    // the ICRC-29 channel. The cross-origin navigation warning in the console is
+    // harmless — the browser blocks the navigation attempt automatically.
 
     popupRef.current = popup;
 
@@ -501,12 +501,7 @@ export function useOisyWallet(): UseOisyWalletReturn {
             },
           };
         }
-        // Null out opener so OISY cannot navigate the parent window
-        try {
-          popup.opener = null;
-        } catch {
-          /* ignore */
-        }
+        // NOTE: Do NOT null out popup.opener — OISY needs it for postMessage routing.
         popupRef.current = popup;
         establishedOriginRef.current = null;
         await waitForPopupReady(popup);
