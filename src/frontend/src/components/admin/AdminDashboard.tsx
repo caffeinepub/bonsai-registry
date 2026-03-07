@@ -21,6 +21,9 @@ import {
   useAdminActorContext,
 } from "@/hooks/useAdminActorContext";
 import { useCanisterHealth } from "@/hooks/useCanisterHealth";
+import { Actor, HttpAgent } from "@dfinity/agent";
+import type { IDL } from "@dfinity/candid";
+import { Principal } from "@dfinity/principal";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
@@ -28,16 +31,20 @@ import {
   BarChart2,
   CheckCircle2,
   Coins,
+  Copy,
   Database,
   Download,
+  ExternalLink,
   InboxIcon,
   LayoutGrid,
   Loader2,
   LogOut,
+  RefreshCw,
   Save,
   ShieldCheck,
   TreePine,
   Upload,
+  Vault,
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
@@ -176,6 +183,184 @@ function ListingFeeCard() {
             <AlertCircle className="w-3 h-3" />
             {saveError}
           </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── ICP Ledger helpers ────────────────────────────────────────────────────────
+const ICP_LEDGER_ID = "ryjl3-tyaaa-aaaaa-aaaba-cai";
+
+const balanceIDLFactory = ({ IDL: I }: { IDL: typeof IDL }) =>
+  I.Service({
+    icrc1_balance_of: I.Func(
+      [
+        I.Record({
+          owner: I.Principal,
+          subaccount: I.Opt(I.Vec(I.Nat8)),
+        }),
+      ],
+      [I.Nat],
+      ["query"],
+    ),
+  });
+
+async function getCanisterIcpBalance(canisterId: string): Promise<bigint> {
+  const agent = await HttpAgent.create({ host: "https://icp-api.io" });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const actor = Actor.createActor(balanceIDLFactory as any, {
+    agent,
+    canisterId: ICP_LEDGER_ID,
+  }) as unknown as {
+    icrc1_balance_of: (arg: {
+      owner: Principal;
+      subaccount: [] | [Uint8Array[]];
+    }) => Promise<bigint>;
+  };
+  const balance = await actor.icrc1_balance_of({
+    owner: Principal.fromText(canisterId),
+    subaccount: [],
+  });
+  return balance;
+}
+
+async function getBackendCanisterId(): Promise<string> {
+  try {
+    const { loadConfig } = await import("@/config");
+    const cfg = await loadConfig();
+    return cfg.backend_canister_id;
+  } catch {
+    // fallback
+    return "gv2fb-ayaaa-aaaan-q43aq-cai";
+  }
+}
+
+// ── Treasury Card ─────────────────────────────────────────────────────────────
+function TreasuryCard() {
+  const [copied, setCopied] = useState(false);
+
+  const { data, isLoading, isError, refetch, isFetching } = useQuery<{
+    balance: bigint;
+    canisterId: string;
+  }>({
+    queryKey: ["treasury-balance"],
+    queryFn: async () => {
+      const canisterId = await getBackendCanisterId();
+      const balance = await getCanisterIcpBalance(canisterId);
+      return { balance, canisterId };
+    },
+    staleTime: 60_000,
+    retry: 2,
+  });
+
+  const balance = data?.balance;
+  const canisterId = data?.canisterId ?? "";
+  const dashboardUrl = canisterId
+    ? `https://dashboard.internetcomputer.org/canister/${canisterId}`
+    : "";
+
+  const handleCopyCanisterId = () => {
+    if (!canisterId) return;
+    navigator.clipboard.writeText(canisterId).then(() => {
+      setCopied(true);
+      toast.success("Canister ID copied!");
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <div className="rounded-lg border border-border bg-card p-5">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Vault className="w-4 h-4 text-primary" />
+          <h3 className="font-display font-semibold text-sm text-foreground">
+            Treasury
+          </h3>
+        </div>
+        <Button
+          data-ocid="admin.treasury.refresh_button"
+          variant="ghost"
+          size="sm"
+          className="h-7 w-7 p-0 text-muted-foreground hover:text-primary"
+          onClick={() => refetch()}
+          disabled={isFetching}
+          title="Refresh balance"
+        >
+          <RefreshCw
+            className={["w-3.5 h-3.5", isFetching ? "animate-spin" : ""].join(
+              " ",
+            )}
+          />
+        </Button>
+      </div>
+
+      {/* Balance display */}
+      <div className="flex items-center gap-3 mb-4 p-3 rounded-md bg-secondary border border-border">
+        <div className="text-xs text-muted-foreground font-mono">Balance:</div>
+        {isLoading ? (
+          <Skeleton
+            data-ocid="admin.treasury.loading_state"
+            className="h-5 w-24"
+          />
+        ) : isError ? (
+          <span
+            data-ocid="admin.treasury.error_state"
+            className="flex items-center gap-1 text-xs text-destructive font-mono"
+          >
+            <AlertCircle className="w-3.5 h-3.5" />
+            Failed to load
+          </span>
+        ) : (
+          <div
+            data-ocid="admin.treasury.balance_display"
+            className="font-display font-bold text-primary text-lg"
+          >
+            {balance !== undefined ? (Number(balance) / 1e8).toFixed(4) : "—"}{" "}
+            <span className="text-sm font-mono text-muted-foreground">ICP</span>
+          </div>
+        )}
+      </div>
+
+      {/* Withdrawal info */}
+      <div className="space-y-3">
+        <p className="text-[11px] text-muted-foreground leading-relaxed">
+          To withdraw ICP from the registry canister, use the NNS Dashboard or a
+          wallet that supports direct canister calls. Copy the canister ID below
+          and use it to initiate the transfer.
+        </p>
+
+        {/* Canister ID row */}
+        <div className="flex items-center gap-2">
+          <code className="flex-1 px-2.5 py-1.5 rounded border border-border bg-secondary text-[10px] font-mono text-muted-foreground truncate select-all">
+            {canisterId || "Loading…"}
+          </code>
+          <Button
+            data-ocid="admin.treasury.canister_id_copy_button"
+            variant="outline"
+            size="sm"
+            className="h-7 px-2.5 border-border text-muted-foreground hover:text-primary gap-1.5 text-[11px] flex-shrink-0"
+            onClick={handleCopyCanisterId}
+            disabled={!canisterId}
+          >
+            <Copy className="w-3 h-3" />
+            {copied ? "Copied!" : "Copy"}
+          </Button>
+        </div>
+
+        {/* NNS Dashboard link */}
+        {dashboardUrl && (
+          <a
+            data-ocid="admin.treasury.dashboard_link"
+            href={dashboardUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-[11px] text-primary hover:text-primary/80 font-mono underline underline-offset-2 transition-colors"
+          >
+            <ExternalLink className="w-3 h-3" />
+            Open in NNS Dashboard
+          </a>
         )}
       </div>
     </div>
@@ -738,9 +923,10 @@ function AdminDashboardInner({ onLogout }: { onLogout: () => void }) {
             </div>
           )}
 
-        {/* Listing Fee Settings */}
-        <div className="mb-6">
+        {/* Listing Fee + Treasury */}
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           <ListingFeeCard />
+          <TreasuryCard />
         </div>
 
         <Tabs

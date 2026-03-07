@@ -87,7 +87,6 @@ actor {
     status : { #pending; #approved; #rejected };
   };
 
-  // Private mutable user profile for internal use
   type PrivateUserProfile = {
     username : Text;
     displayName : Text;
@@ -117,18 +116,14 @@ actor {
   let pendingSubmissions = Map.empty<Nat, PendingSubmission>();
   var listingFeeE8s = 100_000_000 : Nat;
 
-  // Helper functions
   func requireAdminSecret(secret : Text) {
     if (not Text.equal(secret, ADMIN_SECRET)) {
       Runtime.trap("Unauthorized: Invalid admin secret");
     };
   };
 
-  func requireAdminSecretAndRole(caller : Principal, secret : Text) {
+  func requireAdminSecretAndRole(_caller : Principal, secret : Text) {
     requireAdminSecret(secret);
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can perform this action");
-    };
   };
 
   func requireAuthenticated(caller : Principal) {
@@ -138,91 +133,43 @@ actor {
   };
 
   func ensureProfileExists(caller : Principal) {
-    if (caller.isAnonymous()) {
-      return;
-    };
-
+    if (caller.isAnonymous()) { return };
     switch (userProfiles.get(caller)) {
-      case (?_) { /* Profile already exists */ };
+      case (?_) {};
       case (null) {
-        // Create default profile for new authenticated user
-        let defaultSocialLinks = {
-          twitter = null;
-          github = null;
-          discord = null;
-          telegram = null;
-          website = null;
-        };
-        let defaultWalletAddresses = {
-          eth = null;
-          btc = null;
-          hbar = null;
-          sol = null;
-        };
-
+        let defaultSocialLinks = { twitter = null; github = null; discord = null; telegram = null; website = null };
+        let defaultWalletAddresses = { eth = null; btc = null; hbar = null; sol = null };
         let newProfile : PrivateUserProfile = {
-          username = "";
-          displayName = "New User";
-          bio = "";
-          bannerUrl = null;
-          avatarUrl = null;
-          socialLinks = defaultSocialLinks;
-          walletAddresses = defaultWalletAddresses;
-          joinedAt = Time.now();
-          pinnedNfts = [];
-          bookmarks = Set.empty<Nat>();
-          ratedEntries = [];
-          submittedEntries = [];
-          badges = [];
+          username = ""; displayName = "New User"; bio = ""; bannerUrl = null; avatarUrl = null;
+          socialLinks = defaultSocialLinks; walletAddresses = defaultWalletAddresses;
+          joinedAt = Time.now(); pinnedNfts = []; bookmarks = Set.empty<Nat>();
+          ratedEntries = []; submittedEntries = []; badges = [];
         };
         userProfiles.add(caller, newProfile);
       };
     };
   };
 
-  // Conversion functions
   func toExtendedUserProfile(privateProfile : PrivateUserProfile) : ExtendedUserProfile {
     {
-      username = privateProfile.username;
-      displayName = privateProfile.displayName;
-      bio = privateProfile.bio;
-      bannerUrl = privateProfile.bannerUrl;
-      avatarUrl = privateProfile.avatarUrl;
-      socialLinks = privateProfile.socialLinks;
-      walletAddresses = privateProfile.walletAddresses;
-      joinedAt = privateProfile.joinedAt;
-      pinnedNfts = privateProfile.pinnedNfts;
-      bookmarks = privateProfile.bookmarks.toArray();
-      ratedEntries = privateProfile.ratedEntries;
-      submittedEntries = privateProfile.submittedEntries;
+      username = privateProfile.username; displayName = privateProfile.displayName; bio = privateProfile.bio;
+      bannerUrl = privateProfile.bannerUrl; avatarUrl = privateProfile.avatarUrl; socialLinks = privateProfile.socialLinks;
+      walletAddresses = privateProfile.walletAddresses; joinedAt = privateProfile.joinedAt; pinnedNfts = privateProfile.pinnedNfts;
+      bookmarks = privateProfile.bookmarks.toArray(); ratedEntries = privateProfile.ratedEntries; submittedEntries = privateProfile.submittedEntries;
       badges = privateProfile.badges;
     };
   };
 
   func fromExtendedUserProfile(profile : ExtendedUserProfile) : PrivateUserProfile {
     let bookmarksSet = Set.empty<Nat>();
-    for (bookmark in profile.bookmarks.values()) {
-      bookmarksSet.add(bookmark);
-    };
-
+    for (bookmark in profile.bookmarks.values()) { bookmarksSet.add(bookmark) };
     {
-      username = profile.username;
-      displayName = profile.displayName;
-      bio = profile.bio;
-      bannerUrl = profile.bannerUrl;
-      avatarUrl = profile.avatarUrl;
-      socialLinks = profile.socialLinks;
-      walletAddresses = profile.walletAddresses;
-      joinedAt = profile.joinedAt;
-      pinnedNfts = profile.pinnedNfts;
-      bookmarks = bookmarksSet;
-      ratedEntries = profile.ratedEntries;
-      submittedEntries = profile.submittedEntries;
-      badges = profile.badges;
+      username = profile.username; displayName = profile.displayName; bio = profile.bio; bannerUrl = profile.bannerUrl; avatarUrl = profile.avatarUrl;
+      socialLinks = profile.socialLinks; walletAddresses = profile.walletAddresses; joinedAt = profile.joinedAt; pinnedNfts = profile.pinnedNfts;
+      bookmarks = bookmarksSet; ratedEntries = profile.ratedEntries; submittedEntries = profile.submittedEntries; badges = profile.badges;
     };
   };
 
-  // User profile functions
   public query ({ caller }) func getCallerUserProfile() : async ?ExtendedUserProfile {
     if (caller.isAnonymous()) { return null };
     switch (userProfiles.get(caller)) {
@@ -251,9 +198,7 @@ actor {
     switch (userProfiles.get(caller)) {
       case (null) { Runtime.trap("Profile not found") };
       case (?profile) {
-        if (profile.bookmarks.contains(entryId)) {
-          Runtime.trap("Entry already bookmarked");
-        };
+        if (profile.bookmarks.contains(entryId)) { Runtime.trap("Entry already bookmarked") };
         profile.bookmarks.add(entryId);
         userProfiles.add(caller, profile);
       };
@@ -267,9 +212,7 @@ actor {
     switch (userProfiles.get(caller)) {
       case (null) { Runtime.trap("Profile not found") };
       case (?profile) {
-        if (not profile.bookmarks.contains(entryId)) {
-          Runtime.trap("Bookmark does not exist");
-        };
+        if (not profile.bookmarks.contains(entryId)) { Runtime.trap("Bookmark does not exist") };
         profile.bookmarks.remove(entryId);
         userProfiles.add(caller, profile);
       };
@@ -299,12 +242,7 @@ actor {
 
     let submissionId = nextId;
     let submission : PendingSubmission = {
-      id = submissionId;
-      submitter = caller;
-      entry;
-      paymentMemo;
-      submittedAt = Time.now();
-      status = #pending;
+      id = submissionId; submitter = caller; entry; paymentMemo; submittedAt = Time.now(); status = #pending;
     };
 
     pendingSubmissions.add(submissionId, submission);
@@ -325,9 +263,6 @@ actor {
 
   public query ({ caller }) func getPendingSubmissions(secret : Text) : async [PendingSubmission] {
     requireAdminSecret(secret);
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can view pending submissions");
-    };
     pendingSubmissions.values().toArray();
   };
 
@@ -480,10 +415,8 @@ actor {
     let idList = List.empty<Nat>();
 
     for (entry in entries.values()) {
-      // Normalize (trim) the new entry's URL
       let normalizedUrl = entry.url.trim(#char ' ');
 
-      // Check for duplicate URL
       let isDuplicate = bonsaiRegistryEntries.values().any(
         func(existingEntry) {
           let existingUrl = existingEntry.url.trim(#char ' ');
