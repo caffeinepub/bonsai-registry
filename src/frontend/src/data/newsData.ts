@@ -295,6 +295,39 @@ export const icpNews: NewsArticle[] = [
     publishedAt: "2026-02-26",
     tags: ["community", "standard"],
   },
+  {
+    id: 36,
+    title:
+      "Internet Identity – Ability to Rename Identities After v2 Migration",
+    url: "https://forum.dfinity.org/t/internet-identity-ability-to-rename-identities-after-v2-migration/65078",
+    source: "DFINITY Forum",
+    publishedAt: "2026-03-03",
+    tags: ["community", "identity"],
+  },
+  {
+    id: 37,
+    title: "European Subnet Experiencing Timeouts on Update Messages",
+    url: "https://forum.dfinity.org/t/european-subnet-experiencing-timeouts-on-update-messages/65121",
+    source: "DFINITY Forum",
+    publishedAt: "2026-03-05",
+    tags: ["community", "infrastructure"],
+  },
+  {
+    id: 38,
+    title: "Percentage Fees for ICRC-1 Tokens — Developer Discussion",
+    url: "https://forum.dfinity.org/t/percentage-fees-for-icrc-1-tokens/65107",
+    source: "DFINITY Forum",
+    publishedAt: "2026-03-04",
+    tags: ["community", "standard"],
+  },
+  {
+    id: 39,
+    title: "DFINITY Investigates Potential Issues with lhg73 Subnet",
+    url: "https://forum.dfinity.org/t/request-for-dfinity-team-assistance-in-investigating-potential-issues-with-the-lhg73-subnet/64921",
+    source: "DFINITY Forum",
+    publishedAt: "2026-02-28",
+    tags: ["community", "infrastructure"],
+  },
 ];
 
 export const scamAlerts: ScamAlert[] = [

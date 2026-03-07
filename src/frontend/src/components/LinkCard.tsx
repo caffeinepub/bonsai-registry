@@ -1,6 +1,8 @@
+import { isFeatured, isVerified } from "@/data/monetizationData";
 import type { RegistryEntry } from "@/data/registryData";
 import type { LocalRatingStats } from "@/hooks/useLocalRatings";
 import { recordEvent } from "@/utils/analytics";
+import { BadgeCheck, Star } from "lucide-react";
 import { ExternalLink } from "lucide-react";
 import type { EntryRatingStats } from "../backend.d";
 import { StarRating } from "./StarRating";
@@ -66,13 +68,16 @@ export function LinkCard({
   // or a static entry (localStorage ratings)
   const isBackendEntry = entry.id.startsWith("backend-");
 
+  const featured = isFeatured(entry.url);
+  const verified = isVerified(entry.url);
+
   return (
     <a
       href={entry.url}
       target="_blank"
       rel="noopener noreferrer"
       data-ocid={`registry.link.item.${index}`}
-      className="link-card group"
+      className={`link-card group${featured ? " ring-1 ring-amber-400/40 bg-amber-500/5" : ""}`}
       onClick={() => recordEvent("link_click", entry.name)}
     >
       {/* ── Name row ── */}
@@ -105,6 +110,26 @@ export function LinkCard({
           <span className="text-sm font-semibold font-display text-foreground group-hover:text-primary transition-colors truncate leading-tight">
             {entry.name}
           </span>
+
+          {/* Verified badge */}
+          {verified && (
+            <span title="Verified project">
+              <BadgeCheck
+                className="w-3.5 h-3.5 text-sky-400 flex-shrink-0"
+                aria-label="Verified"
+              />
+            </span>
+          )}
+
+          {/* Featured badge */}
+          {featured && (
+            <span title="Featured project">
+              <Star
+                className="w-3.5 h-3.5 text-amber-400 fill-amber-400 flex-shrink-0"
+                aria-label="Featured"
+              />
+            </span>
+          )}
         </div>
 
         <ExternalLink

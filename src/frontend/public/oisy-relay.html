@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>OISY Wallet</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0a; font-family: system-ui, sans-serif; }
+      iframe { display: block; width: 100%; height: 100%; border: none; }
+      #loading {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+        background: #0a0a0a; color: #ccc; font-size: 14px; z-index: 10;
+      }
+      #loading .spinner {
+        width: 36px; height: 36px; border: 3px solid #333; border-top-color: #7c6fff;
+        border-radius: 50%; animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      #loading.hidden { display: none; }
+    </style>
+  </head>
+  <body>
+    <div id="loading">
+      <div class="spinner"></div>
+      <span>Loading OISY Wallet...</span>
+    </div>
+    <iframe
+      id="oisy-frame"
+      src="https://oisy.com/sign"
+      allow="clipboard-write; clipboard-read; storage-access"
+    ></iframe>
+    <script>
+      /**
+       * OISY Relay — bridges postMessage between the relying party (app window)
+       * and OISY's /sign page (iframe), following ICRC-29.
+       *
+       * Why this exists:
+       *  - Opening oisy.com/sign as a popup gives it window.opener access to the
+       *    app, and OISY tries to navigate window.opener.location after auth.
+       *    Browsers block this cross-origin navigation with a console error, which
+       *    kills the postMessage handshake.
+       *  - This relay page sits on the same origin as the app. The app opens THIS
+       *    page as a popup — so window.opener is same-origin and safe.
+       *  - OISY runs inside an iframe here, so it has no window.opener at all.
+       *  - This page forwards messages bidirectionally between app <-> OISY iframe.
+       */
+
+      const frame = document.getElementById('oisy-frame');
+      const loading = document.getElementById('loading');
+      const appWindow = window.opener;
+
+      if (!appWindow) {
+        console.error('[oisy-relay] No opener — this page must be opened as a popup');
+        if (loading) loading.innerHTML = '<span style="color:#f87171">Error: must be opened as a popup.</span>';
+      }
+
+      // Hide loading overlay once OISY iframe loads
+      frame.addEventListener('load', function() {
+        if (loading) loading.classList.add('hidden');
+      });
+
+      // Forward messages from OISY iframe -> app window
+      window.addEventListener('message', function(event) {
+        // Messages FROM the iframe (OISY)
+        if (event.source === frame.contentWindow) {
+          // Forward to the opener (app), preserving the data
+          if (appWindow && !appWindow.closed) {
+            try {
+              appWindow.postMessage(event.data, '*');
+            } catch(e) {
+              console.warn('[oisy-relay] Could not forward to app:', e);
+            }
+          }
+          return;
+        }
+
+        // Messages FROM the app (opener) -> forward to OISY iframe
+        if (event.source === appWindow) {
+          if (frame.contentWindow) {
+            try {
+              frame.contentWindow.postMessage(event.data, 'https://oisy.com');
+            } catch(e) {
+              console.warn('[oisy-relay] Could not forward to OISY iframe:', e);
+            }
+          }
+          return;
+        }
+      });
+
+      // Notify the opener that the relay is ready
+      // The app's useOisyWallet will start pinging icrc29_status once it gets this
+      window.addEventListener('load', function() {
+        if (appWindow && !appWindow.closed) {
+          try {
+            appWindow.postMessage({ type: 'oisy-relay-ready' }, '*');
+          } catch(e) {}
+        }
+      });
+
+      // Handle relay popup closing
+      window.addEventListener('beforeunload', function() {
+        if (appWindow && !appWindow.closed) {
+          try {
+            appWindow.postMessage({ type: 'oisy-relay-closed' }, '*');
+          } catch(e) {}
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -593,7 +593,7 @@ export function PayToListModal({ open, onClose }: PayToListModalProps) {
                   </p>
                   <button
                     type="button"
-                    onClick={oisy.connect}
+                    onClick={() => oisy.connect()}
                     disabled={oisy.isConnecting}
                     className="flex items-center gap-2 px-3 py-1.5 rounded border border-amber-400/40 bg-amber-400/10 text-amber-400 text-xs font-mono hover:bg-amber-400/20 transition-colors"
                   >

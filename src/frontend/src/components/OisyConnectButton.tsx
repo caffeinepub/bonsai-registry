@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useOisyWallet } from "@/hooks/useOisyWallet";
 import { ChevronDown, Loader2, LogOut, User, Wallet } from "lucide-react";
+import { toast } from "sonner";
 
 interface OisyConnectButtonProps {
   onViewProfile?: () => void;
@@ -94,7 +95,15 @@ export function OisyConnectButton({ onViewProfile }: OisyConnectButtonProps) {
       <button
         type="button"
         data-ocid="header.oisy_connect_button"
-        onClick={connect}
+        onClick={() =>
+          connect((principal) => {
+            const short = `${principal.slice(0, 5)}…${principal.slice(-3)}`;
+            toast.success("OISY Wallet connected", {
+              description: `Connected as ${short}`,
+              duration: 4000,
+            });
+          })
+        }
         className="flex items-center gap-1.5 px-2.5 py-1 rounded border border-amber-400/30 bg-amber-400/6 text-amber-400/80 text-[10px] font-mono uppercase hover:bg-amber-400/15 hover:border-amber-400/55 hover:text-amber-400 transition-all duration-150 hover:shadow-[0_0_8px_oklch(0.82_0.15_85/25%)]"
         aria-label="Connect OISY Wallet"
       >
