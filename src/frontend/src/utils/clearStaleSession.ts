@@ -10,14 +10,8 @@
  *
  *   HTTP 400: Invalid signature: EcdsaP256 signature could not be verified
  *
- * We detect this situation by checking whether:
- *   (a) localStorage contains a known II expiry key that has already expired, OR
- *   (b) sessionStorage / localStorage carry a "bad-session" flag set by the
- *       error handler in App.tsx.
- *
- * In both cases we wipe the IndexedDB stores and localStorage keys used by
- * @dfinity/auth-client so that InternetIdentityProvider starts with a clean
- * slate.
+ * We intercept fetch() at the module level so any 400 with an
+ * "Invalid signature" body immediately clears all II storage and reloads.
  */
 
 const IDB_DATABASES = [
@@ -29,6 +23,7 @@ const IDB_STORE = "ic-keyval";
 
 const LS_EXPIRY_KEY = "ic-delegation-expiry"; // written by some auth-client versions
 const LS_BAD_SESSION_KEY = "bonsai-bad-ii-session";
+const RELOAD_FLAG_KEY = "bonsai-session-cleared";
 
 /** Returns true if a stale-session flag was previously set. */
 export function hasStaleSessionFlag(): boolean {
@@ -55,6 +50,7 @@ export async function clearStaleSession(): Promise<void> {
   try {
     localStorage.removeItem(LS_BAD_SESSION_KEY);
     localStorage.removeItem(LS_EXPIRY_KEY);
+    localStorage.removeItem(RELOAD_FLAG_KEY);
     // auth-client also uses keys like "delegation" and "identity"
     for (const key of Object.keys(localStorage)) {
       if (
@@ -120,4 +116,58 @@ export async function clearStaleSession(): Promise<void> {
     });
 
   await Promise.all(IDB_DATABASES.map(clearDb));
+}
+
+/**
+ * Install a global fetch interceptor that detects the EcdsaP256 "Invalid signature"
+ * 400 error from the IC platform and immediately clears all II storage + reloads.
+ * This runs once at module import time, before React mounts.
+ */
+export function installSignatureErrorInterceptor(): void {
+  // Guard: only install once, and don't loop if we already cleared this session
+  if ((window as unknown as Record<string, unknown>).__bonsaiSigInterceptor)
+    return;
+  (window as unknown as Record<string, unknown>).__bonsaiSigInterceptor = true;
+
+  const originalFetch = window.fetch.bind(window);
+  window.fetch = async (
+    ...args: Parameters<typeof fetch>
+  ): Promise<Response> => {
+    const response = await originalFetch(...args);
+
+    // Only inspect responses from ICP API endpoints
+    const url =
+      typeof args[0] === "string" ? args[0] : (args[0] as Request).url;
+    const isIcpApi =
+      url.includes("icp-api.io") ||
+      url.includes("ic0.app") ||
+      url.includes("identity.ic0.app");
+
+    if (isIcpApi && response.status === 400) {
+      // Clone so we can read the body without consuming the original
+      const clone = response.clone();
+      try {
+        const body = await clone.text();
+        if (
+          body.includes("Invalid signature") ||
+          body.includes("EcdsaP256") ||
+          body.includes("signature could not be verified")
+        ) {
+          // Avoid infinite reload loop: only clear+reload once per session
+          const alreadyCleared = sessionStorage.getItem(RELOAD_FLAG_KEY);
+          if (!alreadyCleared) {
+            sessionStorage.setItem(RELOAD_FLAG_KEY, "1");
+            // Clear all II storage asynchronously, then reload
+            clearStaleSession().then(() => {
+              window.location.reload();
+            });
+          }
+        }
+      } catch {
+        // Body read failed — ignore
+      }
+    }
+
+    return response;
+  };
 }
