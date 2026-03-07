@@ -1,5 +1,4 @@
 import { Toaster } from "@/components/ui/sonner";
-import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { SortMode } from "./components/EcosystemSection";
@@ -33,6 +32,7 @@ import { useRecordEvent } from "./hooks/useRecordEvent";
 import { useSubmitRating } from "./hooks/useSubmitRating";
 import { LeaderboardPage } from "./pages/LeaderboardPage";
 import { UserProfilePage } from "./pages/UserProfilePage";
+// clearStaleSession / markSessionStale are now handled at module level in main.tsx
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
