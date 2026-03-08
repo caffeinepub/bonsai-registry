@@ -1,17 +1,23 @@
 # Bonsai Registry
 
 ## Current State
-Full Web3 registry with admin panel, community ratings, user profiles, OISY wallet integration, anonymous analytics, tipping, and canister health check. Admin login uses a shared secret (`#WakeUp4`). Listing fees (ICP) are transferred to the backend canister on pay-to-list, but there is no mechanism to withdraw the accumulated balance.
+Full Web3 registry with admin panel, community ratings, OISY wallet integration, user profiles, leaderboard, analytics, tipping, and bulk import/export. The admin Treasury card shows the ICP balance held by the registry canister but has no way to send that ICP out — it only links to the NNS Dashboard.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Backend: `getIcpBalanceWithSecret(secret)` -- queries the ICP Ledger for the canister's own ICRC-1 balance and returns it in e8s
-- Backend: `withdrawIcpWithSecret(secret, toAddress, amountE8s)` -- transfers ICP from the canister to a target ICRC-1 account (principal text), minus the 10_000 e8s ledger fee
-- Frontend: "Treasury" card in the admin panel showing the current ICP balance (auto-fetched on load, refresh button) and a Withdraw form with a destination address field + amount field (defaults to full balance minus fee) with a submit button that calls `withdrawIcpWithSecret`
+- Backend: `withdrawIcpWithSecret(secret, toAddress, amountE8s)` — verifies admin secret, calls the ICP Ledger canister (ICRC-1 `icrc1_transfer`) to transfer the specified amount from the canister's own account to the given principal address, returns the transaction block index or traps with a descriptive error.
+- Backend: `getCanisterIcpBalanceWithSecret(secret)` — verifies admin secret, queries the ICP Ledger for the canister's own ICRC-1 balance and returns it as `Nat`.
+- Frontend (AdminDashboard `TreasuryCard`): "Withdraw ICP" section with a principal/address input field, an amount input (ICP), a "Send" button protected by the admin password, success/error feedback, and balance auto-refresh after a successful withdrawal.
 
 ### Modify
-- Admin panel layout: add the new Treasury card alongside the existing Listing Price card in the admin settings area
+- `TreasuryCard` component: replace the static NNS Dashboard paragraph with the new withdraw form UI. Keep the balance display and canister ID copy row.
 
 ### Remove
-- Nothing
+- Nothing removed.
+
+## Implementation Plan
+1. Regenerate backend with `withdrawIcpWithSecret` and `getCanisterIcpBalanceWithSecret` added alongside all existing functions.
+2. Update `TreasuryCard` in `AdminDashboard.tsx` to add the withdraw form: principal input, ICP amount input, Send button, loading/error/success states.
+3. Wire the Send button to call `actor.withdrawIcpWithSecret(secret, principal, amountE8s)` via a mutation; on success show a toast and refresh the balance query.
+4. Validate and deploy.

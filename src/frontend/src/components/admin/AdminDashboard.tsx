@@ -41,6 +41,7 @@ import {
   LogOut,
   RefreshCw,
   Save,
+  SendHorizontal,
   ShieldCheck,
   TreePine,
   Upload,
@@ -206,6 +207,41 @@ const balanceIDLFactory = ({ IDL: I }: { IDL: typeof IDL }) =>
     ),
   });
 
+const transferIDLFactory = ({ IDL: I }: { IDL: typeof IDL }) =>
+  I.Service({
+    icrc1_transfer: I.Func(
+      [
+        I.Record({
+          to: I.Record({
+            owner: I.Principal,
+            subaccount: I.Opt(I.Vec(I.Nat8)),
+          }),
+          amount: I.Nat,
+          fee: I.Opt(I.Nat),
+          memo: I.Opt(I.Vec(I.Nat8)),
+          created_at_time: I.Opt(I.Nat64),
+          from_subaccount: I.Opt(I.Vec(I.Nat8)),
+        }),
+      ],
+      [
+        I.Variant({
+          Ok: I.Nat,
+          Err: I.Variant({
+            BadFee: I.Record({ expected_fee: I.Nat }),
+            BadBurn: I.Record({ min_burn_amount: I.Nat }),
+            InsufficientFunds: I.Record({ balance: I.Nat }),
+            TooOld: I.Null,
+            CreatedInFuture: I.Record({ ledger_time: I.Nat64 }),
+            Duplicate: I.Record({ duplicate_of: I.Nat }),
+            TemporarilyUnavailable: I.Null,
+            GenericError: I.Record({ error_code: I.Nat, message: I.Text }),
+          }),
+        }),
+      ],
+      [],
+    ),
+  });
+
 async function getCanisterIcpBalance(canisterId: string): Promise<bigint> {
   const agent = await HttpAgent.create({ host: "https://icp-api.io" });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -239,6 +275,13 @@ async function getBackendCanisterId(): Promise<string> {
 // ── Treasury Card ─────────────────────────────────────────────────────────────
 function TreasuryCard() {
   const [copied, setCopied] = useState(false);
+  const [sendTo, setSendTo] = useState("");
+  const [sendAmount, setSendAmount] = useState("");
+  const [sendState, setSendState] = useState<
+    "idle" | "sending" | "success" | "error"
+  >("idle");
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [blockIndex, setBlockIndex] = useState<string | null>(null);
 
   const { data, isLoading, isError, refetch, isFetching } = useQuery<{
     balance: bigint;
@@ -267,6 +310,82 @@ function TreasuryCard() {
       toast.success("Canister ID copied!");
       setTimeout(() => setCopied(false), 2000);
     });
+  };
+
+  const handleSend = async () => {
+    setSendError(null);
+    setSendState("sending");
+    setBlockIndex(null);
+
+    // Validate destination principal
+    let destPrincipal: Principal;
+    try {
+      destPrincipal = Principal.fromText(sendTo.trim());
+    } catch {
+      setSendError(
+        "Invalid destination principal. Check the format and try again.",
+      );
+      setSendState("error");
+      return;
+    }
+
+    // Validate amount
+    const amountFloat = Number.parseFloat(sendAmount);
+    if (Number.isNaN(amountFloat) || amountFloat <= 0) {
+      setSendError("Enter a valid amount greater than 0.");
+      setSendState("error");
+      return;
+    }
+
+    const amountE8s = BigInt(Math.round(amountFloat * 1e8));
+    const ICP_FEE = 10_000n; // 0.0001 ICP standard fee
+
+    try {
+      const agent = await HttpAgent.create({ host: "https://icp-api.io" });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const ledger = Actor.createActor(transferIDLFactory as any, {
+        agent,
+        canisterId: ICP_LEDGER_ID,
+      }) as unknown as {
+        icrc1_transfer: (arg: {
+          to: { owner: Principal; subaccount: [] };
+          amount: bigint;
+          fee: [bigint];
+          memo: [];
+          created_at_time: [];
+          from_subaccount: [];
+        }) => Promise<{ Ok: bigint } | { Err: Record<string, unknown> }>;
+      };
+
+      const result = await ledger.icrc1_transfer({
+        to: { owner: destPrincipal, subaccount: [] },
+        amount: amountE8s,
+        fee: [ICP_FEE],
+        memo: [],
+        created_at_time: [],
+        from_subaccount: [],
+      });
+
+      if ("Ok" in result) {
+        const idx = result.Ok.toString();
+        setBlockIndex(idx);
+        setSendState("success");
+        setSendTo("");
+        setSendAmount("");
+        toast.success(`ICP sent! Block index: ${idx}`);
+      } else {
+        const errKey = Object.keys(result.Err)[0] ?? "Unknown";
+        const errDetail =
+          (result.Err as Record<string, { message?: string }>)[errKey]
+            ?.message ?? errKey;
+        setSendError(`Transfer failed: ${errDetail}`);
+        setSendState("error");
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unexpected error";
+      setSendError(msg);
+      setSendState("error");
+    }
   };
 
   return (
@@ -362,6 +481,101 @@ function TreasuryCard() {
             Open in NNS Dashboard
           </a>
         )}
+      </div>
+
+      {/* Send ICP section */}
+      <Separator className="my-3" />
+      <div className="space-y-2">
+        {/* Section header */}
+        <div className="flex items-center gap-1.5">
+          <SendHorizontal className="w-3.5 h-3.5 text-primary" />
+          <span className="text-xs font-mono text-foreground font-medium">
+            Send ICP
+          </span>
+          <span className="text-[10px] font-mono text-muted-foreground">
+            from your wallet
+          </span>
+        </div>
+
+        {/* Destination */}
+        <Input
+          data-ocid="admin.treasury.send_to.input"
+          value={sendTo}
+          onChange={(e) => {
+            setSendTo(e.target.value);
+            if (sendState === "error") setSendState("idle");
+            setSendError(null);
+          }}
+          placeholder="Destination principal (xxxxx-xxxxx-...)"
+          className="bg-secondary border-border text-[11px] h-8 font-mono placeholder:text-muted-foreground/50"
+          disabled={sendState === "sending"}
+        />
+
+        {/* Amount */}
+        <Input
+          data-ocid="admin.treasury.send_amount.input"
+          type="number"
+          min="0.0001"
+          step="0.0001"
+          value={sendAmount}
+          onChange={(e) => {
+            setSendAmount(e.target.value);
+            if (sendState === "error") setSendState("idle");
+            setSendError(null);
+          }}
+          placeholder="Amount in ICP (e.g. 0.5)"
+          className="bg-secondary border-border text-[11px] h-8 font-mono placeholder:text-muted-foreground/50"
+          disabled={sendState === "sending"}
+        />
+
+        {/* Send button */}
+        <Button
+          data-ocid="admin.treasury.send_button"
+          size="sm"
+          className="w-full h-8 bg-primary text-primary-foreground gap-1.5 text-xs font-mono"
+          onClick={handleSend}
+          disabled={sendState === "sending" || !sendTo.trim() || !sendAmount}
+        >
+          {sendState === "sending" ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          ) : (
+            <SendHorizontal className="w-3.5 h-3.5" />
+          )}
+          {sendState === "sending" ? "Sending…" : "Send ICP"}
+        </Button>
+
+        {/* Error state */}
+        {sendState === "error" && sendError && (
+          <div
+            data-ocid="admin.treasury.send_error_state"
+            className="flex items-start gap-1.5 rounded border border-destructive/30 bg-destructive/8 px-2.5 py-2"
+          >
+            <AlertCircle className="w-3.5 h-3.5 text-destructive flex-shrink-0 mt-0.5" />
+            <p className="text-[11px] text-destructive leading-snug">
+              {sendError}
+            </p>
+          </div>
+        )}
+
+        {/* Success state */}
+        {sendState === "success" && blockIndex && (
+          <div
+            data-ocid="admin.treasury.send_success_state"
+            className="flex items-start gap-1.5 rounded border border-emerald-500/30 bg-emerald-500/8 px-2.5 py-2"
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
+            <p className="text-[11px] text-emerald-400 leading-snug">
+              Transfer complete!{" "}
+              <span className="font-mono">Block #{blockIndex}</span>
+            </p>
+          </div>
+        )}
+
+        <p className="text-[10px] text-muted-foreground/60 leading-relaxed">
+          This sends ICP from your connected Internet Identity wallet. To
+          withdraw funds accumulated in the canister treasury, use the NNS
+          Dashboard link above.
+        </p>
       </div>
     </div>
   );
