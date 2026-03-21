@@ -23,9 +23,15 @@ const TOTAL_STEPS = 3;
 
 interface OnboardingModalProps {
   onLogin?: () => void;
+  totalEntries?: number;
+  totalEcosystems?: number;
 }
 
-export function OnboardingModal({ onLogin }: OnboardingModalProps) {
+export function OnboardingModal({
+  onLogin,
+  totalEntries = 617,
+  totalEcosystems = 35,
+}: OnboardingModalProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [selected, setSelected] = useState<string[]>([]);
@@ -105,7 +111,12 @@ export function OnboardingModal({ onLogin }: OnboardingModalProps) {
             transition={{ duration: 0.25, ease: "easeOut" }}
             className="p-7 sm:p-8"
           >
-            {step === 1 && <StepWelcome />}
+            {step === 1 && (
+              <StepWelcome
+                totalEntries={totalEntries}
+                totalEcosystems={totalEcosystems}
+              />
+            )}
             {step === 2 && (
               <StepInterests selected={selected} onToggle={toggleInterest} />
             )}
@@ -173,7 +184,16 @@ export function OnboardingModal({ onLogin }: OnboardingModalProps) {
 
 // ─── Step components ───────────────────────────────────────────────────────────
 
-function StepWelcome() {
+interface StepWelcomeProps {
+  totalEntries: number;
+  totalEcosystems: number;
+}
+
+function StepWelcome({ totalEntries, totalEcosystems }: StepWelcomeProps) {
+  // Round down to nearest 50 for a conservative label
+  const projectsLabel = `${Math.floor(totalEntries / 50) * 50}+`;
+  const ecosystemsLabel = `${totalEcosystems}+`;
+
   return (
     <div className="space-y-4">
       {/* Logo + headline */}
@@ -205,9 +225,15 @@ function StepWelcome() {
       <div className="space-y-3">
         <p className="text-sm text-muted-foreground leading-relaxed">
           The premiere curated directory of{" "}
-          <strong className="text-foreground">600+ Web3 projects</strong> across{" "}
-          <strong className="text-foreground">34+ ecosystems</strong> — from
-          Internet Computer and Hedera to Bitcoin, Ethereum, Solana, and beyond.
+          <strong className="text-foreground">
+            {projectsLabel} Web3 projects
+          </strong>{" "}
+          across{" "}
+          <strong className="text-foreground">
+            {ecosystemsLabel} ecosystems
+          </strong>{" "}
+          — from Internet Computer and Hedera to Bitcoin, Ethereum, Solana, and
+          beyond.
         </p>
         <p className="text-sm text-muted-foreground leading-relaxed">
           Our mission: bridge the global Web3 community to the open web, making
@@ -216,8 +242,8 @@ function StepWelcome() {
 
         <div className="grid grid-cols-3 gap-2 pt-1">
           {[
-            { label: "600+", sub: "Projects" },
-            { label: "34+", sub: "Ecosystems" },
+            { label: projectsLabel, sub: "Projects" },
+            { label: ecosystemsLabel, sub: "Ecosystems" },
             { label: "Live", sub: "Community Ratings" },
           ].map((s) => (
             <div

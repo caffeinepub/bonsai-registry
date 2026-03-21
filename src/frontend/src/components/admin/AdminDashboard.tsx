@@ -15,6 +15,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  getBannerPricePerDay,
+  setBannerPricePerDay,
+} from "@/data/monetizationData";
 import { allEntries, ecosystemGroups } from "@/data/registryData";
 import {
   AdminActorProvider,
@@ -39,10 +43,13 @@ import {
   LayoutGrid,
   Loader2,
   LogOut,
+  Mail,
+  Megaphone,
   RefreshCw,
   Save,
   SendHorizontal,
   ShieldCheck,
+  Star,
   TreePine,
   Upload,
   Vault,
@@ -51,9 +58,11 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { AnalyticsTab } from "./AnalyticsTab";
+import { BannerAdsTab } from "./BannerAdsTab";
 import { BulkImportModal } from "./BulkImportModal";
 import { CanisterHealthBadge } from "./CanisterHealthBadge";
 import { EcosystemManager } from "./EcosystemManager";
+import { EmailListTab } from "./EmailListTab";
 import { EntryTable } from "./EntryTable";
 
 const ADMIN_SECRET = "#WakeUp4";
@@ -272,6 +281,76 @@ async function getBackendCanisterId(): Promise<string> {
   }
 }
 
+// ── Banner Price Per Day Card ─────────────────────────────────────────────
+function BannerPriceCard() {
+  const [price, setPrice] = useState(() => getBannerPricePerDay());
+  const [input, setInput] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = () => {
+    const val = Number.parseFloat(input);
+    if (Number.isNaN(val) || val < 0) {
+      toast.error("Enter a valid price");
+      return;
+    }
+    setBannerPricePerDay(val);
+    setPrice(val);
+    setInput("");
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+    toast.success("Banner price updated!");
+  };
+
+  return (
+    <div className="rounded-lg border border-border bg-card p-5">
+      <div className="flex items-center gap-2 mb-4">
+        <Star className="w-4 h-4 text-amber-400" />
+        <h3 className="font-display font-semibold text-sm text-foreground">
+          Banner Ad Price
+        </h3>
+      </div>
+      <div className="flex items-center gap-3 mb-4 p-3 rounded-md bg-secondary border border-border">
+        <div className="text-xs text-muted-foreground font-mono">
+          Price/day:
+        </div>
+        <div className="font-display font-bold text-amber-400 text-lg">
+          {price}{" "}
+          <span className="text-sm font-mono text-muted-foreground">ICP</span>
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label className="text-xs font-mono">Set Price Per Day (ICP)</Label>
+        <div className="flex gap-2">
+          <Input
+            data-ocid="admin.banner_price.input"
+            type="number"
+            min="0"
+            step="0.01"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={price.toString()}
+            className="bg-secondary border-border text-sm h-8 font-mono flex-1"
+            onKeyDown={(e) => e.key === "Enter" && handleSave()}
+          />
+          <Button
+            data-ocid="admin.banner_price.save_button"
+            size="sm"
+            className="bg-primary text-primary-foreground gap-1.5 text-xs h-8"
+            onClick={handleSave}
+            disabled={!input}
+          >
+            {saved ? (
+              <CheckCircle2 className="w-3.5 h-3.5" />
+            ) : (
+              <Save className="w-3.5 h-3.5" />
+            )}
+            Update
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 // ── Treasury Card ─────────────────────────────────────────────────────────────
 function TreasuryCard() {
   const [copied, setCopied] = useState(false);
@@ -1137,9 +1216,10 @@ function AdminDashboardInner({ onLogout }: { onLogout: () => void }) {
             </div>
           )}
 
-        {/* Listing Fee + Treasury */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Listing Fee + Banner Price + Treasury */}
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
           <ListingFeeCard />
+          <BannerPriceCard />
           <TreasuryCard />
         </div>
 
@@ -1186,6 +1266,22 @@ function AdminDashboardInner({ onLogout }: { onLogout: () => void }) {
               <BarChart2 className="w-3.5 h-3.5" />
               Analytics
             </TabsTrigger>
+            <TabsTrigger
+              data-ocid="admin.banners_tab"
+              value="banners"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs gap-1.5 h-7"
+            >
+              <Megaphone className="w-3.5 h-3.5" />
+              Banners
+            </TabsTrigger>
+            <TabsTrigger
+              data-ocid="admin.emaillist_tab"
+              value="emaillist"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs gap-1.5 h-7"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              Email List
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="entries">
@@ -1202,6 +1298,14 @@ function AdminDashboardInner({ onLogout }: { onLogout: () => void }) {
 
           <TabsContent value="analytics">
             <AnalyticsTab />
+          </TabsContent>
+
+          <TabsContent value="banners">
+            <BannerAdsTab />
+          </TabsContent>
+
+          <TabsContent value="emaillist">
+            <EmailListTab />
           </TabsContent>
         </Tabs>
       </div>

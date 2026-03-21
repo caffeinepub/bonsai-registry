@@ -1,10 +1,11 @@
-import { isFeatured, isVerified } from "@/data/monetizationData";
+import { addUtm, isFeatured, isVerified } from "@/data/monetizationData";
 import type { RegistryEntry } from "@/data/registryData";
 import type { LocalRatingStats } from "@/hooks/useLocalRatings";
 import { recordEvent } from "@/utils/analytics";
 import { BadgeCheck, Star } from "lucide-react";
 import { ExternalLink } from "lucide-react";
 import type { EntryRatingStats } from "../backend.d";
+import { LinkPreviewImage } from "./LinkPreviewImage";
 import { StarRating } from "./StarRating";
 
 const TAG_STYLES: Record<string, string> = {
@@ -73,7 +74,7 @@ export function LinkCard({
 
   return (
     <a
-      href={entry.url}
+      href={featured ? addUtm(entry.url) : entry.url}
       target="_blank"
       rel="noopener noreferrer"
       data-ocid={`registry.link.item.${index}`}
@@ -137,6 +138,13 @@ export function LinkCard({
           aria-hidden
         />
       </div>
+
+      {/* ── Link preview image ── */}
+      <LinkPreviewImage
+        url={entry.url}
+        className="mt-1.5 border border-border/30 max-h-28 rounded-sm"
+        aspectClass="aspect-video"
+      />
 
       {/* ── Description ── */}
       <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 mt-0.5">

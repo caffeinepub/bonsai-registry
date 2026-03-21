@@ -29,6 +29,12 @@ export type Category = { 'nft' : null } |
   { 'wallet' : null } |
   { 'commerce' : null } |
   { 'exchange' : null };
+export interface EmailSubscriber {
+  'subscribedAt' : Time,
+  'source' : string,
+  'email' : string,
+  'principalId' : [] | [string],
+}
 export interface EntryRating { 'entryId' : bigint, 'rating' : bigint }
 export interface EntryRatingStats { 'count' : bigint, 'average' : number }
 export interface ExtendedUserProfile {
@@ -104,6 +110,7 @@ export interface _SERVICE {
     [bigint, bigint],
     Array<BonsaiRegistryEntry>
   >,
+  'getAllSubscribersWithSecret' : ActorMethod<[string], Array<EmailSubscriber>>,
   'getCallerAllRatings' : ActorMethod<[], Array<[bigint, bigint]>>,
   'getCallerRating' : ActorMethod<[bigint], [] | [bigint]>,
   'getCallerUserProfile' : ActorMethod<[], [] | [ExtendedUserProfile]>,
@@ -120,8 +127,10 @@ export interface _SERVICE {
   'getListingFee' : ActorMethod<[], bigint>,
   'getPendingSubmissions' : ActorMethod<[string], Array<PendingSubmission>>,
   'getPublicUserProfile' : ActorMethod<[Principal], [] | [ExtendedUserProfile]>,
+  'getSubscriberCount' : ActorMethod<[], bigint>,
   'getTotalEntriesCount' : ActorMethod<[], bigint>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'linkEmailToPrincipal' : ActorMethod<[string], undefined>,
   'rateEntry' : ActorMethod<[bigint, bigint], undefined>,
   'rejectPendingSubmissionWithSecret' : ActorMethod<
     [string, bigint],
@@ -132,6 +141,7 @@ export interface _SERVICE {
   'saveCallerUserProfile' : ActorMethod<[ExtendedUserProfile], undefined>,
   'setListingFeeWithSecret' : ActorMethod<[string, bigint], undefined>,
   'submitProjectListing' : ActorMethod<[BonsaiRegistryEntry, string], bigint>,
+  'subscribeEmail' : ActorMethod<[string, string], undefined>,
   'unbookmarkEntry' : ActorMethod<[bigint], undefined>,
   'updateRegistryEntry' : ActorMethod<[bigint, BonsaiRegistryEntry], undefined>,
   'updateRegistryEntryWithSecret' : ActorMethod<

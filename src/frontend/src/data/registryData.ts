@@ -1,3 +1,81 @@
+import {
+  algorandEntriesExtra,
+  arbitrumEntriesExtra,
+  avalancheEntriesExtra,
+  baseEntriesExtra,
+  bitcoinEntriesExtra,
+  cardanoEntriesExtra,
+  cosmosEntriesExtra,
+  creatorEntriesExtra,
+  ethereumEntriesExtra,
+  filecoinEntriesExtra,
+  hederaEntriesExtra,
+  heliumEntriesExtra,
+  icpEntriesExtra,
+  nearEntriesExtra,
+  optimismEntriesExtra,
+  polygonEntriesExtra,
+  rwaEntriesExtra,
+  solanaEntriesExtra,
+  stellarEntriesExtra,
+  tezosEntriesExtra,
+} from "./registryExpansion";
+import {
+  arbitrumEntriesExtra2,
+  avalancheEntriesExtra2,
+  bitcoinEntriesExtra2,
+  bnbEntriesExtra,
+  chainlinkEntriesExtra,
+  creatorEntriesExtra2,
+  dogecoinEntriesExtra,
+  ethereumEntriesExtra2,
+  hederaEntriesExtra2,
+  icpEntriesExtra2,
+  immutableEntriesExtra,
+  injectiveEntriesExtra,
+  mantleEntriesExtra,
+  rwaEntriesExtra2,
+  solanaEntriesExtra2,
+  tronEntriesExtra,
+  xrpEntriesExtra,
+} from "./registryExpansion2";
+import {
+  algorandEntriesExtra2,
+  baseEntriesExtra2,
+  cardanoEntriesExtra2,
+  chilizEntriesExtra,
+  cosmosEntriesExtra2,
+  enjinEntriesExtra,
+  ethereumEntriesExtra3,
+  filecoinEntriesExtra2,
+  galaEntriesExtra,
+  heliumEntriesExtra2,
+  icpEntriesExtra3,
+  nearEntriesExtra2,
+  optimismEntriesExtra2,
+  polygonEntriesExtra2,
+  solanaEntriesExtra3,
+  stellarEntriesExtra2,
+  tezosEntriesExtra2,
+  vechainEntriesExtra,
+} from "./registryExpansion3";
+import {
+  bitcoinEntriesExtra3,
+  cosmosEntriesExtra3,
+  creatorEntriesExtra3,
+  ethereumEntriesExtra4,
+  hederaEntriesExtra3,
+  icpEntriesExtra4,
+  rwaEntriesExtra3,
+  solanaEntriesExtra4,
+} from "./registryExpansion4";
+import {
+  ethereumEntriesExtra5,
+  icpEntriesExtra5,
+  solanaEntriesExtra5,
+} from "./registryExpansion5";
+import { finalEntries } from "./registryExpansion6";
+import { extraEntries7 } from "./registryExpansion7";
 export type Category =
   | "gaming"
   | "nft"
@@ -429,6 +507,78 @@ const ethereumEntries: RegistryEntry[] = [
     ecosystem: "ethereum",
     tags: ["tools"],
     tier: 1,
+  },
+  {
+    id: "eth-022",
+    name: "Ethereum",
+    description: "Official Ethereum protocol website",
+    url: "https://ethereum.org/",
+    ecosystem: "ethereum",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "eth-023",
+    name: "Ethereum Foundation",
+    description: "Non-profit supporting Ethereum research and development",
+    url: "https://ethereum.foundation/",
+    ecosystem: "ethereum",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "eth-024",
+    name: "EIP-1559",
+    description: "ETH fee market reform — base fee + tip model",
+    url: "https://eips.ethereum.org/EIPS/eip-1559",
+    ecosystem: "ethereum",
+    tags: ["tools"],
+    tier: 2,
+  },
+  {
+    id: "eth-025",
+    name: "dYdX",
+    description: "Perpetuals DEX — decentralized derivatives trading",
+    url: "https://dydx.exchange/",
+    ecosystem: "ethereum",
+    tags: ["defi", "exchange"],
+    tier: 1,
+  },
+  {
+    id: "eth-026",
+    name: "Pendle",
+    description: "Yield tokenization protocol — trade future yield",
+    url: "https://pendle.finance/",
+    ecosystem: "ethereum",
+    tags: ["defi"],
+    tier: 2,
+  },
+  {
+    id: "eth-027",
+    name: "EigenLayer",
+    description: "Restaking protocol — extend ETH security to other apps",
+    url: "https://eigenlayer.xyz/",
+    ecosystem: "ethereum",
+    tags: ["defi"],
+    tier: 1,
+  },
+  {
+    id: "eth-028",
+    name: "ether.fi",
+    description: "Liquid restaking protocol for ETH",
+    url: "https://ether.fi/",
+    ecosystem: "ethereum",
+    tags: ["defi"],
+    tier: 2,
+  },
+  {
+    id: "eth-029",
+    name: "LooksRare",
+    description: "Community-first NFT marketplace with LOOKS token rewards",
+    url: "https://looksrare.org/",
+    ecosystem: "ethereum",
+    tags: ["nft"],
+    tier: 2,
   },
 ];
 
@@ -924,6 +1074,105 @@ const solanaEntries: RegistryEntry[] = [
     ecosystem: "solana",
     tags: ["gaming"],
     tier: 1,
+  },
+  {
+    id: "sol-033",
+    name: "Solana",
+    description: "Official Solana protocol website",
+    url: "https://solana.com/",
+    ecosystem: "solana",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "sol-034",
+    name: "Solana Developer Hub",
+    description: "Official developer docs, SDKs, and tooling for Solana",
+    url: "https://solana.com/developers",
+    ecosystem: "solana",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "sol-035",
+    name: "Solana Explorer",
+    description: "Official Solana blockchain explorer",
+    url: "https://explorer.solana.com/",
+    ecosystem: "solana",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "sol-036",
+    name: "Metaplex",
+    description: "NFT standard and tooling suite for Solana",
+    url: "https://metaplex.com/",
+    ecosystem: "solana",
+    tags: ["nft", "tools"],
+    tier: 1,
+  },
+  {
+    id: "sol-037",
+    name: "Orca",
+    description: "Whirlpools concentrated liquidity AMM on Solana",
+    url: "https://orca.so/",
+    ecosystem: "solana",
+    tags: ["defi", "exchange"],
+    tier: 1,
+  },
+  {
+    id: "sol-038",
+    name: "Drift Protocol",
+    description: "Perpetuals DEX on Solana",
+    url: "https://drift.trade/",
+    ecosystem: "solana",
+    tags: ["defi", "exchange"],
+    tier: 2,
+  },
+  {
+    id: "sol-039",
+    name: "Tensor",
+    description: "Professional NFT trading platform on Solana",
+    url: "https://tensor.trade/",
+    ecosystem: "solana",
+    tags: ["nft", "exchange"],
+    tier: 2,
+  },
+  {
+    id: "sol-040",
+    name: "CyberFrogs",
+    description: "Play-to-earn battle game on Solana",
+    url: "https://cyberfrogs.io/",
+    ecosystem: "solana",
+    tags: ["gaming", "nft"],
+    tier: 3,
+  },
+  {
+    id: "sol-041",
+    name: "DeFira",
+    description: "Space strategy game on Solana",
+    url: "https://defira.io/",
+    ecosystem: "solana",
+    tags: ["gaming"],
+    tier: 3,
+  },
+  {
+    id: "sol-042",
+    name: "SolChicks",
+    description: "Play-to-earn RPG game on Solana",
+    url: "https://solchicks.io/",
+    ecosystem: "solana",
+    tags: ["gaming", "nft"],
+    tier: 3,
+  },
+  {
+    id: "sol-043",
+    name: "Backpack",
+    description: "xNFT wallet — executable NFTs for Solana",
+    url: "https://backpack.app/",
+    ecosystem: "solana",
+    tags: ["wallet"],
+    tier: 2,
   },
 ];
 
@@ -2016,6 +2265,25 @@ const hederaEntries: RegistryEntry[] = [
     ecosystem: "hedera",
     tags: ["tools"],
     tier: 1,
+  },
+  {
+    id: "hbar-053",
+    name: "HLiquity",
+    description:
+      "Borrowing platform on Hedera — interest-free loans backed by HBAR",
+    url: "https://hliquity.io/",
+    ecosystem: "hedera",
+    tags: ["defi"],
+    tier: 2,
+  },
+  {
+    id: "hbar-054",
+    name: "TrackTrace",
+    description: "EU Digital Product Passport and carbon tracking on Hedera",
+    url: "https://hedera.com/users/tracktrace",
+    ecosystem: "hedera",
+    tags: ["tools"],
+    tier: 2,
   },
 ];
 
@@ -4383,6 +4651,78 @@ const optimismEntries: RegistryEntry[] = [
     tags: ["defi", "exchange"],
     tier: 2,
   },
+  {
+    id: "op-005",
+    name: "Optimism",
+    description: "OP Mainnet and Superchain L2 on Ethereum",
+    url: "https://optimism.io/",
+    ecosystem: "optimism",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "op-006",
+    name: "OP Stack",
+    description: "Open-source rollup framework powering the Superchain",
+    url: "https://stack.optimism.io/",
+    ecosystem: "optimism",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "op-007",
+    name: "Optimism Bridge",
+    description: "Official Ethereum ↔ OP Mainnet token bridge",
+    url: "https://app.optimism.io/bridge",
+    ecosystem: "optimism",
+    tags: ["defi"],
+    tier: 1,
+  },
+  {
+    id: "op-008",
+    name: "Optimism Docs",
+    description: "Developer documentation for OP Stack and OP Mainnet",
+    url: "https://docs.optimism.io/",
+    ecosystem: "optimism",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "op-009",
+    name: "Optimistic Etherscan",
+    description: "Block explorer for OP Mainnet",
+    url: "https://optimistic.etherscan.io/",
+    ecosystem: "optimism",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "op-010",
+    name: "Kwenta",
+    description: "Perpetuals trading powered by Synthetix on Optimism",
+    url: "https://kwenta.io/",
+    ecosystem: "optimism",
+    tags: ["defi", "exchange"],
+    tier: 2,
+  },
+  {
+    id: "op-011",
+    name: "Mode",
+    description: "OP Stack L2 with revenue-sharing for developers",
+    url: "https://mode.network/",
+    ecosystem: "optimism",
+    tags: ["tools"],
+    tier: 2,
+  },
+  {
+    id: "op-012",
+    name: "World Chain",
+    description: "Worldcoin L2 built on OP Stack",
+    url: "https://worldchain.org/",
+    ecosystem: "optimism",
+    tags: ["tools"],
+    tier: 2,
+  },
 ];
 
 const baseEntries: RegistryEntry[] = [
@@ -4420,6 +4760,87 @@ const baseEntries: RegistryEntry[] = [
     url: "https://www.friend.tech/",
     ecosystem: "base",
     tags: ["social"],
+    tier: 2,
+  },
+  {
+    id: "base-005",
+    name: "Base Bridge",
+    description: "Official Ethereum ↔ Base token bridge",
+    url: "https://bridge.base.org/",
+    ecosystem: "base",
+    tags: ["defi"],
+    tier: 1,
+  },
+  {
+    id: "base-006",
+    name: "Base Docs",
+    description: "Official developer documentation for Base",
+    url: "https://docs.base.org/",
+    ecosystem: "base",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "base-007",
+    name: "Basescan",
+    description: "Block explorer for the Base network",
+    url: "https://basescan.org/",
+    ecosystem: "base",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "base-008",
+    name: "Uniswap on Base",
+    description: "AMM decentralized exchange deployed on Base",
+    url: "https://app.uniswap.org/",
+    ecosystem: "base",
+    tags: ["defi", "exchange"],
+    tier: 1,
+  },
+  {
+    id: "base-009",
+    name: "Seamless Protocol",
+    description: "Native lending and leverage tokens on Base",
+    url: "https://seamlessprotocol.com/",
+    ecosystem: "base",
+    tags: ["defi"],
+    tier: 2,
+  },
+  {
+    id: "base-010",
+    name: "Moonwell",
+    description: "Lending and borrowing protocol on Base",
+    url: "https://moonwell.fi/",
+    ecosystem: "base",
+    tags: ["defi"],
+    tier: 2,
+  },
+  {
+    id: "base-011",
+    name: "Farcaster",
+    description: "Decentralized social protocol — built natively on Base",
+    url: "https://farcaster.xyz/",
+    ecosystem: "base",
+    tags: ["social"],
+    tier: 1,
+  },
+  {
+    id: "base-012",
+    name: "Mintify",
+    description: "NFT marketplace on Base with analytics and portfolio tools",
+    url: "https://mintify.xyz/",
+    ecosystem: "base",
+    tags: ["nft", "exchange"],
+    tier: 2,
+  },
+  {
+    id: "base-013",
+    name: "Stargate Finance",
+    description: "LayerZero cross-chain liquidity and bridge protocol",
+    url: "https://stargate.finance/",
+    ecosystem: "base",
+    tags: ["defi"],
     tier: 2,
   },
 ];
@@ -4995,6 +5416,63 @@ const rwaEntries: RegistryEntry[] = [
     tags: ["nft", "tools"],
     tier: 1,
   },
+  {
+    id: "rwa-011",
+    name: "BlackRock BUIDL",
+    description: "Tokenized U.S. Treasury fund via Securitize on Ethereum",
+    url: "https://www.blackrock.com/us/individual/products/333177/",
+    ecosystem: "rwa",
+    tags: ["defi"],
+    tier: 1,
+  },
+  {
+    id: "rwa-012",
+    name: "Franklin Templeton BENJI",
+    description:
+      "OnChain U.S. Government Money Fund — tokenized on Stellar and Polygon",
+    url: "https://www.franklintempleton.com/investment-options/products/benji",
+    ecosystem: "rwa",
+    tags: ["defi"],
+    tier: 1,
+  },
+  {
+    id: "rwa-013",
+    name: "Securitize",
+    description:
+      "Tokenization platform — transfer agent for BUIDL and other RWA funds",
+    url: "https://securitize.io/",
+    ecosystem: "rwa",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "rwa-014",
+    name: "RWA.xyz",
+    description: "Real-world asset analytics and treasury aggregator dashboard",
+    url: "https://rwa.xyz/",
+    ecosystem: "rwa",
+    tags: ["tools"],
+    tier: 2,
+  },
+  {
+    id: "rwa-015",
+    name: "Masterworks",
+    description:
+      "Fractional fine art investment — blue-chip paintings tokenized",
+    url: "https://masterworks.com/",
+    ecosystem: "rwa",
+    tags: ["nft", "commerce"],
+    tier: 2,
+  },
+  {
+    id: "rwa-016",
+    name: "Inveniam",
+    description: "Private asset data management and valuation oracles for RWA",
+    url: "https://inveniam.io/",
+    ecosystem: "rwa",
+    tags: ["tools"],
+    tier: 2,
+  },
 ];
 
 const creatorEntries: RegistryEntry[] = [
@@ -5061,7 +5539,407 @@ const creatorEntries: RegistryEntry[] = [
     tags: ["nft", "commerce"],
     tier: 5,
   },
+  {
+    id: "creator-008",
+    name: "Fxhash",
+    description: "Tezos generative art marketplace — open minting platform",
+    url: "https://fxhash.xyz/",
+    ecosystem: "creator",
+    tags: ["nft"],
+    tier: 4,
+  },
+  {
+    id: "creator-009",
+    name: "Plottables",
+    description: "Interactive coding art — on-chain generative art platform",
+    url: "https://plottables.io/",
+    ecosystem: "creator",
+    tags: ["nft"],
+    tier: 4,
+  },
+  {
+    id: "creator-010",
+    name: "Audius",
+    description: "Decentralized music streaming platform — AUDIO token",
+    url: "https://audius.org/",
+    ecosystem: "creator",
+    tags: ["commerce"],
+    tier: 3,
+  },
+  {
+    id: "creator-011",
+    name: "Opulous",
+    description: "Music NFTs and royalty-backed DeFi loans for artists",
+    url: "https://opulous.org/",
+    ecosystem: "creator",
+    tags: ["nft", "commerce"],
+    tier: 3,
+  },
+  {
+    id: "creator-012",
+    name: "Meteora Audio",
+    description: "AI + blockchain audio NFTs — music meets on-chain creation",
+    url: "https://meteora.audio/",
+    ecosystem: "creator",
+    tags: ["nft", "commerce"],
+    tier: 4,
+  },
+  {
+    id: "creator-013",
+    name: "Dassu",
+    description: "Revenue split automation for creators and collaborators",
+    url: "https://dassu.io/",
+    ecosystem: "creator",
+    tags: ["commerce", "tools"],
+    tier: 4,
+  },
+  {
+    id: "creator-014",
+    name: "Koji",
+    description:
+      "Creator monetization apps — link-in-bio with built-in commerce",
+    url: "https://withkoji.com/",
+    ecosystem: "creator",
+    tags: ["commerce"],
+    tier: 3,
+  },
+  {
+    id: "creator-015",
+    name: "Medallion XLN",
+    description: "StarkNet creator economy with 97% revenue to creators",
+    url: "https://medallionxln.com/",
+    ecosystem: "creator",
+    tags: ["nft", "commerce"],
+    tier: 4,
+  },
+  {
+    id: "creator-016",
+    name: "CANI",
+    description:
+      "CaniStore and CaniPlay — music streaming and commerce for musicians",
+    url: "https://canistore.io/",
+    ecosystem: "creator",
+    tags: ["nft", "commerce"],
+    tier: 4,
+  },
 ];
+
+// ─── HELIUM NETWORK ─────────────────────────────────────────────────────────
+
+const heliumEntries: RegistryEntry[] = [
+  {
+    id: "hlm-001",
+    name: "Helium",
+    description: "Decentralized wireless network — IoT, 5G, and MOBILE rewards",
+    url: "https://www.helium.com/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "hlm-002",
+    name: "Helium Foundation",
+    description: "Non-profit governing Helium protocol governance and grants",
+    url: "https://www.helium.foundation/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "hlm-003",
+    name: "Nova Labs",
+    description: "Helium Mobile and core technology — the team behind Helium",
+    url: "https://nova.xyz/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "hlm-004",
+    name: "Helium Documentation",
+    description:
+      "Official developer docs, API reference, and architecture guides",
+    url: "https://docs.helium.com/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "hlm-005",
+    name: "Helium IoT Network",
+    description:
+      "LoRaWAN connectivity for IoT devices — the original Helium network",
+    url: "https://docs.helium.com/iot/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "hlm-006",
+    name: "Helium Console",
+    description:
+      "Device management and Data Credits dashboard for IoT deployments",
+    url: "https://console.helium.com/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 2,
+  },
+  {
+    id: "hlm-007",
+    name: "Helium 5G",
+    description:
+      "5G/CBRS decentralized network — MOBILE token rewards for hotspot hosts",
+    url: "https://www.helium.com/5G",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "hlm-008",
+    name: "Helium Mobile",
+    description: "MVNO mobile carrier powered by the Helium Network",
+    url: "https://www.hellohelium.com/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "hlm-009",
+    name: "Helium Explorer",
+    description: "Network and hotspot explorer for Helium",
+    url: "https://explorer.helium.com/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 1,
+  },
+  {
+    id: "hlm-010",
+    name: "Helium Wallet",
+    description: "Official wallet for HNT, MOBILE, IOT, and Data Credits",
+    url: "https://heliumwallet.org/",
+    ecosystem: "helium",
+    tags: ["wallet"],
+    tier: 1,
+  },
+  {
+    id: "hlm-011",
+    name: "Parley Labs",
+    description: "5G gateways and LoRaWAN hotspots for the Helium network",
+    url: "https://parleylabs.com/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 2,
+  },
+  {
+    id: "hlm-012",
+    name: "FreedomFi",
+    description: "5G CBRS small cells compatible with Helium MOBILE",
+    url: "https://www.freedomfi.com/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 2,
+  },
+  {
+    id: "hlm-013",
+    name: "Cal Chip",
+    description: "Helium hotspot distributor and IoT hardware supplier",
+    url: "https://www.calchipconnect.com/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 2,
+  },
+  {
+    id: "hlm-014",
+    name: "Bobcat Miner",
+    description: "Popular Helium hotspot manufacturer",
+    url: "https://www.bobcatminer.com/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 2,
+  },
+  {
+    id: "hlm-015",
+    name: "SkyNet IoT",
+    description: "LoRaWAN roaming and maritime IoT on Helium",
+    url: "https://skynetiot.com/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 3,
+  },
+  {
+    id: "hlm-016",
+    name: "Particle",
+    description: "M-Series devices with Helium LoRaWAN connectivity",
+    url: "https://www.particle.io/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 2,
+  },
+  {
+    id: "hlm-017",
+    name: "Telefónica",
+    description: "Major carrier operating Helium Mobile hotspots in Mexico",
+    url: "https://www.telefonica.com/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 2,
+  },
+  {
+    id: "hlm-018",
+    name: "Dish Network",
+    description: "First major US carrier to deploy on the Helium 5G network",
+    url: "https://www.dish.com/",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 2,
+  },
+  {
+    id: "hlm-019",
+    name: "LoRaWAN Roaming",
+    description: "IoT roaming integration documentation for Helium",
+    url: "https://docs.helium.com/iot/lorawan-roaming",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 3,
+  },
+  {
+    id: "hlm-020",
+    name: "MOBILE Proof of Coverage",
+    description: "5G hotspot rewards and proof-of-coverage documentation",
+    url: "https://docs.helium.com/mobile/proof-of-coverage",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 3,
+  },
+  {
+    id: "hlm-021",
+    name: "Helium Planner",
+    description: "Coverage planning tool for Helium hotspot deployment",
+    url: "https://explorer.hellohelium.com/planner",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 3,
+  },
+  {
+    id: "hlm-022",
+    name: "Helium Hotspot App",
+    description: "Official iOS/Android app for hotspot management",
+    url: "https://docs.helium.com/mine-hnt/helium-hotspot-app",
+    ecosystem: "helium",
+    tags: ["tools"],
+    tier: 3,
+  },
+];
+
+// ─── MERGE EXPANSIONS ────────────────────────────────────────────────────────
+icpEntries.push(...icpEntriesExtra);
+ethereumEntries.push(...ethereumEntriesExtra);
+bitcoinEntries.push(...bitcoinEntriesExtra);
+solanaEntries.push(...solanaEntriesExtra);
+hederaEntries.push(...hederaEntriesExtra);
+arbitrumEntries.push(...arbitrumEntriesExtra);
+baseEntries.push(...baseEntriesExtra);
+optimismEntries.push(...optimismEntriesExtra);
+polygonEntries.push(...polygonEntriesExtra);
+rwaEntries.push(...rwaEntriesExtra);
+creatorEntries.push(...creatorEntriesExtra);
+cosmosEntries.push(...cosmosEntriesExtra);
+nearEntries.push(...nearEntriesExtra);
+avalancheEntries.push(...avalancheEntriesExtra);
+heliumEntries.push(...heliumEntriesExtra);
+cardanoEntries.push(...cardanoEntriesExtra);
+tezosEntries.push(...tezosEntriesExtra);
+filecoinEntries.push(...filecoinEntriesExtra);
+stellarEntries.push(...stellarEntriesExtra);
+algorandEntries.push(...algorandEntriesExtra);
+// Expansion 2-7
+icpEntries.push(
+  ...icpEntriesExtra2,
+  ...icpEntriesExtra3,
+  ...icpEntriesExtra4,
+  ...icpEntriesExtra5,
+);
+ethereumEntries.push(
+  ...ethereumEntriesExtra2,
+  ...ethereumEntriesExtra3,
+  ...ethereumEntriesExtra4,
+  ...ethereumEntriesExtra5,
+);
+bitcoinEntries.push(...bitcoinEntriesExtra2, ...bitcoinEntriesExtra3);
+solanaEntries.push(
+  ...solanaEntriesExtra2,
+  ...solanaEntriesExtra3,
+  ...solanaEntriesExtra4,
+  ...solanaEntriesExtra5,
+);
+hederaEntries.push(...hederaEntriesExtra2, ...hederaEntriesExtra3);
+bnbEntries.push(...bnbEntriesExtra);
+xrpEntries.push(...xrpEntriesExtra);
+tronEntries.push(...tronEntriesExtra);
+dogeEntries.push(...dogecoinEntriesExtra);
+avalancheEntries.push(...avalancheEntriesExtra2);
+arbitrumEntries.push(...arbitrumEntriesExtra2);
+injectiveEntries.push(...injectiveEntriesExtra);
+immutableEntries.push(...immutableEntriesExtra);
+chainlinkEntries.push(...chainlinkEntriesExtra);
+mantleEntries.push(...mantleEntriesExtra);
+rwaEntries.push(...rwaEntriesExtra2, ...rwaEntriesExtra3);
+creatorEntries.push(...creatorEntriesExtra2, ...creatorEntriesExtra3);
+cosmosEntries.push(...cosmosEntriesExtra2, ...cosmosEntriesExtra3);
+nearEntries.push(...nearEntriesExtra2);
+polygonEntries.push(...polygonEntriesExtra2);
+optimismEntries.push(...optimismEntriesExtra2);
+baseEntries.push(...baseEntriesExtra2);
+tezosEntries.push(...tezosEntriesExtra2);
+filecoinEntries.push(...filecoinEntriesExtra2);
+stellarEntries.push(...stellarEntriesExtra2);
+cardanoEntries.push(...cardanoEntriesExtra2);
+algorandEntries.push(...algorandEntriesExtra2);
+vechainEntries.push(...vechainEntriesExtra);
+galaEntries.push(...galaEntriesExtra);
+enjinEntries.push(...enjinEntriesExtra);
+chilizEntries.push(...chilizEntriesExtra);
+heliumEntries.push(...heliumEntriesExtra2);
+// Add finalEntries and extraEntries7 to ethereum (mixed multi-chain)
+ethereumEntries.push(...finalEntries.filter((e) => e.ecosystem === "ethereum"));
+bitcoinEntries.push(...finalEntries.filter((e) => e.ecosystem === "bitcoin"));
+bnbEntries.push(...finalEntries.filter((e) => e.ecosystem === "bnb"));
+solanaEntries.push(...finalEntries.filter((e) => e.ecosystem === "solana"));
+arbitrumEntries.push(...finalEntries.filter((e) => e.ecosystem === "arbitrum"));
+baseEntries.push(...finalEntries.filter((e) => e.ecosystem === "base"));
+optimismEntries.push(...finalEntries.filter((e) => e.ecosystem === "optimism"));
+polygonEntries.push(...finalEntries.filter((e) => e.ecosystem === "polygon"));
+avalancheEntries.push(
+  ...finalEntries.filter((e) => e.ecosystem === "avalanche"),
+);
+cosmosEntries.push(...finalEntries.filter((e) => e.ecosystem === "cosmos"));
+creatorEntries.push(...finalEntries.filter((e) => e.ecosystem === "creator"));
+immutableEntries.push(
+  ...finalEntries.filter((e) => e.ecosystem === "immutable"),
+);
+enjinEntries.push(...finalEntries.filter((e) => e.ecosystem === "enjin"));
+ethereumEntries.push(
+  ...extraEntries7.filter((e) => e.ecosystem === "ethereum"),
+);
+bitcoinEntries.push(...extraEntries7.filter((e) => e.ecosystem === "bitcoin"));
+solanaEntries.push(...extraEntries7.filter((e) => e.ecosystem === "solana"));
+cosmosEntries.push(...extraEntries7.filter((e) => e.ecosystem === "cosmos"));
+polygonEntries.push(...extraEntries7.filter((e) => e.ecosystem === "polygon"));
+optimismEntries.push(
+  ...extraEntries7.filter((e) => e.ecosystem === "optimism"),
+);
+mantleEntries.push(...extraEntries7.filter((e) => e.ecosystem === "mantle"));
+nearEntries.push(...extraEntries7.filter((e) => e.ecosystem === "near"));
+hederaEntries.push(...extraEntries7.filter((e) => e.ecosystem === "hedera"));
+injectiveEntries.push(
+  ...extraEntries7.filter((e) => e.ecosystem === "injective"),
+);
+heliumEntries.push(...extraEntries7.filter((e) => e.ecosystem === "helium"));
+baseEntries.push(...extraEntries7.filter((e) => e.ecosystem === "base"));
+arbitrumEntries.push(
+  ...extraEntries7.filter((e) => e.ecosystem === "arbitrum"),
+);
+rwaEntries.push(...extraEntries7.filter((e) => e.ecosystem === "rwa"));
 
 // ─── ECOSYSTEM GROUPS ─────────────────────────────────────────────────────────
 
@@ -5273,6 +6151,14 @@ export const ecosystemGroups: EcosystemGroup[] = [
     token: "CHZ",
     tier: 4,
     entries: chilizEntries,
+  },
+  // Tier 3
+  {
+    slug: "helium",
+    name: "Helium Network",
+    token: "HNT",
+    tier: 3,
+    entries: heliumEntries,
   },
   // Tier 5
   {

@@ -1,8 +1,11 @@
 import { Toaster } from "@/components/ui/sonner";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { BonsaiNewsCarousel } from "./components/BonsaiNewsCarousel";
 import type { SortMode } from "./components/EcosystemSection";
 import { EcosystemSection } from "./components/EcosystemSection";
+import { EmailSignupWidget } from "./components/EmailSignupWidget";
+import { FeaturedSection } from "./components/FeaturedSection";
 import { FilterBar } from "./components/FilterBar";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
@@ -30,6 +33,7 @@ import { useOisyWallet } from "./hooks/useOisyWallet";
 import { useRatings } from "./hooks/useRatings";
 import { useRecordEvent } from "./hooks/useRecordEvent";
 import { useSubmitRating } from "./hooks/useSubmitRating";
+import { BannerLogPage } from "./pages/BannerLogPage";
 import { LeaderboardPage } from "./pages/LeaderboardPage";
 import { UserProfilePage } from "./pages/UserProfilePage";
 // clearStaleSession / markSessionStale are now handled at module level in main.tsx
@@ -200,14 +204,29 @@ export default function App() {
 
       const group = groupMap.get(slug)!;
 
-      // Deduplicate: if a static entry with the same name exists, replace it
-      const existingIdx = group.entries.findIndex(
-        (e) => e.name.toLowerCase() === be.name.toLowerCase(),
-      );
-      if (existingIdx >= 0) {
-        group.entries[existingIdx] = be;
+      // Deduplicate by URL first, then by name
+      const normalizeUrl = (u: string) =>
+        u
+          .toLowerCase()
+          .replace(/\/+$/, "")
+          .replace(/^https?:\/\//, "");
+      const beUrl = normalizeUrl(be.url ?? "");
+      const existingByUrl = beUrl
+        ? group.entries.findIndex(
+            (e) => normalizeUrl((e as { url?: string }).url ?? "") === beUrl,
+          )
+        : -1;
+      if (existingByUrl >= 0) {
+        group.entries[existingByUrl] = be;
       } else {
-        group.entries.push(be);
+        const existingByName = group.entries.findIndex(
+          (e) => e.name.toLowerCase() === be.name.toLowerCase(),
+        );
+        if (existingByName >= 0) {
+          group.entries[existingByName] = be;
+        } else {
+          group.entries.push(be);
+        }
       }
     }
 
@@ -245,7 +264,17 @@ export default function App() {
         return true;
       })
       .map((group) => {
-        let entries = group.entries;
+        // Deduplicate entries by URL within each group
+        const seenUrls = new Set<string>();
+        let entries = group.entries.filter((e) => {
+          const norm = ((e as { url?: string }).url ?? "")
+            .toLowerCase()
+            .replace(/\/+$/, "")
+            .replace(/^https?:\/\//, "");
+          if (!norm || seenUrls.has(norm)) return false;
+          seenUrls.add(norm);
+          return true;
+        });
 
         // Category filter
         if (activeCategory !== "all") {
@@ -288,6 +317,16 @@ export default function App() {
     return (
       <>
         <AdminPage />
+        <Toaster />
+      </>
+    );
+  }
+
+  // Banner Log route
+  if (currentHash === "#banner-log") {
+    return (
+      <>
+        <BannerLogPage />
         <Toaster />
       </>
     );
@@ -339,7 +378,11 @@ export default function App() {
   return (
     <>
       {/* Onboarding — auto-shows on first visit */}
-      <OnboardingModal onLogin={login} />
+      <OnboardingModal
+        onLogin={login}
+        totalEntries={displayTotalEntries}
+        totalEcosystems={displayTotalEcosystems}
+      />
 
       {/* Tip modal */}
       <TipModal open={tipOpen} onClose={() => setTipOpen(false)} />
@@ -499,6 +542,28 @@ export default function App() {
                     </div>
                   )}
 
+                {/* Email signup widget — only on unfiltered view */}
+                {searchQuery === "" &&
+                  activeCategory === "all" &&
+                  activeChain === "all" && (
+                    <EmailSignupWidget identity={identity} />
+                  )}
+
+                {/* Bonsai Ecosystem News Carousel — only on unfiltered view */}
+                {searchQuery === "" &&
+                  activeCategory === "all" &&
+                  activeChain === "all" && <BonsaiNewsCarousel />}
+
+                {/* Featured section — only on unfiltered view */}
+                {searchQuery === "" &&
+                  activeCategory === "all" &&
+                  activeChain === "all" && <FeaturedSection />}
+
+                {/* ICP News & Community Updates — only on unfiltered view */}
+                {searchQuery === "" &&
+                  activeCategory === "all" &&
+                  activeChain === "all" && <NewsSection />}
+
                 {/* Ecosystem sections */}
                 {filteredGroups.map(({ group, entries }, idx) => (
                   <EcosystemSection
@@ -518,11 +583,6 @@ export default function App() {
                     onLocalRate={submitLocalRating}
                   />
                 ))}
-
-                {/* ICP News & Community Updates — only on unfiltered view */}
-                {searchQuery === "" &&
-                  activeCategory === "all" &&
-                  activeChain === "all" && <NewsSection />}
               </>
             )}
           </main>

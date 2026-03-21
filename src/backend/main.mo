@@ -10,8 +10,11 @@ import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
 import Set "mo:core/Set";
 
+
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+
+// Apply migration to transform the old actor state into the new one
 
 actor {
   public type Category = {
@@ -103,6 +106,13 @@ actor {
     badges : [Text];
   };
 
+  public type EmailSubscriber = {
+    email : Text;
+    principalId : ?Text;
+    subscribedAt : Time.Time;
+    source : Text;
+  };
+
   let ADMIN_SECRET : Text = "#WakeUp4";
 
   let bonsaiRegistryEntries = Map.empty<Nat, BonsaiRegistryEntry>();
@@ -115,6 +125,7 @@ actor {
   let userProfiles = Map.empty<Principal, PrivateUserProfile>();
   let pendingSubmissions = Map.empty<Nat, PendingSubmission>();
   var listingFeeE8s = 100_000_000 : Nat;
+  let emailSubscribers = Map.empty<Text, EmailSubscriber>();
 
   func requireAdminSecret(secret : Text) {
     if (not Text.equal(secret, ADMIN_SECRET)) {
@@ -538,4 +549,46 @@ actor {
       }
     );
   };
+
+  // Email Subscription Methods
+
+  // Store new persistent email subscriber
+  public shared ({ caller = _ }) func subscribeEmail(email : Text, source : Text) : async () {
+    let subscriber : EmailSubscriber = {
+      email;
+      principalId = null;
+      subscribedAt = Time.now();
+      source;
+    };
+
+    emailSubscribers.add(email, subscriber);
+  };
+
+  // Link email with caller principal
+  public shared ({ caller }) func linkEmailToPrincipal(email : Text) : async () {
+    requireAuthenticated(caller);
+
+    switch (emailSubscribers.get(email)) {
+      case (null) { Runtime.trap("Email not found") };
+      case (?subscriber) {
+        let updatedSubscriber = {
+          subscriber with principalId = ?caller.toText()
+        };
+        emailSubscribers.add(email, updatedSubscriber);
+      };
+    };
+  };
+
+  // Get all subscribers with secret - admin only
+  public shared ({ caller }) func getAllSubscribersWithSecret(secret : Text) : async [EmailSubscriber] {
+    requireAdminSecretAndRole(caller, secret);
+
+    emailSubscribers.values().toArray();
+  };
+
+  // Get subscriber count
+  public query ({ caller = _ }) func getSubscriberCount() : async Nat {
+    emailSubscribers.size();
+  };
 };
+

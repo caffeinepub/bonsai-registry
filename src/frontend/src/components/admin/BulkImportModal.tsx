@@ -19,8 +19,9 @@ import {
   Info,
   Loader2,
   RefreshCw,
+  Upload,
 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 
 interface BulkImportModalProps {
@@ -83,6 +84,10 @@ function parseEntries(raw: string): {
   }
 
   const entries: BonsaiRegistryEntry[] = [];
+
+  // Deduplicate by URL within the import batch
+  const seenUrls = new Set<string>();
+
   for (let i = 0; i < parsed.length; i++) {
     const item = parsed[i] as RawEntry;
     if (!item.name || typeof item.name !== "string") {
@@ -103,6 +108,10 @@ function parseEntries(raw: string): {
         error: `Entry ${i + 1}: missing or invalid "ecosystem"`,
       };
     }
+
+    const normalizedUrl = item.url.trim().toLowerCase().replace(/\/+$/, "");
+    if (seenUrls.has(normalizedUrl)) continue; // skip duplicate
+    seenUrls.add(normalizedUrl);
 
     const rawCategories = Array.isArray(item.categories) ? item.categories : [];
     const categories = rawCategories.filter((c) =>
@@ -133,6 +142,8 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
   const [preview, setPreview] = useState<BonsaiRegistryEntry[]>([]);
   const [importedCount, setImportedCount] = useState<number | null>(null);
   const [skippedCount, setSkippedCount] = useState<number>(0);
+  const [fileName, setFileName] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     status: healthStatus,
@@ -140,9 +151,10 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
     retry: healthRetry,
   } = useCanisterHealth(open && !!actor);
 
-  const handleTextChange = useCallback((value: string) => {
+  const processJson = useCallback((value: string, name?: string) => {
     setJsonText(value);
     setImportedCount(null);
+    if (name !== undefined) setFileName(name);
     if (!value.trim()) {
       setParseError(null);
       setPreview([]);
@@ -152,6 +164,31 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
     setParseError(error);
     setPreview(entries);
   }, []);
+
+  const handleTextChange = useCallback(
+    (value: string) => processJson(value, undefined),
+    [processJson],
+  );
+
+  const handleFileUpload = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      if (!file.name.endsWith(".json")) {
+        toast.error("Please select a .json file");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target?.result as string;
+        processJson(text, file.name);
+      };
+      reader.readAsText(file);
+      // Reset input so same file can be re-selected
+      e.target.value = "";
+    },
+    [processJson],
+  );
 
   const ADMIN_SECRET = "#WakeUp4";
 
@@ -167,7 +204,9 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
       setSkippedCount(skipped);
       if (skipped > 0) {
         toast.success(
-          `Imported ${count} new ${count === 1 ? "entry" : "entries"}. ${skipped} duplicate${skipped === 1 ? "" : "s"} skipped.`,
+          `Imported ${count} new ${
+            count === 1 ? "entry" : "entries"
+          }. ${skipped} duplicate${skipped === 1 ? "" : "s"} skipped.`,
         );
       } else {
         toast.success(
@@ -188,6 +227,7 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
     setPreview([]);
     setImportedCount(null);
     setSkippedCount(0);
+    setFileName(null);
     mutation.reset();
     onClose();
   };
@@ -211,12 +251,58 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
             </DialogTitle>
           </div>
           <DialogDescription className="text-xs text-muted-foreground">
-            Paste a JSON array of entries to import them all at once into the
-            backend registry.
+            Upload a JSON file or paste a JSON array to import entries into the
+            backend registry. Duplicate URLs are automatically skipped.
           </DialogDescription>
         </DialogHeader>
 
         <Separator />
+
+        {/* File upload area */}
+        <div>
+          <p className="text-xs font-medium text-foreground mb-2">
+            Upload JSON File
+          </p>
+          <div
+            className="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border hover:border-primary/40 bg-secondary/30 hover:bg-primary/5 transition-colors cursor-pointer py-6 px-4"
+            onClick={() => fileInputRef.current?.click()}
+            onKeyDown={(e) =>
+              e.key === "Enter" && fileInputRef.current?.click()
+            }
+            // biome-ignore lint/a11y/useSemanticElements: <explanation>
+            role="button"
+            tabIndex={0}
+            aria-label="Upload JSON file"
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json,application/json"
+              className="hidden"
+              onChange={handleFileUpload}
+              data-ocid="admin.bulk_import.upload_button"
+            />
+            <Upload className="w-8 h-8 text-muted-foreground/40" />
+            {fileName ? (
+              <div className="text-center">
+                <p className="text-sm font-medium text-primary">{fileName}</p>
+                <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                  File loaded — review below before importing
+                </p>
+              </div>
+            ) : (
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">
+                  Click to select a{" "}
+                  <span className="text-primary font-medium">.json</span> file
+                </p>
+                <p className="text-[10px] text-muted-foreground/50 mt-0.5">
+                  Or paste JSON directly in the text area below
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Format hint */}
         <div className="rounded-md border border-border bg-secondary/40 p-3">
@@ -240,7 +326,9 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
         {/* Textarea */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium text-foreground">JSON Data</p>
+            <p className="text-xs font-medium text-foreground">
+              Or Paste JSON Directly
+            </p>
             {preview.length > 0 && !parseError && (
               <span className="text-[10px] font-mono text-primary">
                 ✓ {preview.length} entries ready to import
@@ -252,7 +340,7 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
             value={jsonText}
             onChange={(e) => handleTextChange(e.target.value)}
             placeholder={`Paste your JSON array here...\n\n${EXAMPLE}`}
-            rows={12}
+            rows={10}
             className="font-mono text-xs bg-secondary border-border focus-visible:border-primary focus-visible:ring-0 resize-y"
           />
 
@@ -269,6 +357,11 @@ export function BulkImportModal({ open, onClose }: BulkImportModalProps) {
             <div className="flex items-center gap-2 p-2.5 rounded bg-primary/10 border border-primary/20 text-xs text-primary">
               <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
               Ready to import <strong>{preview.length}</strong> entries
+              {fileName && (
+                <span className="text-muted-foreground/60">
+                  from {fileName}
+                </span>
+              )}
             </div>
           )}
         </div>

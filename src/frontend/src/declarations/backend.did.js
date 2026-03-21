@@ -39,6 +39,12 @@ export const EntryRatingStats = IDL.Record({
   'count' : IDL.Nat,
   'average' : IDL.Float64,
 });
+export const EmailSubscriber = IDL.Record({
+  'subscribedAt' : Time,
+  'source' : IDL.Text,
+  'email' : IDL.Text,
+  'principalId' : IDL.Opt(IDL.Text),
+});
 export const EntryRating = IDL.Record({
   'entryId' : IDL.Nat,
   'rating' : IDL.Nat,
@@ -123,6 +129,11 @@ export const idlService = IDL.Service({
       [IDL.Vec(BonsaiRegistryEntry)],
       ['query'],
     ),
+  'getAllSubscribersWithSecret' : IDL.Func(
+      [IDL.Text],
+      [IDL.Vec(EmailSubscriber)],
+      [],
+    ),
   'getCallerAllRatings' : IDL.Func(
       [],
       [IDL.Vec(IDL.Tuple(IDL.Nat, IDL.Nat))],
@@ -157,8 +168,10 @@ export const idlService = IDL.Service({
       [IDL.Opt(ExtendedUserProfile)],
       ['query'],
     ),
+  'getSubscriberCount' : IDL.Func([], [IDL.Nat], ['query']),
   'getTotalEntriesCount' : IDL.Func([], [IDL.Nat], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'linkEmailToPrincipal' : IDL.Func([IDL.Text], [], []),
   'rateEntry' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
   'rejectPendingSubmissionWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   'removeRegistryEntry' : IDL.Func([IDL.Nat], [], []),
@@ -170,6 +183,7 @@ export const idlService = IDL.Service({
       [IDL.Nat],
       [],
     ),
+  'subscribeEmail' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'unbookmarkEntry' : IDL.Func([IDL.Nat], [], []),
   'updateRegistryEntry' : IDL.Func([IDL.Nat, BonsaiRegistryEntry], [], []),
   'updateRegistryEntryWithSecret' : IDL.Func(
@@ -212,6 +226,12 @@ export const idlFactory = ({ IDL }) => {
   const EntryRatingStats = IDL.Record({
     'count' : IDL.Nat,
     'average' : IDL.Float64,
+  });
+  const EmailSubscriber = IDL.Record({
+    'subscribedAt' : Time,
+    'source' : IDL.Text,
+    'email' : IDL.Text,
+    'principalId' : IDL.Opt(IDL.Text),
   });
   const EntryRating = IDL.Record({ 'entryId' : IDL.Nat, 'rating' : IDL.Nat });
   const SocialLinks = IDL.Record({
@@ -298,6 +318,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(BonsaiRegistryEntry)],
         ['query'],
       ),
+    'getAllSubscribersWithSecret' : IDL.Func(
+        [IDL.Text],
+        [IDL.Vec(EmailSubscriber)],
+        [],
+      ),
     'getCallerAllRatings' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Nat, IDL.Nat))],
@@ -332,8 +357,10 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(ExtendedUserProfile)],
         ['query'],
       ),
+    'getSubscriberCount' : IDL.Func([], [IDL.Nat], ['query']),
     'getTotalEntriesCount' : IDL.Func([], [IDL.Nat], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'linkEmailToPrincipal' : IDL.Func([IDL.Text], [], []),
     'rateEntry' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
     'rejectPendingSubmissionWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
     'removeRegistryEntry' : IDL.Func([IDL.Nat], [], []),
@@ -345,6 +372,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Nat],
         [],
       ),
+    'subscribeEmail' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'unbookmarkEntry' : IDL.Func([IDL.Nat], [], []),
     'updateRegistryEntry' : IDL.Func([IDL.Nat, BonsaiRegistryEntry], [], []),
     'updateRegistryEntryWithSecret' : IDL.Func(

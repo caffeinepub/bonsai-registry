@@ -68,6 +68,7 @@ export function Footer({ onTipOpen }: FooterProps) {
                   url: "https://t3kno-logic.xyz",
                 },
                 { name: "Caffeine AI", url: "https://caffeine.ai" },
+                { name: "Eliza Labs", url: "https://elizalabs.ai/" },
               ].map((link) => (
                 <li key={link.url}>
                   <a

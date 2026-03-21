@@ -47,6 +47,12 @@ export interface PendingSubmission {
     entry: BonsaiRegistryEntry;
     paymentMemo: string;
 }
+export interface EmailSubscriber {
+    subscribedAt: Time;
+    source: string;
+    email: string;
+    principalId?: string;
+}
 export interface BonsaiRegistryEntry {
     id: bigint;
     url: string;
@@ -98,6 +104,7 @@ export interface backendInterface {
     getAllBookmarkedEntries(): Promise<Array<bigint>>;
     getAllEntryRatings(): Promise<Array<[bigint, EntryRatingStats]>>;
     getAllRegistryEntries(offset: bigint, limit: bigint): Promise<Array<BonsaiRegistryEntry>>;
+    getAllSubscribersWithSecret(secret: string): Promise<Array<EmailSubscriber>>;
     getCallerAllRatings(): Promise<Array<[bigint, bigint]>>;
     getCallerRating(entryId: bigint): Promise<bigint | null>;
     getCallerUserProfile(): Promise<ExtendedUserProfile | null>;
@@ -108,8 +115,10 @@ export interface backendInterface {
     getListingFee(): Promise<bigint>;
     getPendingSubmissions(secret: string): Promise<Array<PendingSubmission>>;
     getPublicUserProfile(user: Principal): Promise<ExtendedUserProfile | null>;
+    getSubscriberCount(): Promise<bigint>;
     getTotalEntriesCount(): Promise<bigint>;
     isCallerAdmin(): Promise<boolean>;
+    linkEmailToPrincipal(email: string): Promise<void>;
     rateEntry(entryId: bigint, rating: bigint): Promise<void>;
     rejectPendingSubmissionWithSecret(secret: string, submissionId: bigint): Promise<void>;
     removeRegistryEntry(id: bigint): Promise<void>;
@@ -117,6 +126,7 @@ export interface backendInterface {
     saveCallerUserProfile(profile: ExtendedUserProfile): Promise<void>;
     setListingFeeWithSecret(secret: string, fee: bigint): Promise<void>;
     submitProjectListing(entry: BonsaiRegistryEntry, paymentMemo: string): Promise<bigint>;
+    subscribeEmail(email: string, source: string): Promise<void>;
     unbookmarkEntry(entryId: bigint): Promise<void>;
     updateRegistryEntry(id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
     updateRegistryEntryWithSecret(secret: string, id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
