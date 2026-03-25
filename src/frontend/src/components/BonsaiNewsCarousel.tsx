@@ -38,10 +38,29 @@ function parseAtomXml(xml: string): NewsItem[] {
       .slice(0, 120);
 
     let image: string | null = null;
-    const mediaThumbnail = entry.querySelector("thumbnail");
-    if (mediaThumbnail) {
-      image = mediaThumbnail.getAttribute("url");
-    } else {
+    // 1. Try namespaced media:thumbnail (Yahoo Media RSS extension)
+    const mediaNs = entry.getElementsByTagNameNS(
+      "http://search.yahoo.com/mrss/",
+      "thumbnail",
+    );
+    if (mediaNs.length > 0) image = mediaNs[0].getAttribute("url");
+    // 2. Fallback: scan all child elements by localName
+    if (!image) {
+      const allEls = Array.from(entry.getElementsByTagName("*"));
+      const thumb = allEls.find((el) => el.localName === "thumbnail");
+      if (thumb) image = thumb.getAttribute("url");
+    }
+    // 3. Check enclosure elements (common in RSS/Atom)
+    if (!image) {
+      const enclosure =
+        entry.querySelector("enclosure") ??
+        entry.getElementsByTagName("enclosure")[0];
+      const encType = enclosure?.getAttribute("type") ?? "";
+      if (enclosure && encType.startsWith("image/"))
+        image = enclosure.getAttribute("url");
+    }
+    // 4. Fallback: first <img> in content HTML
+    if (!image) {
       const contentHtml = entry.querySelector("content")?.textContent ?? "";
       const imgMatch = contentHtml.match(/<img[^>]+src=["']([^"']+)["']/i);
       if (imgMatch) image = imgMatch[1];
@@ -115,7 +134,7 @@ function NewsCard({ item }: { item: NewsItem }) {
 
   useEffect(() => {
     if (!item.image) {
-      const microlinkUrl = `https://api.microlink.io?url=${encodeURIComponent(item.link)}&meta=false&screenshot=false`;
+      const microlinkUrl = `https://api.microlink.io?url=${encodeURIComponent(item.link)}`;
       fetch(microlinkUrl)
         .then((r) => r.json())
         .then((data) => {

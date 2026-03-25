@@ -84,7 +84,8 @@ export type Category =
   | "exchange"
   | "social"
   | "tools"
-  | "commerce";
+  | "commerce"
+  | "cloud_hosting";
 
 export type Tier = 1 | 2 | 3 | 4 | 5;
 
@@ -2364,6 +2365,16 @@ const icpEntries: RegistryEntry[] = [
     ecosystem: "icp",
     tags: ["tools"],
     tier: 2,
+  },
+  {
+    id: "icp-ubin-001",
+    name: "uBin",
+    description:
+      "uBin is a 100% on-chain cloud hosting service built on the Internet Computer Protocol. Created by Daniel McCoy, uBin enables developers and creators to host files, images, videos, and media with true decentralization. No centralized servers, no censorship, fully on-chain storage.",
+    url: "https://h3cjw-syaaa-aaaam-qbbia-cai.ic0.app/",
+    ecosystem: "icp",
+    tags: ["cloud_hosting", "tools"],
+    tier: 1,
   },
   {
     id: "icp-002",

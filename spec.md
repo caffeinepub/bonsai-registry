@@ -1,48 +1,63 @@
-# Bonsai Registry
+# Bonsai Registry — Version 66
 
 ## Current State
-- Static registry data in `registryData.ts` with 600+ entries across 34 ecosystems (Bitcoin, Ethereum, Solana, Hedera, ICP, Avalanche, and more)
-- News data in `newsData.ts` with 39 ICP news articles and 3 scam alerts
-- Monetization data in `monetizationData.ts` with featured/verified/sponsored entries
-- Backend supports editable entries via bulk import
-- Full feature set: admin panel, community ratings, user profiles, OISY wallet, leaderboard, analytics, tipping
+- EmailSignupWidget: email-only, optional II principal linking, no OISY principal
+- EmailSubscriber type: email, principalId (?Text), subscribedAt, source
+- Category variant: #gaming, #defi, #nft, #wallet, #exchange, #social, #tools, #commerce (no cloud_hosting)
+- ExtendedUserProfile: no oisyPrincipal field persisted
+- No ambassador/influencer system
+- No creator commerce contracts
+- No Bonsai Approved badge/airdrop mechanism
+- No uBin registry entry or Cloud Hosting category
 
 ## Requested Changes (Diff)
 
 ### Add
-- ~120 new ICP ecosystem entries from `bonsai-registry-extended.json`:
-  - Developer agents: agent-js, ic-js, icblast, node-ic0, agent-rs, dfx, agent_dart, agent-go, agent-unity, ICP.NET
-  - CDK frameworks: ic-cdk (Rust), Kybra (Python), Azle (JS/TS), Chico (C/C++), icpp (C++), cdk-as (AssemblyScript), Ego, CDK Framework
-  - Motoko ecosystem: MOPS, Vessel, Motoko GitHub Repo, Motoko Playground, Motoko VS Code, Motoko.js, Motoko Formatter, Embed Motoko, Blocks editor, Awesome Motoko
-  - Candid tools: Candid GitHub Repo, Candid UI, didc, idl2json, Intellij Plugin, + language-specific Candid libs (JS, Dart, C#, Kotlin, Elm, Haskell, Java, AssemblyScript, Motoko)
-  - Database/storage: CanDB, ic-sqlite, ic-stable-memory, stable-structures
-  - Token standards: ICRC-1, ICRC-2, DIP20, DIP721, EXT, Origyn NFT
-  - Developer tooling: IC Inspector, Canistergeek, ic-repl, ICPipeline, ic-nix, canister-profiling
-  - Cross-chain tools: Chain-key ECDSA, EVM Utility Canister, ic-web3, Terabethia, Omnic, Orally, No key wallet
-  - DeFi: Exchange Rate Canister, DeSwap Orderbook, Spinner, ICTC, Axon, SNS
-  - Wallets: AstroX Me, Bitfinity, NFID, Stoic, connect2ic
-  - Registries/explorers: Canlista, Cyql, ICLighthouse Explorer, ICSCAN, ICP Ecosystem Showcase
-  - Starter templates: create-ic, create-ic-app, ic-rust-starter, vite-react-motoko, canister-sdk
-  - Social: Messity, OpenChat (GitHub), W3NS
-  - Gaming: WebGL Sample
-  - Other tools: ic-blackhole, Metrics encoder, Launchtrail, ic-nix
-  - Learning: Internet Computer Developer Hub, IC Sample Dapps, Considerations for NFT Developers, Developer Grants Video, Language Guide
-  - Tutorials: Rust+React+II tutorial, Access control, Backup/Restore, Hosting ERC-721 metadata, Migration Motoko→Rust, Converting ICP to Cycles, Social Platform SEO, etc.
-- New Bitcoin entries: Bitcoin.org, Blockstream Explorer, Liquid Network, Runes Protocol, Hiro (Stacks), Leather Wallet, BlueWallet, Muun, Phoenix Wallet, Zest Protocol, Bitflow Finance, sBTC Bridge, Blockstream (Infrastructure), Ordinals.com
-- New Hedera entries: WallaWallet, Hashport, HashGuild, RedSwan CRE, Hedera Asset Tokenization Studio, HeadStarter, HLiquity, Hedera AI Studio, Hedera Agent Marketplace, TrackTrace, atma.io, DOVU, Verra, Hedera Guardian, AUDD, Hedera Stablecoin Studio, ioBuilders, Archax, EarthID, Hedera Web3 Applications
-- New Solana entries: Helius, Triton, Solscan, Pump.fun, Kamino Finance, Mango Markets, Meteora, Parcl, Wormhole, Exchange Art, Genopets, CyberFrogs, DeFira, SolChicks
-- 7 new news articles from DFINITY Medium blog (IDs 40-46)
+- OISY wallet principal ID required field in mailing list signup (EmailSubscriber type updated to require oisyPrincipal: Text)
+- EmailSignupWidget: OISY principal field (required), helper text, validation
+- Bonsai Approved airdrop admin system: admin can mark wallets as approved, view/export airdrop list
+- #cloud_hosting category to Category variant
+- uBin entry in registry (ICP, Cloud Hosting, Tools)
+- uBin hosting recommendation in UserProfilePage profile edit section
+- Ambassador Program: new page at #ambassador
+  - Influencer onboarding/registration with platform T&S (family-safe policy)
+  - Customizable influencer profiles (bio, avatar, banner, social links, media showcase: MP4/GIF/PNG/JPEG)
+  - Influencer sets their own price per campaign (ckUSDC)
+  - Influencer writes custom T&S agreement for clients
+  - Client must agree to influencer T&S before contract proceeds
+  - All T&S agreements stored on-chain transparently
+  - Contract workflow: created → client accepts T&S → active → completed or disputed
+  - DAO vote on disputed contracts (community votes)
+  - Contracts visible publicly for DAO transparency
+  - Ambassador profiles amplified via Bonsai Registry ecosystem
+  - Full media stack for ambassador profile showcase
 
 ### Modify
-- `newsData.ts`: append 7 new DFINITY blog articles from the GitHub repo that are missing from the current dataset
+- Backend: EmailSubscriber adds oisyPrincipal required field
+- Backend: subscribeEmail function signature adds oisyPrincipal parameter
+- Backend: Category adds #cloud_hosting
+- Backend: ExtendedUserProfile adds oisyPrincipal: ?Text
+- EmailSignupWidget: require OISY principal input before allowing subscribe
+- App.tsx: add #ambassador route
+- Admin panel: add Airdrop tab showing approved wallet list with export
 
 ### Remove
-- Nothing
+- Nothing removed
 
 ## Implementation Plan
-1. Append new ICP entries to the `icpEntries` array in `registryData.ts` with unique IDs (icp-dev-001 etc.)
-2. Append new Bitcoin entries to `bitcoinEntries` array
-3. Append new Hedera entries to `hederaEntries` array
-4. Append new Solana entries to `solanaEntries` array
-5. Append 7 new news articles to `icpNews` array in `newsData.ts`
-6. Run validation and deploy
+1. Update main.mo:
+   - Add #cloud_hosting to Category
+   - Update EmailSubscriber to include oisyPrincipal: Text
+   - Update subscribeEmail to accept oisyPrincipal param
+   - Add oisyPrincipal field to ExtendedUserProfile
+   - Add AmbassadorProfile type: principalId, displayName, bio, avatarUrl, bannerUrl, socialLinks, mediaItems, customTerms, pricePerCampaign (ckUSDC), joinedAt, status (#pending | #approved | #suspended), tags
+   - Add CreatorContract type: id, influencer, client, campaignTitle, description, influencerPrice, clientAgreedToTerms, status (#draft | #pending_agreement | #active | #completed | #disputed | #resolved), termsSnapshot, createdAt, completedAt, disputeReason, daoVotes
+   - Add DAOVote type: voter, contractId, vote (#approve | #reject), comment, timestamp
+   - Functions: registerAmbassador, getAmbassadorProfile, saveAmbassadorProfile, getAllAmbassadors, createContract, clientAgreeToTerms, completeContract, disputeContract, voteOnContract, getContract, getContractsByAmbassador, getAllPublicContracts, getOpenDisputedContracts
+   - Add bonsaiApprovedList: [Principal], markBonsaiApprovedWithSecret, getBonsaiApprovedListWithSecret
+2. Update EmailSignupWidget to require oisyPrincipal
+3. Update UserProfilePage to save/show oisyPrincipal, add uBin hosting recommendation
+4. Add AmbassadorPage.tsx with onboarding, profile editor, contract creation/management
+5. Add admin Airdrop tab
+6. Add uBin to registry entries
+7. Wire #ambassador route in App.tsx

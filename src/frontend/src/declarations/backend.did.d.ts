@@ -111,6 +111,7 @@ export interface _SERVICE {
     Array<BonsaiRegistryEntry>
   >,
   'getAllSubscribersWithSecret' : ActorMethod<[string], Array<EmailSubscriber>>,
+  'getBannerAdsJson' : ActorMethod<[], string>,
   'getCallerAllRatings' : ActorMethod<[], Array<[bigint, bigint]>>,
   'getCallerRating' : ActorMethod<[bigint], [] | [bigint]>,
   'getCallerUserProfile' : ActorMethod<[], [] | [ExtendedUserProfile]>,
@@ -138,6 +139,7 @@ export interface _SERVICE {
   >,
   'removeRegistryEntry' : ActorMethod<[bigint], undefined>,
   'removeRegistryEntryWithSecret' : ActorMethod<[string, bigint], undefined>,
+  'saveBannerAdsWithSecret' : ActorMethod<[string, string], undefined>,
   'saveCallerUserProfile' : ActorMethod<[ExtendedUserProfile], undefined>,
   'setListingFeeWithSecret' : ActorMethod<[string, bigint], undefined>,
   'submitProjectListing' : ActorMethod<[BonsaiRegistryEntry, string], bigint>,

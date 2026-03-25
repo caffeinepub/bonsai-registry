@@ -188,6 +188,7 @@ export interface backendInterface {
     getAllEntryRatings(): Promise<Array<[bigint, EntryRatingStats]>>;
     getAllRegistryEntries(offset: bigint, limit: bigint): Promise<Array<BonsaiRegistryEntry>>;
     getAllSubscribersWithSecret(secret: string): Promise<Array<EmailSubscriber>>;
+    getBannerAdsJson(): Promise<string>;
     getCallerAllRatings(): Promise<Array<[bigint, bigint]>>;
     getCallerRating(entryId: bigint): Promise<bigint | null>;
     getCallerUserProfile(): Promise<ExtendedUserProfile | null>;
@@ -206,6 +207,7 @@ export interface backendInterface {
     rejectPendingSubmissionWithSecret(secret: string, submissionId: bigint): Promise<void>;
     removeRegistryEntry(id: bigint): Promise<void>;
     removeRegistryEntryWithSecret(secret: string, id: bigint): Promise<void>;
+    saveBannerAdsWithSecret(secret: string, adsJson: string): Promise<void>;
     saveCallerUserProfile(profile: ExtendedUserProfile): Promise<void>;
     setListingFeeWithSecret(secret: string, fee: bigint): Promise<void>;
     submitProjectListing(entry: BonsaiRegistryEntry, paymentMemo: string): Promise<bigint>;
@@ -397,6 +399,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getAllSubscribersWithSecret(arg0);
             return from_candid_vec_n16(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getBannerAdsJson(): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getBannerAdsJson();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getBannerAdsJson();
+            return result;
         }
     }
     async getCallerAllRatings(): Promise<Array<[bigint, bigint]>> {
@@ -648,6 +664,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.removeRegistryEntryWithSecret(arg0, arg1);
+            return result;
+        }
+    }
+    async saveBannerAdsWithSecret(arg0: string, arg1: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.saveBannerAdsWithSecret(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.saveBannerAdsWithSecret(arg0, arg1);
             return result;
         }
     }

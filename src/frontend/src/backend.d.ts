@@ -24,6 +24,7 @@ export interface ExtendedUserProfile {
     bookmarks: Array<bigint>;
     avatarUrl?: string;
     bannerUrl?: string;
+    oisyPrincipal?: [] | [string];
 }
 export type Time = bigint;
 export interface WalletAddresses {
@@ -52,6 +53,7 @@ export interface EmailSubscriber {
     source: string;
     email: string;
     principalId?: string;
+    oisyPrincipal?: string;
 }
 export interface BonsaiRegistryEntry {
     id: bigint;
@@ -92,6 +94,64 @@ export enum Variant_pending_approved_rejected {
     approved = "approved",
     rejected = "rejected"
 }
+export interface AmbassadorSocialLinks {
+    twitter: [] | [string];
+    instagram: [] | [string];
+    youtube: [] | [string];
+    tiktok: [] | [string];
+    website: [] | [string];
+}
+export interface AmbassadorMediaItem {
+    url: string;
+    mediaType: string;
+    caption: string;
+}
+export interface AmbassadorProfile {
+    principalId: string;
+    displayName: string;
+    bio: string;
+    avatarUrl: string;
+    bannerUrl: string;
+    socialLinks: AmbassadorSocialLinks;
+    mediaItems: Array<AmbassadorMediaItem>;
+    customTerms: string;
+    pricePerCampaign: number;
+    currency: string;
+    joinedAt: bigint;
+    status: { pending: null } | { approved: null } | { suspended: null };
+    tags: string[];
+    agreedToPlatformTerms: boolean;
+}
+export interface DaoVote {
+    voter: string;
+    contractId: string;
+    vote: { approve_influencer: null } | { approve_client: null } | { dismiss: null };
+    comment: string;
+    timestamp: bigint;
+}
+export interface CreatorContract {
+    id: string;
+    influencerPrincipal: string;
+    clientPrincipal: string;
+    campaignTitle: string;
+    description: string;
+    deliverables: string;
+    priceInCkUSDC: number;
+    influencerTermsSnapshot: string;
+    clientAgreedAt: [] | [bigint];
+    status: { draft: null } | { pending_agreement: null } | { active: null } | { completed: null } | { disputed: null } | { resolved: null };
+    createdAt: bigint;
+    completedAt: [] | [bigint];
+    disputeReason: string;
+    daoVotes: Array<DaoVote>;
+    resolvedBy: string;
+}
+export interface BonsaiApprovedEntry {
+    principalId: string;
+    oisyPrincipal: string;
+    email: string;
+    approvedAt: bigint;
+}
 export interface backendInterface {
     addRegistryEntry(entry: BonsaiRegistryEntry): Promise<bigint>;
     addRegistryEntryWithSecret(secret: string, entry: BonsaiRegistryEntry): Promise<bigint>;
@@ -105,6 +165,7 @@ export interface backendInterface {
     getAllEntryRatings(): Promise<Array<[bigint, EntryRatingStats]>>;
     getAllRegistryEntries(offset: bigint, limit: bigint): Promise<Array<BonsaiRegistryEntry>>;
     getAllSubscribersWithSecret(secret: string): Promise<Array<EmailSubscriber>>;
+    getBannerAdsJson(): Promise<string>;
     getCallerAllRatings(): Promise<Array<[bigint, bigint]>>;
     getCallerRating(entryId: bigint): Promise<bigint | null>;
     getCallerUserProfile(): Promise<ExtendedUserProfile | null>;
@@ -123,11 +184,33 @@ export interface backendInterface {
     rejectPendingSubmissionWithSecret(secret: string, submissionId: bigint): Promise<void>;
     removeRegistryEntry(id: bigint): Promise<void>;
     removeRegistryEntryWithSecret(secret: string, id: bigint): Promise<void>;
+    saveBannerAdsWithSecret(secret: string, adsJson: string): Promise<void>;
     saveCallerUserProfile(profile: ExtendedUserProfile): Promise<void>;
     setListingFeeWithSecret(secret: string, fee: bigint): Promise<void>;
     submitProjectListing(entry: BonsaiRegistryEntry, paymentMemo: string): Promise<bigint>;
-    subscribeEmail(email: string, source: string): Promise<void>;
+    subscribeEmail(email: string, oisyPrincipal: string, source: string): Promise<void>;
     unbookmarkEntry(entryId: bigint): Promise<void>;
     updateRegistryEntry(id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
     updateRegistryEntryWithSecret(secret: string, id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
+    registerAmbassador(profile: AmbassadorProfile): Promise<void>;
+    getAmbassadorProfile(principalId: string): Promise<AmbassadorProfile | null>;
+    saveAmbassadorProfile(profile: AmbassadorProfile): Promise<void>;
+    getAllAmbassadors(): Promise<Array<AmbassadorProfile>>;
+    getApprovedAmbassadors(): Promise<Array<AmbassadorProfile>>;
+    approveAmbassadorWithSecret(secret: string, principalId: string): Promise<void>;
+    suspendAmbassadorWithSecret(secret: string, principalId: string): Promise<void>;
+    createContract(influencerPrincipal: string, campaignTitle: string, description: string, deliverables: string, priceInCkUSDC: number): Promise<string>;
+    clientAgreeToTerms(contractId: string): Promise<void>;
+    markContractComplete(contractId: string): Promise<void>;
+    disputeContract(contractId: string, reason: string): Promise<void>;
+    voteOnContract(contractId: string, vote: { approve_influencer: null } | { approve_client: null } | { dismiss: null }, comment: string): Promise<void>;
+    resolveContractWithSecret(secret: string, contractId: string, resolution: string): Promise<void>;
+    getContract(contractId: string): Promise<CreatorContract | null>;
+    getContractsByAmbassador(principalId: string): Promise<Array<CreatorContract>>;
+    getContractsByClient(principalId: string): Promise<Array<CreatorContract>>;
+    getAllPublicContracts(): Promise<Array<CreatorContract>>;
+    getDisputedContracts(): Promise<Array<CreatorContract>>;
+    markBonsaiApprovedWithSecret(secret: string, principalId: string, oisyPrincipal: string, email: string): Promise<void>;
+    getBonsaiApprovedListWithSecret(secret: string): Promise<Array<BonsaiApprovedEntry>>;
+    isBonsaiApproved(principalId: string): Promise<boolean>;
 }

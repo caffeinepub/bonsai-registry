@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import {
   getBannerPricePerDay,
   setBannerPricePerDay,
@@ -661,6 +662,481 @@ function TreasuryCard() {
 }
 
 // ── Submissions Tab ───────────────────────────────────────────────────────────
+// ── Airdrop Tab ─────────────────────────────────────────────────────────────────
+function AirdropTab() {
+  const actorRaw = useAdminActorContext();
+  // biome-ignore lint/suspicious/noExplicitAny: extended backend methods
+  const actor = actorRaw as any;
+  const [manualPrincipal, setManualPrincipal] = useState("");
+  const [manualOisy, setManualOisy] = useState("");
+  const [manualEmail, setManualEmail] = useState("");
+  const [adding, setAdding] = useState(false);
+
+  const {
+    data: approvedList = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["bonsai-approved-list"],
+    queryFn: async () => {
+      try {
+        return await actor.getBonsaiApprovedListWithSecret(ADMIN_SECRET);
+      } catch {
+        return [];
+      }
+    },
+    enabled: !!actor,
+  });
+
+  const handleAdd = async () => {
+    if (!manualPrincipal.trim() || !manualOisy.trim() || !manualEmail.trim()) {
+      toast.error("All fields are required.");
+      return;
+    }
+    setAdding(true);
+    try {
+      await actor.markBonsaiApprovedWithSecret(
+        ADMIN_SECRET,
+        manualPrincipal.trim(),
+        manualOisy.trim(),
+        manualEmail.trim(),
+      );
+      toast.success("User marked as Bonsai Approved!");
+      setManualPrincipal("");
+      setManualOisy("");
+      setManualEmail("");
+      refetch();
+    } catch (err) {
+      toast.error(
+        `Failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const exportCsv = () => {
+    const header = "principalId,oisyPrincipal,email,approvedAt";
+    const rows = (
+      approvedList as Array<{
+        principalId: string;
+        oisyPrincipal: string;
+        email: string;
+        approvedAt: bigint;
+      }>
+    ).map(
+      (e) =>
+        `${e.principalId},${e.oisyPrincipal},${e.email},${new Date(Number(e.approvedAt) / 1_000_000).toISOString()}`,
+    );
+    const csv = [header, ...rows].join("\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "bonsai-approved.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+        <div className="flex items-center gap-2 mb-1">
+          <Star className="w-4 h-4 text-primary" />
+          <h3 className="font-display font-bold text-base text-foreground">
+            Bonsai Approved NFT Airdrop
+          </h3>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Subscribers who provided their OISY Principal are eligible for the
+          Bonsai Approved NFT airdrop. Manually approve users or export the
+          list.
+        </p>
+      </div>
+
+      <div className="rounded-lg border border-border bg-secondary/30 p-4 space-y-3">
+        <p className="text-xs font-semibold text-foreground">
+          Mark User as Bonsai Approved
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <Input
+            data-ocid="admin.airdrop.principal_input"
+            value={manualPrincipal}
+            onChange={(e) => setManualPrincipal(e.target.value)}
+            placeholder="Principal ID"
+            className="bg-background border-border text-xs font-mono"
+          />
+          <Input
+            data-ocid="admin.airdrop.oisy_input"
+            value={manualOisy}
+            onChange={(e) => setManualOisy(e.target.value)}
+            placeholder="OISY Principal"
+            className="bg-background border-border text-xs font-mono"
+          />
+          <Input
+            data-ocid="admin.airdrop.email_input"
+            value={manualEmail}
+            onChange={(e) => setManualEmail(e.target.value)}
+            placeholder="Email"
+            className="bg-background border-border text-xs"
+          />
+        </div>
+        <Button
+          data-ocid="admin.airdrop.add_button"
+          size="sm"
+          onClick={handleAdd}
+          disabled={adding}
+          className="bg-primary text-primary-foreground"
+        >
+          {adding ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" />
+          ) : (
+            <Star className="w-3.5 h-3.5 mr-1" />
+          )}
+          Mark Approved
+        </Button>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-semibold text-foreground">
+          Approved List ({Array.isArray(approvedList) ? approvedList.length : 0}
+          )
+        </p>
+        <Button
+          data-ocid="admin.airdrop.export_button"
+          size="sm"
+          variant="outline"
+          onClick={exportCsv}
+          className="border-border text-xs gap-1"
+        >
+          <Download className="w-3.5 h-3.5" />
+          Export CSV
+        </Button>
+      </div>
+
+      {isLoading ? (
+        <div className="flex justify-center py-6">
+          <Loader2 className="w-5 h-5 animate-spin text-primary" />
+        </div>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow className="border-border">
+              <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+                Principal
+              </TableHead>
+              <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+                OISY Principal
+              </TableHead>
+              <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+                Email
+              </TableHead>
+              <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+                Approved
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {(
+              approvedList as Array<{
+                principalId: string;
+                oisyPrincipal: string;
+                email: string;
+                approvedAt: bigint;
+              }>
+            ).map((e, idx) => (
+              <TableRow
+                key={e.principalId}
+                data-ocid={`admin.airdrop.item.${idx + 1}`}
+                className="border-border"
+              >
+                <TableCell className="font-mono text-[10px] text-muted-foreground">
+                  {e.principalId.slice(0, 16)}…
+                </TableCell>
+                <TableCell className="font-mono text-[10px] text-muted-foreground">
+                  {e.oisyPrincipal.slice(0, 16)}…
+                </TableCell>
+                <TableCell className="text-xs text-foreground">
+                  {e.email}
+                </TableCell>
+                <TableCell className="text-[10px] text-muted-foreground">
+                  {new Date(
+                    Number(e.approvedAt) / 1_000_000,
+                  ).toLocaleDateString()}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </div>
+  );
+}
+
+// ── Admin Ambassadors Tab ──────────────────────────────────────────────────────────
+function AdminAmbassadorsTab() {
+  const actorRaw = useAdminActorContext();
+  // biome-ignore lint/suspicious/noExplicitAny: extended backend methods
+  const actor = actorRaw as any;
+  const queryClient = useQueryClient();
+  const [resolveContractId, setResolveContractId] = useState("");
+  const [resolveText, setResolveText] = useState("");
+  const [resolving, setResolving] = useState(false);
+
+  const { data: allAmbassadors = [], isLoading } = useQuery({
+    queryKey: ["admin-all-ambassadors"],
+    queryFn: async () => {
+      try {
+        return await actor.getAllAmbassadors();
+      } catch {
+        return [];
+      }
+    },
+    enabled: !!actor,
+  });
+
+  const { data: disputedContracts = [], isLoading: loadingDisputed } = useQuery(
+    {
+      queryKey: ["admin-disputed-contracts"],
+      queryFn: async () => {
+        try {
+          return await actor.getDisputedContracts();
+        } catch {
+          return [];
+        }
+      },
+      enabled: !!actor,
+    },
+  );
+
+  const handleApprove = async (principalId: string) => {
+    try {
+      await actor.approveAmbassadorWithSecret(ADMIN_SECRET, principalId);
+      toast.success("Ambassador approved!");
+      queryClient.invalidateQueries({ queryKey: ["admin-all-ambassadors"] });
+    } catch (err) {
+      toast.error(`Failed: ${String(err)}`);
+    }
+  };
+
+  const handleSuspend = async (principalId: string) => {
+    try {
+      await actor.suspendAmbassadorWithSecret(ADMIN_SECRET, principalId);
+      toast.success("Ambassador suspended.");
+      queryClient.invalidateQueries({ queryKey: ["admin-all-ambassadors"] });
+    } catch (err) {
+      toast.error(`Failed: ${String(err)}`);
+    }
+  };
+
+  const handleResolve = async () => {
+    if (!resolveContractId.trim() || !resolveText.trim()) {
+      toast.error("Contract ID and resolution required.");
+      return;
+    }
+    setResolving(true);
+    try {
+      await actor.resolveContractWithSecret(
+        ADMIN_SECRET,
+        resolveContractId.trim(),
+        resolveText.trim(),
+      );
+      toast.success("Contract resolved!");
+      setResolveContractId("");
+      setResolveText("");
+      queryClient.invalidateQueries({ queryKey: ["admin-disputed-contracts"] });
+    } catch (err) {
+      toast.error(`Failed: ${String(err)}`);
+    } finally {
+      setResolving(false);
+    }
+  };
+
+  const getStatusLabel = (
+    status: { pending: null } | { approved: null } | { suspended: null },
+  ) => {
+    if ("approved" in status)
+      return (
+        <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
+          Approved
+        </Badge>
+      );
+    if ("suspended" in status)
+      return (
+        <Badge className="bg-red-500/20 text-red-300 border-red-500/30 text-[10px]">
+          Suspended
+        </Badge>
+      );
+    return (
+      <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]">
+        Pending
+      </Badge>
+    );
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="font-display font-bold text-base text-foreground mb-3">
+          All Ambassadors (
+          {Array.isArray(allAmbassadors) ? allAmbassadors.length : 0})
+        </h3>
+        {isLoading ? (
+          <div className="flex justify-center py-6">
+            <Loader2 className="w-5 h-5 animate-spin text-primary" />
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow className="border-border">
+                <TableHead className="text-[10px] font-mono uppercase text-muted-foreground">
+                  Name
+                </TableHead>
+                <TableHead className="text-[10px] font-mono uppercase text-muted-foreground">
+                  Price
+                </TableHead>
+                <TableHead className="text-[10px] font-mono uppercase text-muted-foreground">
+                  Status
+                </TableHead>
+                <TableHead className="text-[10px] font-mono uppercase text-muted-foreground">
+                  Actions
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(
+                allAmbassadors as Array<{
+                  principalId: string;
+                  displayName: string;
+                  pricePerCampaign: number;
+                  status:
+                    | { pending: null }
+                    | { approved: null }
+                    | { suspended: null };
+                }>
+              ).map((a, idx) => (
+                <TableRow
+                  key={a.principalId}
+                  data-ocid={`admin.ambassadors.item.${idx + 1}`}
+                  className="border-border"
+                >
+                  <TableCell className="text-sm text-foreground font-semibold">
+                    {a.displayName}
+                  </TableCell>
+                  <TableCell className="text-xs text-primary">
+                    {a.pricePerCampaign} ckUSDC
+                  </TableCell>
+                  <TableCell>{getStatusLabel(a.status)}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-1.5">
+                      {!("approved" in a.status) && (
+                        <Button
+                          data-ocid="admin.ambassador.approve_button"
+                          size="sm"
+                          className="bg-emerald-500/80 text-white text-[10px] h-6 px-2"
+                          onClick={() => handleApprove(a.principalId)}
+                        >
+                          Approve
+                        </Button>
+                      )}
+                      {!("suspended" in a.status) && (
+                        <Button
+                          data-ocid="admin.ambassador.suspend_button"
+                          size="sm"
+                          variant="outline"
+                          className="border-red-500/30 text-red-400 text-[10px] h-6 px-2"
+                          onClick={() => handleSuspend(a.principalId)}
+                        >
+                          Suspend
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </div>
+
+      <Separator className="border-border/50" />
+
+      <div>
+        <h3 className="font-display font-bold text-base text-foreground mb-3">
+          Disputed Contracts (
+          {Array.isArray(disputedContracts) ? disputedContracts.length : 0})
+        </h3>
+        {loadingDisputed ? (
+          <div className="flex justify-center py-6">
+            <Loader2 className="w-5 h-5 animate-spin text-primary" />
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {(
+              disputedContracts as Array<{
+                id: string;
+                campaignTitle: string;
+                disputeReason: string;
+                daoVotes: Array<unknown>;
+              }>
+            ).map((c, idx) => (
+              <div
+                key={c.id}
+                data-ocid={`admin.disputes.item.${idx + 1}`}
+                className="rounded-lg border border-red-500/20 bg-red-500/5 p-3 space-y-2"
+              >
+                <p className="text-sm font-semibold text-foreground">
+                  {c.campaignTitle}
+                </p>
+                <p className="text-[10px] font-mono text-muted-foreground/70">
+                  {c.id}
+                </p>
+                {c.disputeReason && (
+                  <p className="text-xs text-red-300/80">{c.disputeReason}</p>
+                )}
+                <p className="text-[10px] text-muted-foreground">
+                  Votes: {c.daoVotes.length}
+                </p>
+              </div>
+            ))}
+            <div className="rounded-lg border border-border bg-secondary/30 p-4 space-y-3">
+              <p className="text-xs font-semibold text-foreground">
+                Resolve Contract (Admin)
+              </p>
+              <Input
+                data-ocid="admin.disputes.contract_id_input"
+                value={resolveContractId}
+                onChange={(e) => setResolveContractId(e.target.value)}
+                placeholder="Contract ID"
+                className="bg-background border-border text-xs font-mono"
+              />
+              <Textarea
+                data-ocid="admin.disputes.resolution_textarea"
+                value={resolveText}
+                onChange={(e) => setResolveText(e.target.value)}
+                placeholder="Resolution notes..."
+                className="bg-background border-border text-xs resize-none"
+                rows={3}
+              />
+              <Button
+                data-ocid="admin.disputes.resolve_button"
+                size="sm"
+                onClick={handleResolve}
+                disabled={resolving}
+                className="bg-primary text-primary-foreground"
+              >
+                {resolving ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" />
+                ) : null}
+                Resolve Contract
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function SubmissionsTab() {
   const actor = useAdminActorContext();
   const queryClient = useQueryClient();
@@ -1282,6 +1758,22 @@ function AdminDashboardInner({ onLogout }: { onLogout: () => void }) {
               <Mail className="w-3.5 h-3.5" />
               Email List
             </TabsTrigger>
+            <TabsTrigger
+              data-ocid="admin.airdrop_tab"
+              value="airdrop"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs gap-1.5 h-7"
+            >
+              <Star className="w-3.5 h-3.5" />
+              Airdrop
+            </TabsTrigger>
+            <TabsTrigger
+              data-ocid="admin.ambassadors_tab"
+              value="ambassadors"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs gap-1.5 h-7"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Ambassadors
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="entries">
@@ -1306,6 +1798,12 @@ function AdminDashboardInner({ onLogout }: { onLogout: () => void }) {
 
           <TabsContent value="emaillist">
             <EmailListTab />
+          </TabsContent>
+          <TabsContent value="airdrop">
+            <AirdropTab />
+          </TabsContent>
+          <TabsContent value="ambassadors">
+            <AdminAmbassadorsTab />
           </TabsContent>
         </Tabs>
       </div>

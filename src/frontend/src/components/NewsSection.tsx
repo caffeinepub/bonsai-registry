@@ -43,6 +43,11 @@ const RSS_SOURCES = [
     source: "ICP Hub Turkey",
     tags: ["community", "hub"],
   },
+  {
+    url: "https://ictalk.org/latest.rss",
+    source: "ICTalk",
+    tags: ["community", "ictalk"],
+  },
 ];
 
 // rss2json is a free, CORS-friendly RSS→JSON proxy

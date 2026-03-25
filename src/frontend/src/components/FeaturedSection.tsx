@@ -1,7 +1,9 @@
+import { createActorWithConfig } from "@/config";
 import {
   addUtm,
   featuredEntries,
   getActiveBannerAds,
+  saveBannerAds,
 } from "@/data/monetizationData";
 import type { BannerAd } from "@/data/monetizationData";
 import { cn } from "@/lib/utils";
@@ -137,11 +139,44 @@ function BannerSlide({ ad }: { ad: BannerAd }) {
 
 // ── Rich Media Featured Banner Section ────────────────────────────────────
 export function FeaturedSection() {
-  const activeBanners = getActiveBannerAds();
+  const [activeBanners, setActiveBanners] = useState<BannerAd[]>(() =>
+    getActiveBannerAds(),
+  );
+  const [_bannersLoading, setBannersLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showGetFeatured, setShowGetFeatured] = useState(false);
   const [hovered, setHovered] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Load banners from canister on mount (cross-device persistence)
+  useEffect(() => {
+    let cancelled = false;
+    async function loadFromCanister() {
+      try {
+        const actor = await createActorWithConfig();
+        const json = await actor.getBannerAdsJson();
+        if (json && !cancelled) {
+          const all = JSON.parse(json) as BannerAd[];
+          const now = Date.now();
+          const active = all.filter(
+            (a) =>
+              a.status === "active" && a.startDate <= now && a.endDate >= now,
+          );
+          setActiveBanners(active);
+          // Update localStorage cache for offline use
+          saveBannerAds(all);
+        }
+      } catch {
+        // Fall back to localStorage cache already set in initial state
+      } finally {
+        if (!cancelled) setBannersLoading(false);
+      }
+    }
+    loadFromCanister();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const hasBanners = activeBanners.length > 0;
 

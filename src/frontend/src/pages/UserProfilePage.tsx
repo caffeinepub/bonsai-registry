@@ -604,6 +604,7 @@ interface EditFormState {
   btc: string;
   hbar: string;
   sol: string;
+  oisyPrincipal: string;
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -638,6 +639,7 @@ export function UserProfilePage({
     btc: "",
     hbar: "",
     sol: "",
+    oisyPrincipal: "",
   });
 
   // Custom NFT collections
@@ -777,6 +779,7 @@ export function UserProfilePage({
       btc: profile?.walletAddresses?.btc ?? "",
       hbar: profile?.walletAddresses?.hbar ?? "",
       sol: profile?.walletAddresses?.sol ?? "",
+      oisyPrincipal: profile?.oisyPrincipal?.[0] ?? "",
     });
     setIsEditing(true);
   };
@@ -809,6 +812,9 @@ export function UserProfilePage({
         hbar: editForm.hbar.trim() || undefined,
         sol: editForm.sol.trim() || undefined,
       },
+      oisyPrincipal: editForm.oisyPrincipal.trim()
+        ? [editForm.oisyPrincipal.trim()]
+        : [],
       pinnedNfts: profile?.pinnedNfts ?? [],
       submittedEntries: profile?.submittedEntries ?? [],
       ratedEntries: profile?.ratedEntries ?? [],
@@ -1486,6 +1492,37 @@ export function UserProfilePage({
 
                   {/* Tab 3: Web3 */}
                   <TabsContent value="web3" className="space-y-3 mt-0">
+                    {/* OISY Principal ID */}
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-mono text-amber-300">
+                        OISY Principal ID
+                        <a
+                          href="https://oisy.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-2 text-primary hover:underline text-[10px]"
+                        >
+                          (Get OISY Wallet)
+                        </a>
+                      </Label>
+                      <Input
+                        data-ocid="profile.web3.oisy_input"
+                        value={editForm.oisyPrincipal}
+                        onChange={(e) =>
+                          setEditForm((f) => ({
+                            ...f,
+                            oisyPrincipal: e.target.value,
+                          }))
+                        }
+                        placeholder="xxxxx-xxxxx-xxxxx-xxxxx-xxx"
+                        className="bg-secondary border-amber-400/30 text-sm h-8 font-mono text-xs"
+                      />
+                      <p className="text-[10px] text-muted-foreground/60">
+                        Required for NFT airdrops including the Bonsai Approved
+                        badge
+                      </p>
+                    </div>
+
                     {/* OISY link */}
                     <div className="rounded-lg border border-amber-400/20 bg-amber-400/5 p-3">
                       <div className="flex items-center justify-between gap-2">
@@ -1599,6 +1636,43 @@ export function UserProfilePage({
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* ── uBin Hosting Recommendation (own profile only) ── */}
+        {isOwnProfile && identity && (
+          <div className="mb-6 rounded-xl border border-teal-500/25 bg-gradient-to-r from-teal-500/8 to-emerald-500/8 p-4 flex flex-col sm:flex-row gap-4 items-start">
+            <img
+              src="/assets/uploads/ubin-d6c3fd63-019d1e5c-34c8-71f8-8ed3-3fa9858a0e8b-1.png"
+              alt="uBin logo"
+              className="w-12 h-12 rounded-lg object-contain border border-teal-500/20 bg-background/60 p-1 flex-shrink-0"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
+            />
+            <div className="flex-1 min-w-0">
+              <h3 className="font-display font-bold text-sm text-teal-300 mb-1 flex items-center gap-2">
+                Host Your Media On-Chain with uBin
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-teal-500/20 text-teal-400 border border-teal-500/30">
+                  100% On-Chain
+                </span>
+              </h3>
+              <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                uBin is a 100% on-chain cloud hosting service built on ICP by
+                Daniel McCoy. Upload your profile images, banners, and media
+                files with true decentralization. No centralized servers, no
+                censorship, fully on-chain storage.
+              </p>
+              <a
+                href="https://h3cjw-syaaa-aaaam-qbbia-cai.ic0.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-teal-500/20 border border-teal-500/40 text-teal-300 hover:bg-teal-500/30 hover:text-teal-200 text-xs font-semibold transition-colors"
+              >
+                <ExternalLink className="w-3 h-3" />
+                Open uBin
+              </a>
+            </div>
+          </div>
+        )}
 
         {/* ── Rated Entries (own profile only) ── */}
         {isOwnProfile &&

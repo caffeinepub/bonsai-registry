@@ -33,6 +33,7 @@ import { useOisyWallet } from "./hooks/useOisyWallet";
 import { useRatings } from "./hooks/useRatings";
 import { useRecordEvent } from "./hooks/useRecordEvent";
 import { useSubmitRating } from "./hooks/useSubmitRating";
+import { AmbassadorPage } from "./pages/AmbassadorPage";
 import { BannerLogPage } from "./pages/BannerLogPage";
 import { LeaderboardPage } from "./pages/LeaderboardPage";
 import { UserProfilePage } from "./pages/UserProfilePage";
@@ -366,6 +367,21 @@ export default function App() {
             setCurrentHash("");
           }}
           onLogin={login}
+        />
+        <Toaster />
+      </>
+    );
+  }
+
+  // Ambassador route
+  if (currentHash === "#ambassador") {
+    return (
+      <>
+        <AmbassadorPage
+          onBack={() => {
+            window.location.hash = "";
+            setCurrentHash("");
+          }}
         />
         <Toaster />
       </>

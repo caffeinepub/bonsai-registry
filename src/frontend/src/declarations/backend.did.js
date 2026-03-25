@@ -134,6 +134,7 @@ export const idlService = IDL.Service({
       [IDL.Vec(EmailSubscriber)],
       [],
     ),
+  'getBannerAdsJson' : IDL.Func([], [IDL.Text], ['query']),
   'getCallerAllRatings' : IDL.Func(
       [],
       [IDL.Vec(IDL.Tuple(IDL.Nat, IDL.Nat))],
@@ -176,6 +177,7 @@ export const idlService = IDL.Service({
   'rejectPendingSubmissionWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   'removeRegistryEntry' : IDL.Func([IDL.Nat], [], []),
   'removeRegistryEntryWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
+  'saveBannerAdsWithSecret' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'saveCallerUserProfile' : IDL.Func([ExtendedUserProfile], [], []),
   'setListingFeeWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   'submitProjectListing' : IDL.Func(
@@ -323,6 +325,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(EmailSubscriber)],
         [],
       ),
+    'getBannerAdsJson' : IDL.Func([], [IDL.Text], ['query']),
     'getCallerAllRatings' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Nat, IDL.Nat))],
@@ -365,6 +368,7 @@ export const idlFactory = ({ IDL }) => {
     'rejectPendingSubmissionWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
     'removeRegistryEntry' : IDL.Func([IDL.Nat], [], []),
     'removeRegistryEntryWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
+    'saveBannerAdsWithSecret' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'saveCallerUserProfile' : IDL.Func([ExtendedUserProfile], [], []),
     'setListingFeeWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
     'submitProjectListing' : IDL.Func(

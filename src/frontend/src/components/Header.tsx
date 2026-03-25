@@ -84,6 +84,17 @@ export function Header({
               <Trophy className="w-2.5 h-2.5" />
               <span>Leaderboard</span>
             </button>
+            <span className="w-px h-3 bg-border hidden sm:block" />
+            <button
+              type="button"
+              data-ocid="header.ambassador.link"
+              onClick={() => {
+                window.location.hash = "#ambassador";
+              }}
+              className="hidden sm:flex items-center gap-1 font-mono text-[10px] text-muted-foreground/60 uppercase tracking-widest hover:text-primary transition-colors"
+            >
+              <span>Ambassadors</span>
+            </button>
             {backendLoading && (
               <span
                 data-ocid="registry.loading_state"

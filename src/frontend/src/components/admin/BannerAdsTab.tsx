@@ -14,6 +14,7 @@ import {
   saveBannerAds,
   updateBannerAdStatus,
 } from "@/data/monetizationData";
+import { useAdminActorContext } from "@/hooks/useAdminActorContext";
 import { cn } from "@/lib/utils";
 import {
   CheckCircle2,
@@ -26,8 +27,10 @@ import {
   Trash2,
   XCircle,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+const ADMIN_SECRET = "#WakeUp4";
 
 function statusBadge(status: BannerStatus) {
   if (status === "active")
@@ -101,6 +104,7 @@ interface AddForm {
 }
 
 export function BannerAdsTab() {
+  const actor = useAdminActorContext();
   const [ads, setAds] = useState<BannerAd[]>(() => loadBannerAds());
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<EditForm | null>(null);
@@ -119,6 +123,40 @@ export function BannerAdsTab() {
 
   const refresh = () => setAds(loadBannerAds());
 
+  // Load from canister on mount
+  useEffect(() => {
+    let cancelled = false;
+    actor
+      .getBannerAdsJson()
+      .then((json) => {
+        if (json && !cancelled) {
+          try {
+            const loaded = JSON.parse(json) as BannerAd[];
+            if (loaded.length > 0) {
+              saveBannerAds(loaded);
+              setAds(loaded);
+            }
+          } catch {
+            /* ignore parse error */
+          }
+        }
+      })
+      .catch(() => {
+        /* already using localStorage */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [actor]);
+
+  const syncToCanister = async (allAds: BannerAd[]) => {
+    try {
+      await actor.saveBannerAdsWithSecret(ADMIN_SECRET, JSON.stringify(allAds));
+    } catch (err) {
+      console.warn("Failed to sync banner ads to canister:", err);
+    }
+  };
+
   const totalCount = ads.length;
   const pendingCount = ads.filter((a) => a.status === "pending").length;
   const activeCount = ads.filter((a) => a.status === "active").length;
@@ -133,24 +171,28 @@ export function BannerAdsTab() {
     });
     toast.success("Banner ad approved and is now live!");
     refresh();
+    syncToCanister(loadBannerAds());
   };
 
   const handleReject = (id: string) => {
     updateBannerAdStatus(id, "rejected");
     toast.success("Banner ad rejected.");
     refresh();
+    syncToCanister(loadBannerAds());
   };
 
   const handleDeactivate = (id: string) => {
     updateBannerAdStatus(id, "rejected");
     toast.success("Banner ad deactivated.");
     refresh();
+    syncToCanister(loadBannerAds());
   };
 
   const handleDelete = (id: string) => {
     deleteBannerAd(id);
     toast.success("Banner ad deleted.");
     refresh();
+    syncToCanister(loadBannerAds());
   };
 
   const startEdit = (ad: BannerAd) => {
@@ -188,6 +230,7 @@ export function BannerAdsTab() {
           : allAds[idx].endDate,
       };
       saveBannerAds(allAds);
+      syncToCanister(allAds);
     }
     setTimeout(() => {
       setSaving(false);
@@ -226,6 +269,7 @@ export function BannerAdsTab() {
     };
     allAds.push(newAd);
     saveBannerAds(allAds);
+    syncToCanister(allAds);
     setTimeout(() => {
       setSaving(false);
       setShowAddForm(false);
