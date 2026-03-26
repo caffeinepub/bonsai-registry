@@ -1,63 +1,36 @@
-# Bonsai Registry — Version 66
+# Bonsai Registry
 
 ## Current State
-- EmailSignupWidget: email-only, optional II principal linking, no OISY principal
-- EmailSubscriber type: email, principalId (?Text), subscribedAt, source
-- Category variant: #gaming, #defi, #nft, #wallet, #exchange, #social, #tools, #commerce (no cloud_hosting)
-- ExtendedUserProfile: no oisyPrincipal field persisted
-- No ambassador/influencer system
-- No creator commerce contracts
-- No Bonsai Approved badge/airdrop mechanism
-- No uBin registry entry or Cloud Hosting category
+- Registry directory with LinkCard components that show a 24px favicon and lazy-loaded OG preview image
+- EcosystemManager in admin saves rankings to localStorage only — not visible on other devices
+- App.tsx reads ecosystem order from localStorage
+- No live price ticker exists
+- No $BONSAI token promotion or funneling
 
 ## Requested Changes (Diff)
 
 ### Add
-- OISY wallet principal ID required field in mailing list signup (EmailSubscriber type updated to require oisyPrincipal: Text)
-- EmailSignupWidget: OISY principal field (required), helper text, validation
-- Bonsai Approved airdrop admin system: admin can mark wallets as approved, view/export airdrop list
-- #cloud_hosting category to Category variant
-- uBin entry in registry (ICP, Cloud Hosting, Tools)
-- uBin hosting recommendation in UserProfilePage profile edit section
-- Ambassador Program: new page at #ambassador
-  - Influencer onboarding/registration with platform T&S (family-safe policy)
-  - Customizable influencer profiles (bio, avatar, banner, social links, media showcase: MP4/GIF/PNG/JPEG)
-  - Influencer sets their own price per campaign (ckUSDC)
-  - Influencer writes custom T&S agreement for clients
-  - Client must agree to influencer T&S before contract proceeds
-  - All T&S agreements stored on-chain transparently
-  - Contract workflow: created → client accepts T&S → active → completed or disputed
-  - DAO vote on disputed contracts (community votes)
-  - Contracts visible publicly for DAO transparency
-  - Ambassador profiles amplified via Bonsai Registry ecosystem
-  - Full media stack for ambassador profile showcase
+- Backend functions: `saveEcosystemOrderWithSecret(secret, orderJson)` and `getEcosystemOrder()` to persist ecosystem order/visibility in the canister
+- `PriceTicker` component showing live prices for $BONSAI (Odin.Fun), $ICP, $BTC, $USDC — displayed in the header utility strip
+- $BONSAI token promotion widget/banner with invite link (https://odin.fun/token/26j2) appearing tastefully in header, footer, and sidebar
+- Larger favicon fallback in LinkCard when no OG preview image is available
 
 ### Modify
-- Backend: EmailSubscriber adds oisyPrincipal required field
-- Backend: subscribeEmail function signature adds oisyPrincipal parameter
-- Backend: Category adds #cloud_hosting
-- Backend: ExtendedUserProfile adds oisyPrincipal: ?Text
-- EmailSignupWidget: require OISY principal input before allowing subscribe
-- App.tsx: add #ambassador route
-- Admin panel: add Airdrop tab showing approved wallet list with export
+- `EcosystemManager.tsx`: Replace localStorage save/load with canister API calls (`saveEcosystemOrderWithSecret` / `getEcosystemOrder`)
+- `App.tsx`: Load ecosystem order from canister on mount instead of localStorage
+- `LinkCard.tsx`: When no OG preview image loads, show a larger (48px) centered favicon as a fallback in the preview area
+- `Header.tsx`: Add PriceTicker in the utility strip and a subtle $BONSAI call-to-action
+- `Footer.tsx`: Add $BONSAI / Odin.Fun link in ecosystem partners
+- `backend.d.ts` and backend bindings: Expose new ecosystem order endpoints
 
 ### Remove
-- Nothing removed
+- localStorage-only ecosystem order logic from EcosystemManager and App.tsx
 
 ## Implementation Plan
-1. Update main.mo:
-   - Add #cloud_hosting to Category
-   - Update EmailSubscriber to include oisyPrincipal: Text
-   - Update subscribeEmail to accept oisyPrincipal param
-   - Add oisyPrincipal field to ExtendedUserProfile
-   - Add AmbassadorProfile type: principalId, displayName, bio, avatarUrl, bannerUrl, socialLinks, mediaItems, customTerms, pricePerCampaign (ckUSDC), joinedAt, status (#pending | #approved | #suspended), tags
-   - Add CreatorContract type: id, influencer, client, campaignTitle, description, influencerPrice, clientAgreedToTerms, status (#draft | #pending_agreement | #active | #completed | #disputed | #resolved), termsSnapshot, createdAt, completedAt, disputeReason, daoVotes
-   - Add DAOVote type: voter, contractId, vote (#approve | #reject), comment, timestamp
-   - Functions: registerAmbassador, getAmbassadorProfile, saveAmbassadorProfile, getAllAmbassadors, createContract, clientAgreeToTerms, completeContract, disputeContract, voteOnContract, getContract, getContractsByAmbassador, getAllPublicContracts, getOpenDisputedContracts
-   - Add bonsaiApprovedList: [Principal], markBonsaiApprovedWithSecret, getBonsaiApprovedListWithSecret
-2. Update EmailSignupWidget to require oisyPrincipal
-3. Update UserProfilePage to save/show oisyPrincipal, add uBin hosting recommendation
-4. Add AmbassadorPage.tsx with onboarding, profile editor, contract creation/management
-5. Add admin Airdrop tab
-6. Add uBin to registry entries
-7. Wire #ambassador route in App.tsx
+1. Add two canister functions in main.mo: `saveEcosystemOrderWithSecret` (stores JSON string) and `getEcosystemOrder` (public query returning the string)
+2. Regenerate backend.d.ts bindings to expose new endpoints
+3. Update EcosystemManager to call `saveEcosystemOrderWithSecret` on save/move and `getEcosystemOrder` on load, falling back to localStorage for migration
+4. Update App.tsx to call `getEcosystemOrder` on mount and merge with static data
+5. Create `PriceTicker.tsx` — fetches ICP+BTC from CoinGecko public API, BONSAI from Odin.Fun API, USDC hardcoded at $1. Auto-refreshes every 30s. Horizontal scrolling strip in header.
+6. Add $BONSAI promotion: subtle banner/badge with Odin.Fun invite link in header utility strip, footer partner link, and a small persistent call-to-action in the sidebar
+7. Improve LinkCard favicon fallback: when OG image fails/absent, render a larger favicon (64px) centered in the preview area with a subtle background

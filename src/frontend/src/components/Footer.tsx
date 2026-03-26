@@ -20,7 +20,6 @@ export function Footer({ onTipOpen }: FooterProps) {
     >
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Brand column */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-md overflow-hidden border border-primary/40 flex-shrink-0">
@@ -29,8 +28,7 @@ export function Footer({ onTipOpen }: FooterProps) {
                   alt="Bonsai Registry"
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = "none";
+                    (e.target as HTMLImageElement).style.display = "none";
                   }}
                 />
               </div>
@@ -40,16 +38,24 @@ export function Footer({ onTipOpen }: FooterProps) {
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Bridging the Web3 community to the open web. The premiere curated
-              directory for decentralized ecosystems — from Internet Computer to
-              Hedera, Bitcoin to emerging chains.
+              directory for decentralized ecosystems.
             </p>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <TreePine className="w-3.5 h-3.5 text-primary flex-shrink-0" />
               <span>Curating 75+ Decentralized Ecosystems</span>
             </div>
+            <a
+              href="https://odin.fun/token/26j2?ref=bonsai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-amber-400/30 bg-amber-400/5 text-amber-400 text-xs font-mono hover:bg-amber-400/15 hover:border-amber-400/50 transition-all"
+              style={{ boxShadow: "0 0 10px oklch(0.79 0.15 80 / 15%)" }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              Get $BONSAI on Odin.Fun
+            </a>
           </div>
 
-          {/* Links column */}
           <div className="space-y-3">
             <h3 className="font-display font-bold text-sm text-foreground">
               Ecosystem Partners
@@ -69,6 +75,14 @@ export function Footer({ onTipOpen }: FooterProps) {
                 },
                 { name: "Caffeine AI", url: "https://caffeine.ai" },
                 { name: "Eliza Labs", url: "https://elizalabs.ai/" },
+                {
+                  name: "uBin (On-Chain Cloud Hosting)",
+                  url: "https://h3cjw-syaaa-aaaam-qbbia-cai.ic0.app/",
+                },
+                {
+                  name: "$BONSAI on Odin.Fun",
+                  url: "https://odin.fun/token/26j2?ref=bonsai",
+                },
               ].map((link) => (
                 <li key={link.url}>
                   <a
@@ -85,7 +99,6 @@ export function Footer({ onTipOpen }: FooterProps) {
             </ul>
           </div>
 
-          {/* SEO & About column */}
           <div className="space-y-3">
             <h3 className="font-display font-bold text-sm text-foreground">
               About the Registry
@@ -107,22 +120,22 @@ export function Footer({ onTipOpen }: FooterProps) {
           </div>
         </div>
 
-        {/* SEO keyword paragraph */}
         <div className="mt-8 pt-6 border-t border-border">
           <p className="text-xs text-muted-foreground/60 leading-relaxed text-center max-w-4xl mx-auto">
-            Web3 directory · ICP blockchain · Internet Computer Protocol ·
-            Hedera Hashgraph · HBAR token · DeFi protocols · NFT marketplace ·
-            blockchain gaming · decentralized exchange · DEX · cryptocurrency
-            wallet · smart contracts · DAO governance · Layer 2 · Ethereum
-            scaling · Solana ecosystem · Bitcoin Ordinals · cross-chain bridge ·
-            liquid staking · yield farming · tokenized assets · RWA
+            Web3 directory \u00b7 ICP blockchain \u00b7 Internet Computer
+            Protocol \u00b7 Hedera Hashgraph \u00b7 HBAR token \u00b7 DeFi
+            protocols \u00b7 NFT marketplace \u00b7 blockchain gaming \u00b7
+            decentralized exchange \u00b7 DEX \u00b7 cryptocurrency wallet
+            \u00b7 smart contracts \u00b7 DAO governance \u00b7 Layer 2 \u00b7
+            Ethereum scaling \u00b7 Solana ecosystem \u00b7 Bitcoin Ordinals
+            \u00b7 cross-chain bridge \u00b7 liquid staking \u00b7 yield farming
+            \u00b7 tokenized assets \u00b7 RWA
           </p>
         </div>
 
-        {/* Copyright */}
         <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-muted-foreground">
-            © {currentYear} The Bonsai Registry · Built by{" "}
+            \u00a9 {currentYear} The Bonsai Registry \u00b7 Built by{" "}
             <a
               href="https://t3kno-logic.xyz"
               target="_blank"

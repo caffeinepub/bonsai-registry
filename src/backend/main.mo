@@ -277,6 +277,7 @@ actor {
   include MixinAuthorization(accessControlState);
   var listingFeeE8s = 100_000_000 : Nat;
   var bannerAdsJson : Text = "";
+  var ecosystemOrderJson : Text = "";
 
   // Ambassador / Contract stores
   let ambassadorProfiles = Map.empty<Text, AmbassadorProfile>();
@@ -942,5 +943,18 @@ actor {
 
   public query ({ caller = _ }) func getBannerAdsJson() : async Text {
     bannerAdsJson;
+  };
+
+  // ============================================================
+  // ECOSYSTEM ORDER
+  // ============================================================
+
+  public shared ({ caller }) func saveEcosystemOrderWithSecret(secret : Text, orderJson : Text) : async () {
+    requireAdminSecretAndRole(caller, secret);
+    ecosystemOrderJson := orderJson;
+  };
+
+  public query ({ caller = _ }) func getEcosystemOrder() : async Text {
+    ecosystemOrderJson;
   };
 };

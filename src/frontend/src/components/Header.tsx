@@ -13,6 +13,9 @@ import {
   X,
 } from "lucide-react";
 import { OisyConnectButton } from "./OisyConnectButton";
+import { PriceTicker } from "./PriceTicker";
+
+const BONSAI_URL = "https://odin.fun/token/26j2?ref=bonsai";
 
 interface HeaderProps {
   searchQuery: string;
@@ -22,13 +25,11 @@ interface HeaderProps {
   mobileNavOpen: boolean;
   onToggleMobileNav: () => void;
   backendLoading?: boolean;
-  // Internet Identity auth
   identity?: Identity | null;
   isLoggingIn?: boolean;
   isInitializing?: boolean;
   onLogin?: () => void;
   onLogout?: () => void;
-  // List Your Project
   onListProject?: () => void;
   onViewProfile?: () => void;
   oisyConnected?: boolean;
@@ -53,25 +54,23 @@ export function Header({
 }: HeaderProps) {
   const isSignedIn = !!identity;
   const principal = identity?.getPrincipal().toString();
-  // Truncate principal for display: show first 5 + ... + last 3 chars
   const shortPrincipal = principal
-    ? `${principal.slice(0, 5)}…${principal.slice(-3)}`
+    ? `${principal.slice(0, 5)}\u2026${principal.slice(-3)}`
     : null;
 
   return (
     <header className="header-atmosphere border-b border-border sticky top-0 z-40 backdrop-blur-sm">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
-        {/* ── Top utility strip ── */}
-        <div className="flex items-center justify-between py-2 border-b border-border/50">
-          <div className="flex items-center gap-2">
+        {/* Top utility strip */}
+        <div className="flex items-center justify-between py-2 border-b border-border/50 gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="font-mono text-[10px] text-primary/70 uppercase tracking-widest">
               Web3 Directory
             </span>
             <span className="w-px h-3 bg-border" />
             <span className="font-mono text-[10px] text-muted-foreground/60 uppercase tracking-widest">
-              {totalEcosystems}+ Chains · {totalEntries}+ Projects
+              {totalEcosystems}+ Chains \u00b7 {totalEntries}+ Projects
             </span>
-            {/* Leaderboard link */}
             <span className="w-px h-3 bg-border hidden sm:block" />
             <button
               type="button"
@@ -106,11 +105,25 @@ export function Header({
             )}
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* ── OISY Wallet connect button ── */}
-            <OisyConnectButton onViewProfile={onViewProfile} />
+          {/* Price ticker + BONSAI badge (desktop) */}
+          <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
+            <PriceTicker />
+            <span className="w-px h-3 bg-border" />
+            <a
+              href={BONSAI_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-ocid="header.bonsai.link"
+              className="flex items-center gap-1 px-2 py-0.5 rounded border border-amber-400/30 bg-amber-400/5 text-amber-400 text-[10px] font-mono uppercase tracking-wider hover:bg-amber-400/15 hover:border-amber-400/50 transition-all"
+              style={{ boxShadow: "0 0 8px oklch(0.79 0.15 80 / 18%)" }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
+              $BONSAI on Odin.Fun \u2192
+            </a>
+          </div>
 
-            {/* ── List Your Project button ── */}
+          <div className="flex items-center gap-2">
+            <OisyConnectButton onViewProfile={onViewProfile} />
             {(identity || oisyConnected) && onListProject && (
               <button
                 type="button"
@@ -123,16 +136,13 @@ export function Header({
                 <span>List Project</span>
               </button>
             )}
-
-            {/* ── Internet Identity Auth button ── */}
             {isInitializing ? (
               <span className="flex items-center gap-1 px-2.5 py-1 rounded border border-border text-muted-foreground/40 text-[10px] font-mono">
                 <Loader2 className="w-2.5 h-2.5 animate-spin" />
-                <span className="hidden sm:inline">Loading…</span>
+                <span className="hidden sm:inline">Loading\u2026</span>
               </span>
             ) : isSignedIn ? (
               <div className="flex items-center gap-1.5">
-                {/* User indicator */}
                 <div
                   data-ocid="header.user_indicator"
                   className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded border border-primary/25 bg-primary/8 text-[10px] font-mono text-primary/80"
@@ -140,7 +150,6 @@ export function Header({
                   <User className="w-2.5 h-2.5 text-primary" aria-hidden />
                   <span title={principal ?? ""}>{shortPrincipal}</span>
                 </div>
-                {/* Logout */}
                 <button
                   type="button"
                   data-ocid="header.signout_button"
@@ -176,17 +185,15 @@ export function Header({
                   <LogIn className="w-3 h-3" aria-hidden />
                 )}
                 <span className="sm:hidden">
-                  {isLoggingIn ? "Signing In…" : "Sign In"}
+                  {isLoggingIn ? "Signing In\u2026" : "Sign In"}
                 </span>
                 <span className="hidden sm:inline">
                   {isLoggingIn
-                    ? "Signing In…"
+                    ? "Signing In\u2026"
                     : "Sign In with Internet Identity"}
                 </span>
               </button>
             )}
-
-            {/* Mobile hamburger — top strip */}
             <button
               type="button"
               data-ocid="mobile.menu.button"
@@ -204,9 +211,22 @@ export function Header({
           </div>
         </div>
 
-        {/* ── Brand + Search row ── */}
+        {/* Mobile ticker strip */}
+        <div className="lg:hidden flex items-center justify-between py-1.5 border-b border-border/30 gap-2">
+          <PriceTicker />
+          <a
+            href={BONSAI_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 px-2 py-0.5 rounded border border-amber-400/30 bg-amber-400/5 text-amber-400 text-[9px] font-mono uppercase hover:bg-amber-400/15 transition-colors flex-shrink-0"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            $BONSAI
+          </a>
+        </div>
+
+        {/* Brand + Search row */}
         <div className="flex items-center gap-5 py-4">
-          {/* Logo mark */}
           <div className="flex-shrink-0 relative">
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden border border-primary/30 bg-secondary shadow-[0_0_20px_oklch(0.60_0.235_27/18%)]">
               <img
@@ -225,11 +245,8 @@ export function Header({
                 <TreePine className="w-7 h-7 text-primary" />
               </div>
             </div>
-            {/* Pulse dot */}
             <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary border-2 border-background animate-pulse" />
           </div>
-
-          {/* Title block */}
           <div className="flex-shrink-0 hidden sm:block">
             <h1 className="font-display font-extrabold leading-none tracking-tight">
               <span
@@ -243,26 +260,22 @@ export function Header({
               </span>
             </h1>
             <p className="mt-1 font-mono text-[10px] text-muted-foreground/70 uppercase tracking-wider">
-              RWA · E-Commerce · Web3 Ecosystems
+              RWA \u00b7 E-Commerce \u00b7 Web3 Ecosystems
             </p>
           </div>
-
-          {/* Mobile title (compact) */}
           <div className="sm:hidden flex-shrink-0">
             <h1 className="font-display font-extrabold text-base leading-tight">
               <span className="text-primary">Bonsai</span>{" "}
               <span className="text-foreground">Registry</span>
             </h1>
           </div>
-
-          {/* Search — takes remaining width */}
           <div className="flex-1 relative group">
             <div className="absolute inset-0 rounded-md bg-primary/5 blur-sm opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none" />
             <Input
               data-ocid="registry.search_input"
               type="search"
-              placeholder="Search projects, chains, categories…"
+              placeholder="Search projects, chains, categories\u2026"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               className="pl-10 pr-9 h-10 bg-secondary/80 border-border focus-visible:border-primary focus-visible:ring-0 focus-visible:ring-offset-0 text-sm placeholder:text-muted-foreground/50 transition-colors"
@@ -278,8 +291,6 @@ export function Header({
               </button>
             )}
           </div>
-
-          {/* Desktop stats pills */}
           <div className="hidden xl:flex items-center gap-2 flex-shrink-0">
             <div className="stat-badge px-3 py-1.5 rounded border border-primary/20 bg-primary/10 text-center">
               <p className="text-base font-bold text-primary leading-none">
