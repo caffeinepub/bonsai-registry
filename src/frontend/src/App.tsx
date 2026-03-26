@@ -236,10 +236,27 @@ export default function App() {
     const staticSlugs = new Set(ecosystemGroups.map((g) => g.slug));
     const newSlugs = [...groupMap.keys()].filter((s) => !staticSlugs.has(s));
 
-    return [
+    // Apply admin-saved ecosystem sort/visibility overrides from localStorage
+    let overrides: Record<string, { sortOrder?: number; hidden?: boolean }> =
+      {};
+    try {
+      const raw = localStorage.getItem("bonsai_ecosystem_overrides");
+      if (raw) overrides = JSON.parse(raw);
+    } catch {}
+
+    const allGroups = [
       ...ecosystemGroups.map((g) => groupMap.get(g.slug)!),
       ...newSlugs.map((s) => groupMap.get(s)!),
-    ];
+    ].filter(Boolean);
+
+    // Filter hidden and sort by admin-saved order
+    const visible = allGroups.filter((g) => !overrides[g.slug]?.hidden);
+    visible.sort((a, b) => {
+      const aOrder = overrides[a.slug]?.sortOrder ?? allGroups.indexOf(a);
+      const bOrder = overrides[b.slug]?.sortOrder ?? allGroups.indexOf(b);
+      return aOrder - bOrder;
+    });
+    return visible;
   }, [backendEntries]);
 
   // Derived totals that reflect merged data once backend loads

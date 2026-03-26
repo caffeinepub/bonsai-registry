@@ -20,8 +20,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { createActorWithConfig } from "@/config";
-import { useExtNfts } from "@/hooks/useExtNfts";
-import { useIcrc7Nfts } from "@/hooks/useIcrc7Nfts";
 import { useInternetIdentity } from "@/hooks/useInternetIdentity";
 import { useOisyWallet } from "@/hooks/useOisyWallet";
 import { Principal } from "@icp-sdk/core/principal";
@@ -39,12 +37,9 @@ import {
   ExternalLink,
   Github,
   Globe,
-  ImageOff,
   Loader2,
   LogIn,
   MessageCircle,
-  Pin,
-  PinOff,
   Plus,
   Save,
   Send,
@@ -58,32 +53,6 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
-
-// Collection standard interface
-interface CollectionDef {
-  id: string;
-  name: string;
-  standard: "icrc7" | "ext";
-}
-
-// Known ICP NFT collections
-const KNOWN_ICRC7_COLLECTIONS: CollectionDef[] = [
-  { id: "qmglu-oaaaa-aaaah-adqvq-cai", name: "Bioniq", standard: "icrc7" },
-  { id: "6wih6-siaaa-aaaah-qczva-cai", name: "Origyn", standard: "icrc7" },
-];
-
-const KNOWN_EXT_COLLECTIONS: CollectionDef[] = [
-  { id: "e3izy-jiaaa-aaaah-qacbq-cai", name: "ICPunks", standard: "ext" },
-  { id: "d3ttm-qaaaa-aaaai-qam4a-cai", name: "BTC Flower", standard: "ext" },
-  { id: "bxdf4-baaaa-aaaah-qaruq-cai", name: "Poked Bots", standard: "ext" },
-  { id: "skjpp-haaaa-aaaae-qac7q-cai", name: "Motoko Ghosts", standard: "ext" },
-  { id: "2glp2-qqaaa-aaaah-qadsq-cai", name: "Starverse", standard: "ext" },
-];
-
-const KNOWN_COLLECTIONS: CollectionDef[] = [
-  ...KNOWN_ICRC7_COLLECTIONS,
-  ...KNOWN_EXT_COLLECTIONS,
-];
 
 interface UserProfilePageProps {
   /** Principal in URL (null = own profile) */
@@ -309,273 +278,6 @@ function SocialLinks({ links }: { links: ExtendedUserProfile["socialLinks"] }) {
   );
 }
 
-// ─── NFT Card ─────────────────────────────────────────────────────────────────
-function NftCard({
-  tokenId,
-  name,
-  imageUrl,
-  collectionId,
-  isPinned,
-  onPinToggle,
-  isOwner,
-}: {
-  tokenId: bigint;
-  name: string;
-  imageUrl: string | null;
-  collectionId: string;
-  isPinned: boolean;
-  onPinToggle: (tokenId: bigint, collectionId: string) => void;
-  isOwner: boolean;
-}) {
-  const [imgError, setImgError] = useState(false);
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.96 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className={[
-        "relative group rounded-lg border overflow-hidden transition-all duration-200",
-        isPinned
-          ? "border-primary/50 bg-primary/5 shadow-[0_0_12px_oklch(0.60_0.235_27/20%)]"
-          : "border-border bg-card hover:border-primary/30 hover:bg-card/80",
-      ].join(" ")}
-    >
-      <div className="aspect-square bg-secondary/50 flex items-center justify-center overflow-hidden">
-        {imageUrl && !imgError ? (
-          <img
-            src={imageUrl}
-            alt={name}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            onError={() => setImgError(true)}
-            loading="lazy"
-          />
-        ) : (
-          <div className="flex flex-col items-center gap-2 text-muted-foreground/40 p-4">
-            <ImageOff className="w-8 h-8" />
-            <span className="text-[10px] font-mono text-center leading-tight">
-              No image
-            </span>
-          </div>
-        )}
-      </div>
-      <div className="p-2">
-        <p
-          className="text-xs font-medium text-foreground truncate"
-          title={name}
-        >
-          {name}
-        </p>
-        <p className="text-[10px] text-muted-foreground font-mono">
-          #{tokenId.toString()}
-        </p>
-      </div>
-      {isOwner && (
-        <button
-          type="button"
-          onClick={() => onPinToggle(tokenId, collectionId)}
-          className={[
-            "absolute top-1.5 right-1.5 p-1 rounded transition-all duration-150",
-            isPinned
-              ? "bg-primary/20 text-primary opacity-100"
-              : "bg-background/70 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-primary",
-          ].join(" ")}
-          title={isPinned ? "Unpin from profile" : "Pin to profile"}
-          aria-label={
-            isPinned ? "Unpin NFT from profile" : "Pin NFT to profile"
-          }
-        >
-          {isPinned ? (
-            <PinOff className="w-3 h-3" />
-          ) : (
-            <Pin className="w-3 h-3" />
-          )}
-        </button>
-      )}
-      {isPinned && (
-        <div className="absolute top-1.5 left-1.5">
-          <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-primary/80 text-primary-foreground text-[9px] font-mono">
-            <Pin className="w-2 h-2" />
-            Pinned
-          </span>
-        </div>
-      )}
-    </motion.div>
-  );
-}
-
-// ─── Standard badge ───────────────────────────────────────────────────────────
-function StandardBadge({ standard }: { standard: "icrc7" | "ext" }) {
-  return (
-    <span
-      className={[
-        "text-[9px] font-mono px-1.5 py-0.5 rounded border uppercase tracking-wide",
-        standard === "ext"
-          ? "text-amber-400/80 bg-amber-400/10 border-amber-400/20"
-          : "text-sky-400/80 bg-sky-400/10 border-sky-400/20",
-      ].join(" ")}
-    >
-      {standard === "ext" ? "EXT v2" : "ICRC-7"}
-    </span>
-  );
-}
-
-// ─── Collection Section ───────────────────────────────────────────────────────
-function CollectionSection({
-  collectionId,
-  collectionName,
-  standard,
-  ownerPrincipal,
-  pinnedNfts,
-  onPinToggle,
-  isOwner,
-  onRemove,
-}: {
-  collectionId: string;
-  collectionName: string;
-  standard: "icrc7" | "ext";
-  ownerPrincipal: string;
-  pinnedNfts: Array<{ tokenId: bigint; collectionId: string }>;
-  onPinToggle: (tokenId: bigint, collectionId: string) => void;
-  isOwner: boolean;
-  onRemove?: () => void;
-}) {
-  // Always call both hooks; disable the one not in use via null canister ID
-  const icrc7Result = useIcrc7Nfts(
-    standard === "icrc7" ? collectionId : null,
-    ownerPrincipal,
-  );
-  const extResult = useExtNfts(
-    standard === "ext" ? collectionId : null,
-    ownerPrincipal,
-  );
-  const {
-    data: nfts,
-    isLoading,
-    isError,
-  } = standard === "ext" ? extResult : icrc7Result;
-
-  if (isLoading) {
-    return (
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <h4 className="text-sm font-display font-semibold text-foreground">
-            {collectionName}
-          </h4>
-          <StandardBadge standard={standard} />
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />
-        </div>
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="aspect-square rounded-lg" />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div>
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <div className="flex items-center gap-2">
-            <h4 className="text-sm font-display font-semibold text-foreground">
-              {collectionName}
-            </h4>
-            <StandardBadge standard={standard} />
-          </div>
-          {onRemove && isOwner && (
-            <button
-              type="button"
-              onClick={onRemove}
-              className="text-muted-foreground hover:text-destructive transition-colors"
-              aria-label="Remove collection"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
-        <p className="text-xs text-muted-foreground/60 font-mono py-2">
-          Could not load NFTs from this collection.
-        </p>
-      </div>
-    );
-  }
-
-  if (!nfts || nfts.length === 0) {
-    return (
-      <div>
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <div className="flex items-center gap-2">
-            <h4 className="text-sm font-display font-semibold text-foreground">
-              {collectionName}
-            </h4>
-            <StandardBadge standard={standard} />
-          </div>
-          {onRemove && isOwner && (
-            <button
-              type="button"
-              onClick={onRemove}
-              className="text-muted-foreground hover:text-destructive transition-colors"
-              aria-label="Remove collection"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
-        <p
-          data-ocid="profile.nfts.empty_state"
-          className="text-xs text-muted-foreground/60 font-mono py-2"
-        >
-          No NFTs found in this collection for your wallet.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <div className="flex items-center justify-between gap-2 mb-3">
-        <div className="flex items-center gap-2">
-          <h4 className="text-sm font-display font-semibold text-foreground">
-            {collectionName}
-          </h4>
-          <StandardBadge standard={standard} />
-          <span className="text-[10px] font-mono text-muted-foreground bg-secondary border border-border px-1.5 py-0.5 rounded">
-            {nfts.length}
-          </span>
-        </div>
-        {onRemove && isOwner && (
-          <button
-            type="button"
-            onClick={onRemove}
-            className="text-muted-foreground hover:text-destructive transition-colors"
-            aria-label="Remove collection"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
-        )}
-      </div>
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-        {nfts.map((nft) => (
-          <NftCard
-            key={nft.tokenId.toString()}
-            tokenId={nft.tokenId}
-            name={nft.name}
-            imageUrl={nft.imageUrl}
-            collectionId={collectionId}
-            isPinned={pinnedNfts.some(
-              (p) =>
-                p.tokenId === nft.tokenId && p.collectionId === collectionId,
-            )}
-            onPinToggle={onPinToggle}
-            isOwner={isOwner}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // ─── Format join date ─────────────────────────────────────────────────────────
 function formatJoinDate(ns: bigint | number | undefined): string {
   if (!ns) return "";
@@ -641,16 +343,6 @@ export function UserProfilePage({
     sol: "",
     oisyPrincipal: "",
   });
-
-  // Custom NFT collections
-  const [customCollections, setCustomCollections] = useState<CollectionDef[]>(
-    [],
-  );
-  const [newCollectionInput, setNewCollectionInput] = useState("");
-  const [newCollectionStandard, setNewCollectionStandard] = useState<
-    "icrc7" | "ext"
-  >("icrc7");
-  const [addCollectionError, setAddCollectionError] = useState("");
 
   // ── Fetch profile ──────────────────────────────────────────────────────────
   const { data: profile, isLoading: profileLoading } =
@@ -729,39 +421,6 @@ export function UserProfilePage({
       ),
   });
 
-  // ── Pin NFT mutation ───────────────────────────────────────────────────────
-  const pinMutation = useMutation({
-    mutationFn: async (
-      pinnedNfts: Array<{ tokenId: bigint; collectionId: string }>,
-    ) => {
-      if (!identity) throw new Error("Not authenticated");
-      const actor = await createActorWithConfig({ agentOptions: { identity } });
-      await actor.saveCallerUserProfile({
-        displayName: profile?.displayName ?? "",
-        username: profile?.username ?? "",
-        bio: profile?.bio ?? "",
-        avatarUrl: profile?.avatarUrl,
-        bannerUrl: profile?.bannerUrl,
-        socialLinks: profile?.socialLinks ?? {},
-        walletAddresses: profile?.walletAddresses ?? {},
-        pinnedNfts,
-        submittedEntries: profile?.submittedEntries ?? [],
-        ratedEntries: profile?.ratedEntries ?? [],
-        bookmarks: profile?.bookmarks ?? [],
-        joinedAt: profile?.joinedAt ?? 0n,
-        badges: profile?.badges ?? [],
-      });
-    },
-    onSuccess: () =>
-      queryClient.invalidateQueries({
-        queryKey: ["user-profile", viewPrincipal],
-      }),
-    onError: (err) =>
-      toast.error(
-        err instanceof Error ? err.message : "Failed to update pinned NFTs",
-      ),
-  });
-
   const handleStartEdit = () => {
     setEditForm({
       displayName: profile?.displayName ?? "",
@@ -835,58 +494,12 @@ export function UserProfilePage({
     toast.success("OISY wallet principal linked! Click Save to persist.");
   };
 
-  const handlePinToggle = (tokenId: bigint, collectionId: string) => {
-    if (!profile) return;
-    const current = profile.pinnedNfts ?? [];
-    const isPinned = current.some(
-      (p) => p.tokenId === tokenId && p.collectionId === collectionId,
-    );
-    const updated = isPinned
-      ? current.filter(
-          (p) => !(p.tokenId === tokenId && p.collectionId === collectionId),
-        )
-      : [...current, { tokenId, collectionId }];
-    pinMutation.mutate(updated);
-  };
-
-  const handleAddCollection = () => {
-    setAddCollectionError("");
-    const id = newCollectionInput.trim();
-    if (!id) return;
-    if (
-      !/^[a-z0-9]{5}-[a-z0-9]{5}-[a-z0-9]{5}-[a-z0-9]{5}-[a-z0-9]{3}$/.test(id)
-    ) {
-      setAddCollectionError(
-        "Invalid canister ID format (e.g. xxxxx-xxxxx-xxxxx-xxxxx-xxx)",
-      );
-      return;
-    }
-    if (
-      customCollections.some((c) => c.id === id) ||
-      KNOWN_COLLECTIONS.some((c) => c.id === id)
-    ) {
-      setAddCollectionError("This collection is already added.");
-      return;
-    }
-    setCustomCollections((prev) => [
-      ...prev,
-      {
-        id,
-        name: `${id.slice(0, 5)}…${id.slice(-3)}`,
-        standard: newCollectionStandard,
-      },
-    ]);
-    setNewCollectionInput("");
-  };
-
   const handleShareProfile = () => {
     const url = `${window.location.origin}/#profile/${viewPrincipal}`;
     navigator.clipboard
       .writeText(url)
       .then(() => toast.success("Profile link copied!"));
   };
-
-  const allCollections = [...KNOWN_COLLECTIONS, ...customCollections];
 
   // Contribution score
   const ratedCount = profile?.ratedEntries?.length ?? 0;
@@ -1088,7 +701,7 @@ export function UserProfilePage({
           </div>
 
           {/* Avatar + name row — overlaps banner bottom */}
-          <div className="flex items-end justify-between gap-4 mt-[-40px] px-4 sm:px-5">
+          <div className="relative z-10 flex items-end justify-between gap-4 mt-[-40px] px-4 sm:px-5">
             {/* Avatar */}
             <div className="flex-shrink-0 relative">
               {profile?.avatarUrl ? (
@@ -1782,161 +1395,6 @@ export function UserProfilePage({
             )}
           </motion.section>
         )}
-
-        {/* ── NFT Showcase ── */}
-        <motion.section
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.25 }}
-          className="mb-8"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display font-bold text-lg text-foreground flex items-center gap-2">
-              NFT Showcase
-              <span className="text-[9px] font-mono text-muted-foreground bg-secondary border border-border px-1.5 py-0.5 rounded uppercase tracking-wide">
-                ICRC-7 · EXT v2
-              </span>
-            </h2>
-          </div>
-
-          {/* Pinned NFTs (shown to everyone) */}
-          {profile?.pinnedNfts && profile.pinnedNfts.length > 0 && (
-            <div className="mb-5">
-              <p className="font-mono text-[10px] text-primary/60 uppercase tracking-widest mb-3">
-                Pinned NFTs
-              </p>
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                {profile.pinnedNfts.map((pinned) => (
-                  <div
-                    key={`${pinned.collectionId}-${pinned.tokenId}`}
-                    className="rounded-lg border border-primary/30 bg-primary/5 p-2 flex flex-col items-center gap-1"
-                  >
-                    <Pin className="w-4 h-4 text-primary" />
-                    <p className="text-[10px] font-mono text-muted-foreground text-center truncate w-full">
-                      #{pinned.tokenId.toString()}
-                    </p>
-                    <p className="text-[9px] text-muted-foreground/60 truncate w-full text-center">
-                      {pinned.collectionId.slice(0, 5)}…
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Full collections (owner only) */}
-          {isOwnProfile && viewPrincipal && (
-            <div className="space-y-6">
-              {allCollections.map((col) => (
-                <CollectionSection
-                  key={col.id}
-                  collectionId={col.id}
-                  collectionName={col.name}
-                  standard={col.standard}
-                  ownerPrincipal={viewPrincipal}
-                  pinnedNfts={profile?.pinnedNfts ?? []}
-                  onPinToggle={handlePinToggle}
-                  isOwner={isOwnProfile}
-                  onRemove={
-                    customCollections.some((c) => c.id === col.id)
-                      ? () =>
-                          setCustomCollections((prev) =>
-                            prev.filter((c) => c.id !== col.id),
-                          )
-                      : undefined
-                  }
-                />
-              ))}
-
-              {/* Add collection */}
-              <div className="rounded-lg border border-dashed border-border/60 p-4">
-                <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest mb-3">
-                  Add NFT Collection
-                </p>
-
-                {/* Standard toggle */}
-                <div className="flex gap-1.5 mb-3">
-                  <button
-                    type="button"
-                    data-ocid="profile.add_collection_icrc7_toggle"
-                    onClick={() => setNewCollectionStandard("icrc7")}
-                    className={[
-                      "px-2.5 py-1 rounded text-[10px] font-mono border transition-all",
-                      newCollectionStandard === "icrc7"
-                        ? "bg-sky-400/15 text-sky-300 border-sky-400/30"
-                        : "bg-secondary text-muted-foreground border-border hover:border-sky-400/20 hover:text-sky-400/70",
-                    ].join(" ")}
-                  >
-                    ICRC-7
-                  </button>
-                  <button
-                    type="button"
-                    data-ocid="profile.add_collection_ext_toggle"
-                    onClick={() => setNewCollectionStandard("ext")}
-                    className={[
-                      "px-2.5 py-1 rounded text-[10px] font-mono border transition-all",
-                      newCollectionStandard === "ext"
-                        ? "bg-amber-400/15 text-amber-300 border-amber-400/30"
-                        : "bg-secondary text-muted-foreground border-border hover:border-amber-400/20 hover:text-amber-400/70",
-                    ].join(" ")}
-                  >
-                    EXT v2
-                  </button>
-                </div>
-
-                <div className="flex gap-2">
-                  <Input
-                    data-ocid="profile.add_collection_input"
-                    value={newCollectionInput}
-                    onChange={(e) => {
-                      setNewCollectionInput(e.target.value);
-                      setAddCollectionError("");
-                    }}
-                    placeholder="Paste canister ID (e.g. xxxxx-xxxxx-xxxxx-xxxxx-xxx)"
-                    className="bg-secondary border-border text-sm font-mono flex-1 h-8 text-xs"
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && handleAddCollection()
-                    }
-                  />
-                  <Button
-                    data-ocid="profile.add_collection_button"
-                    size="sm"
-                    variant="outline"
-                    className="border-primary/30 text-primary hover:bg-primary/10 text-xs gap-1 h-8 flex-shrink-0"
-                    onClick={handleAddCollection}
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    Add
-                  </Button>
-                </div>
-                {addCollectionError && (
-                  <p
-                    data-ocid="profile.add_collection_error"
-                    className="text-[11px] text-destructive mt-1.5 flex items-center gap-1"
-                  >
-                    <AlertCircle className="w-3 h-3" />
-                    {addCollectionError}
-                  </p>
-                )}
-                <p className="text-[10px] text-muted-foreground mt-2">
-                  Any ICRC-7 or EXT v2 compatible NFT canister on the Internet
-                  Computer.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Public view — no NFT data */}
-          {!isOwnProfile &&
-            (!profile?.pinnedNfts || profile.pinnedNfts.length === 0) && (
-              <p
-                data-ocid="profile.nfts.empty_state"
-                className="text-sm text-muted-foreground/60 py-4 font-mono"
-              >
-                No pinned NFTs
-              </p>
-            )}
-        </motion.section>
 
         {/* ── Submitted Projects ── */}
         <motion.section
