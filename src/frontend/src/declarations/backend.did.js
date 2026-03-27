@@ -135,6 +135,7 @@ export const idlService = IDL.Service({
       [],
     ),
   'getBannerAdsJson' : IDL.Func([], [IDL.Text], ['query']),
+  'getEcosystemOrder' : IDL.Func([], [IDL.Text], ['query']),
   'getCallerAllRatings' : IDL.Func(
       [],
       [IDL.Vec(IDL.Tuple(IDL.Nat, IDL.Nat))],
@@ -178,7 +179,7 @@ export const idlService = IDL.Service({
   'removeRegistryEntry' : IDL.Func([IDL.Nat], [], []),
   'removeRegistryEntryWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   'saveBannerAdsWithSecret' : IDL.Func([IDL.Text, IDL.Text], [], []),
-  'saveCallerUserProfile' : IDL.Func([ExtendedUserProfile], [], []),
+  'saveEcosystemOrderWithSecret' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'setListingFeeWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   'submitProjectListing' : IDL.Func(
       [BonsaiRegistryEntry, IDL.Text],
@@ -326,6 +327,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'getBannerAdsJson' : IDL.Func([], [IDL.Text], ['query']),
+    'getEcosystemOrder' : IDL.Func([], [IDL.Text], ['query']),
     'getCallerAllRatings' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Nat, IDL.Nat))],
@@ -369,6 +371,7 @@ export const idlFactory = ({ IDL }) => {
     'removeRegistryEntry' : IDL.Func([IDL.Nat], [], []),
     'removeRegistryEntryWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
     'saveBannerAdsWithSecret' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'saveEcosystemOrderWithSecret' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'saveCallerUserProfile' : IDL.Func([ExtendedUserProfile], [], []),
     'setListingFeeWithSecret' : IDL.Func([IDL.Text, IDL.Nat], [], []),
     'submitProjectListing' : IDL.Func(

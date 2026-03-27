@@ -48,28 +48,39 @@ export function PriceTicker() {
   });
 
   const fetchPrices = async () => {
-    const [cgRes, odinRes] = await Promise.allSettled([
-      fetch(
-        "https://api.coingecko.com/api/v3/simple/price?ids=internet-computer,bitcoin&vs_currencies=usd",
-      ),
+    const [icpRes, btcRes, odinRes] = await Promise.allSettled([
+      fetch("https://api.kraken.com/0/public/Ticker?pair=ICPUSD"),
+      fetch("https://api.kraken.com/0/public/Ticker?pair=XBTUSD"),
       fetch("https://api.odin.fun/v1/token/26j2"),
     ]);
+
     let icp: number | null = null;
     let btc: number | null = null;
     let bonsai: number | null = null;
-    if (cgRes.status === "fulfilled" && cgRes.value.ok) {
+
+    if (icpRes.status === "fulfilled" && icpRes.value.ok) {
       try {
-        const d = await cgRes.value.json();
-        icp = d["internet-computer"]?.usd ?? null;
-        btc = d.bitcoin?.usd ?? null;
+        const d = await icpRes.value.json();
+        const val = d?.result?.ICPUSD?.c?.[0];
+        if (val) icp = Number.parseFloat(val);
       } catch {}
     }
+
+    if (btcRes.status === "fulfilled" && btcRes.value.ok) {
+      try {
+        const d = await btcRes.value.json();
+        const val = d?.result?.XXBTZUSD?.c?.[0];
+        if (val) btc = Number.parseFloat(val);
+      } catch {}
+    }
+
     if (odinRes.status === "fulfilled" && odinRes.value.ok) {
       try {
         const d = await odinRes.value.json();
         bonsai = d?.data?.price ?? null;
       } catch {}
     }
+
     const snapshot = prevRef.current;
     setPrices((prev) => {
       const prevMap = prev.reduce<PrevPrices>(

@@ -38,6 +38,7 @@ import {
   Github,
   Globe,
   Loader2,
+  Lock,
   LogIn,
   MessageCircle,
   Plus,
@@ -45,6 +46,7 @@ import {
   Send,
   Share2,
   Star,
+  Trophy,
   Twitter,
   Wallet,
   X,
@@ -91,6 +93,90 @@ function Identicon({
   );
 }
 
+// ─── Achievement badge definitions ────────────────────────────────────────────
+const BADGE_DEFINITIONS = [
+  {
+    id: "early-adopter",
+    label: "Early Adopter",
+    icon: "⚡",
+    color: "amber",
+    desc: "Joined the Bonsai Ecosystem early",
+    check: (p: ExtendedUserProfile) => {
+      const ms = Number(p.joinedAt ?? 0n) / 1_000_000;
+      return ms > 0 && ms < new Date("2026-01-01").getTime();
+    },
+  },
+  {
+    id: "first-rating",
+    label: "First Vote",
+    icon: "⭐",
+    color: "yellow",
+    desc: "Rate your first project",
+    check: (p: ExtendedUserProfile) => (p.ratedEntries?.length ?? 0) >= 1,
+    unlockHint: "Rate any project in the registry",
+  },
+  {
+    id: "power-voter",
+    label: "Power Voter",
+    icon: "🗳️",
+    color: "violet",
+    desc: "Rate 10+ projects",
+    check: (p: ExtendedUserProfile) => (p.ratedEntries?.length ?? 0) >= 10,
+    unlockHint: "Rate 10 projects",
+  },
+  {
+    id: "community-voice",
+    label: "Community Voice",
+    icon: "📣",
+    color: "blue",
+    desc: "Rate 25+ projects",
+    check: (p: ExtendedUserProfile) => (p.ratedEntries?.length ?? 0) >= 25,
+    unlockHint: "Rate 25 projects",
+  },
+  {
+    id: "contributor",
+    label: "Contributor",
+    icon: "🌱",
+    color: "green",
+    desc: "Submit your first registry entry",
+    check: (p: ExtendedUserProfile) => (p.submittedEntries?.length ?? 0) >= 1,
+    unlockHint: "Submit a project to the registry",
+  },
+  {
+    id: "bonsai-builder",
+    label: "Bonsai Builder",
+    icon: "🌿",
+    color: "emerald",
+    desc: "Submit 3+ registry entries",
+    check: (p: ExtendedUserProfile) => (p.submittedEntries?.length ?? 0) >= 3,
+    unlockHint: "Submit 3 projects",
+  },
+  {
+    id: "web3-connected",
+    label: "Web3 Connected",
+    icon: "🔗",
+    color: "cyan",
+    desc: "Add a wallet address to your profile",
+    check: (p: ExtendedUserProfile) =>
+      !!(
+        p.walletAddresses?.eth ||
+        p.walletAddresses?.btc ||
+        p.walletAddresses?.sol ||
+        p.walletAddresses?.hbar
+      ),
+    unlockHint: "Add a wallet address in your profile",
+  },
+  {
+    id: "oisy-pioneer",
+    label: "OISY Pioneer",
+    icon: "🏅",
+    color: "orange",
+    desc: "Connect your OISY wallet principal",
+    check: (p: ExtendedUserProfile) => !!p.oisyPrincipal?.[0],
+    unlockHint: "Link your OISY Principal ID",
+  },
+];
+
 // ─── Badge pill ───────────────────────────────────────────────────────────────
 function BadgePill({ badge }: { badge: string }) {
   const styles: Record<string, string> = {
@@ -100,16 +186,41 @@ function BadgePill({ badge }: { badge: string }) {
       "bg-violet-400/15 text-violet-300 border border-violet-400/30",
     "verified-builder":
       "bg-emerald-400/15 text-emerald-300 border border-emerald-400/30",
+    "first-rating":
+      "bg-yellow-400/15 text-yellow-300 border border-yellow-400/30",
+    "power-voter":
+      "bg-violet-400/15 text-violet-300 border border-violet-400/30",
+    "community-voice": "bg-blue-400/15 text-blue-300 border border-blue-400/30",
+    contributor: "bg-green-400/15 text-green-300 border border-green-400/30",
+    "bonsai-builder":
+      "bg-emerald-400/15 text-emerald-300 border border-emerald-400/30",
+    "web3-connected": "bg-cyan-400/15 text-cyan-300 border border-cyan-400/30",
+    "oisy-pioneer":
+      "bg-orange-400/15 text-orange-300 border border-orange-400/30",
   };
   const icons: Record<string, React.ReactNode> = {
     "early-adopter": <Zap className="w-3 h-3" />,
     "top-contributor": <Award className="w-3 h-3" />,
     "verified-builder": <CheckCircle2 className="w-3 h-3" />,
+    "first-rating": <Star className="w-3 h-3" />,
+    "power-voter": <Star className="w-3 h-3" />,
+    "community-voice": <Star className="w-3 h-3" />,
+    contributor: <CheckCircle2 className="w-3 h-3" />,
+    "bonsai-builder": <CheckCircle2 className="w-3 h-3" />,
+    "web3-connected": <Wallet className="w-3 h-3" />,
+    "oisy-pioneer": <Award className="w-3 h-3" />,
   };
   const labels: Record<string, string> = {
     "early-adopter": "Early Adopter",
     "top-contributor": "Top Contributor",
     "verified-builder": "Verified Builder",
+    "first-rating": "First Vote",
+    "power-voter": "Power Voter",
+    "community-voice": "Community Voice",
+    contributor: "Contributor",
+    "bonsai-builder": "Bonsai Builder",
+    "web3-connected": "Web3 Connected",
+    "oisy-pioneer": "OISY Pioneer",
   };
   const style =
     styles[badge] ?? "bg-secondary text-muted-foreground border border-border";
@@ -743,6 +854,20 @@ export function UserProfilePage({
                   Share
                 </Button>
               )}
+              {isOwnProfile && (
+                <a
+                  data-ocid="profile.x_share_button"
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                    "I'm building my Web3 identity on @BonsaiRegistry — the most comprehensive Web3 directory across 35+ ecosystems. Join me and get $BONSAI 🌿 https://odin.fun/token/26j2?ref=bonsai #BONSAI #Web3 #ICP",
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 h-8 rounded border border-sky-400/30 bg-sky-400/8 text-sky-400 text-xs font-mono hover:bg-sky-400/15 transition-all"
+                >
+                  <Twitter className="w-3 h-3" />
+                  Share on X
+                </a>
+              )}
               {isOwnProfile && identity && !isEditing && (
                 <Button
                   data-ocid="profile.edit_button"
@@ -892,6 +1017,65 @@ export function UserProfilePage({
             />
           </div>
         </motion.section>
+
+        {/* ── Achievements ── */}
+        {profile &&
+          (() => {
+            const achieved = BADGE_DEFINITIONS.map((b) => ({
+              ...b,
+              earned: b.check(profile),
+            }));
+            const earnedCount = achieved.filter((b) => b.earned).length;
+            return (
+              <motion.section
+                data-ocid="profile.achievements.section"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.08 }}
+                className="mb-8"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <Trophy className="w-4 h-4 text-amber-400" />
+                  <h3 className="font-display font-bold text-sm text-foreground">
+                    Achievements
+                  </h3>
+                  <span className="font-mono text-[10px] text-muted-foreground/60 ml-1">
+                    {earnedCount}/{achieved.length} earned
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {achieved.map((b) => (
+                    <div
+                      key={b.id}
+                      className={`relative rounded-lg border p-3 text-center transition-all ${
+                        b.earned
+                          ? "border-primary/20 bg-primary/5"
+                          : "border-border/40 bg-secondary/20 opacity-50"
+                      }`}
+                    >
+                      <div className="text-2xl mb-1">
+                        {b.earned ? (
+                          b.icon
+                        ) : (
+                          <Lock className="w-5 h-5 mx-auto text-muted-foreground/40" />
+                        )}
+                      </div>
+                      <p
+                        className={`text-[10px] font-semibold font-mono uppercase tracking-wide leading-tight ${b.earned ? "text-foreground" : "text-muted-foreground/50"}`}
+                      >
+                        {b.label}
+                      </p>
+                      <p
+                        className={`text-[9px] mt-0.5 leading-tight ${b.earned ? "text-muted-foreground/70" : "text-muted-foreground/40"}`}
+                      >
+                        {b.earned ? b.desc : (b.unlockHint ?? b.desc)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </motion.section>
+            );
+          })()}
 
         {/* ── Edit form (tabbed) ── */}
         <AnimatePresence>

@@ -3,7 +3,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { recordEvent } from "@/utils/analytics";
 import { LogIn } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "bonsai_onboarded";
@@ -36,7 +35,6 @@ export function OnboardingModal({
   const [step, setStep] = useState(1);
   const [selected, setSelected] = useState<string[]>([]);
 
-  // Show only on first visit
   useEffect(() => {
     const alreadyOnboarded = localStorage.getItem(STORAGE_KEY);
     if (!alreadyOnboarded) {
@@ -93,36 +91,28 @@ export function OnboardingModal({
 
         {/* Progress bar */}
         <div className="h-1 bg-secondary w-full">
-          <motion.div
+          <div
             className="h-full bg-primary"
-            initial={{ width: "33%" }}
-            animate={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
+            style={{
+              width: `${(step / TOTAL_STEPS) * 100}%`,
+              transition: "width 0.4s ease-in-out",
+            }}
           />
         </div>
 
         {/* Step content */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, x: 24 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -24 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="p-7 sm:p-8"
-          >
-            {step === 1 && (
-              <StepWelcome
-                totalEntries={totalEntries}
-                totalEcosystems={totalEcosystems}
-              />
-            )}
-            {step === 2 && (
-              <StepInterests selected={selected} onToggle={toggleInterest} />
-            )}
-            {step === 3 && <StepAllSet onLogin={onLogin} onClose={complete} />}
-          </motion.div>
-        </AnimatePresence>
+        <div key={step} className="p-7 sm:p-8 animate-in fade-in duration-200">
+          {step === 1 && (
+            <StepWelcome
+              totalEntries={totalEntries}
+              totalEcosystems={totalEcosystems}
+            />
+          )}
+          {step === 2 && (
+            <StepInterests selected={selected} onToggle={toggleInterest} />
+          )}
+          {step === 3 && <StepAllSet onLogin={onLogin} onClose={complete} />}
+        </div>
 
         {/* Footer */}
         <div className="px-7 sm:px-8 pb-7 sm:pb-8 flex items-center justify-between gap-4">
@@ -137,7 +127,7 @@ export function OnboardingModal({
           </button>
 
           <div className="flex items-center gap-3">
-            {/* Step dots — use step number as stable key */}
+            {/* Step dots */}
             <div className="flex items-center gap-1.5">
               {[1, 2, 3].map((dotStep) => (
                 <div
@@ -190,13 +180,11 @@ interface StepWelcomeProps {
 }
 
 function StepWelcome({ totalEntries, totalEcosystems }: StepWelcomeProps) {
-  // Round down to nearest 50 for a conservative label
   const projectsLabel = `${Math.floor(totalEntries / 50) * 50}+`;
   const ecosystemsLabel = `${totalEcosystems}+`;
 
   return (
     <div className="space-y-4">
-      {/* Logo + headline */}
       <div className="flex items-center gap-3">
         <div className="w-12 h-12 rounded-lg border border-primary/40 overflow-hidden flex-shrink-0">
           <img
@@ -372,7 +360,6 @@ function StepAllSet({ onLogin, onClose }: StepAllSetProps) {
         </div>
       </div>
 
-      {/* Sign in CTA */}
       {onLogin && (
         <div className="pt-1 max-w-xs mx-auto">
           <Button

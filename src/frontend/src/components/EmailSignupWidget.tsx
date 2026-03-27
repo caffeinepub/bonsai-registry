@@ -61,11 +61,7 @@ export function EmailSignupWidget({ identity }: EmailSignupWidgetProps) {
 
     setSubmitting(true);
     try {
-      await (
-        actor as unknown as {
-          subscribeEmail: (e: string, o: string, s: string) => Promise<void>;
-        }
-      ).subscribeEmail(trimmedEmail, trimmedOisy, "main_page");
+      await actor.subscribeEmail(trimmedEmail, "main_page");
       if (identity) {
         try {
           await actor.linkEmailToPrincipal(trimmedEmail);
@@ -83,11 +79,18 @@ export function EmailSignupWidget({ identity }: EmailSignupWidgetProps) {
         .then((c) => setSubscriberCount(Number(c)))
         .catch(() => {});
     } catch (err: unknown) {
+      console.error("[EmailSignupWidget] subscribeEmail error:", err);
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.toLowerCase().includes("already")) {
         toast.info("You're already subscribed! 🌿");
+      } else if (msg.toLowerCase().includes("invalid")) {
+        toast.error(
+          "Invalid email or Principal ID. Please check and try again.",
+        );
       } else {
-        toast.error("Subscription failed. Please try again.");
+        toast.error(
+          "Subscription failed. Please check your details and try again.",
+        );
       }
     } finally {
       setSubmitting(false);

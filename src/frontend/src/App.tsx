@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/sonner";
+import { Twitter } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BonsaiNewsCarousel } from "./components/BonsaiNewsCarousel";
@@ -519,6 +520,15 @@ export default function App() {
                           >
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                             Get $BONSAI on Odin.Fun
+                          </a>
+                          <a
+                            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("Rooted in Web3. Growing beyond borders. 🌿 Join the Bonsai Ecosystem — the most comprehensive Web3 directory across 35+ blockchains. Get $BONSAI on @OdinFun https://odin.fun/token/26j2?ref=bonsai #BONSAI #ICP #Web3")}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 px-3 py-1 rounded border border-sky-400/30 bg-sky-400/8 text-sky-400 text-xs font-mono hover:bg-sky-400/15 transition-all"
+                          >
+                            <Twitter className="w-3 h-3" />
+                            Share on X
                           </a>
                         </div>
                       </div>
