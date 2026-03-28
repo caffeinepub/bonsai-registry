@@ -213,7 +213,7 @@ export interface backendInterface {
     saveCallerUserProfile(profile: ExtendedUserProfile): Promise<void>;
     setListingFeeWithSecret(secret: string, fee: bigint): Promise<void>;
     submitProjectListing(entry: BonsaiRegistryEntry, paymentMemo: string): Promise<bigint>;
-    subscribeEmail(email: string, source: string): Promise<void>;
+    subscribeEmail(email: string, oisyPrincipal: string, source: string): Promise<void>;
     unbookmarkEntry(entryId: bigint): Promise<void>;
     updateRegistryEntry(id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
     updateRegistryEntryWithSecret(secret: string, id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
@@ -753,17 +753,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async subscribeEmail(arg0: string, arg1: string): Promise<void> {
+    async subscribeEmail(arg0: string, arg1: string, arg2: string): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.subscribeEmail(arg0, arg1);
+                const result = await this.actor.subscribeEmail(arg0, arg1, arg2);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.subscribeEmail(arg0, arg1);
+            const result = await this.actor.subscribeEmail(arg0, arg1, arg2);
             return result;
         }
     }

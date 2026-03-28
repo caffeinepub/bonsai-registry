@@ -186,7 +186,7 @@ export const idlService = IDL.Service({
       [IDL.Nat],
       [],
     ),
-  'subscribeEmail' : IDL.Func([IDL.Text, IDL.Text], [], []),
+  'subscribeEmail' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
   'unbookmarkEntry' : IDL.Func([IDL.Nat], [], []),
   'updateRegistryEntry' : IDL.Func([IDL.Nat, BonsaiRegistryEntry], [], []),
   'updateRegistryEntryWithSecret' : IDL.Func(
@@ -379,7 +379,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Nat],
         [],
       ),
-    'subscribeEmail' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'subscribeEmail' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
     'unbookmarkEntry' : IDL.Func([IDL.Nat], [], []),
     'updateRegistryEntry' : IDL.Func([IDL.Nat, BonsaiRegistryEntry], [], []),
     'updateRegistryEntryWithSecret' : IDL.Func(

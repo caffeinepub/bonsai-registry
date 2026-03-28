@@ -145,7 +145,7 @@ export interface _SERVICE {
   'saveCallerUserProfile' : ActorMethod<[ExtendedUserProfile], undefined>,
   'setListingFeeWithSecret' : ActorMethod<[string, bigint], undefined>,
   'submitProjectListing' : ActorMethod<[BonsaiRegistryEntry, string], bigint>,
-  'subscribeEmail' : ActorMethod<[string, string], undefined>,
+  'subscribeEmail' : ActorMethod<[string, string, string], undefined>,
   'unbookmarkEntry' : ActorMethod<[bigint], undefined>,
   'updateRegistryEntry' : ActorMethod<[bigint, BonsaiRegistryEntry], undefined>,
   'updateRegistryEntryWithSecret' : ActorMethod<

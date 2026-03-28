@@ -61,7 +61,8 @@ export function EmailSignupWidget({ identity }: EmailSignupWidgetProps) {
 
     setSubmitting(true);
     try {
-      await actor.subscribeEmail(trimmedEmail, "main_page");
+      // subscribeEmail(email, oisyPrincipal, source)
+      await actor.subscribeEmail(trimmedEmail, trimmedOisy, "main_page");
       if (identity) {
         try {
           await actor.linkEmailToPrincipal(trimmedEmail);

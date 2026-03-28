@@ -108,7 +108,7 @@ export function LinkCard({
             </span>
           </div>
 
-          <span className="text-sm font-semibold font-display text-foreground group-hover:text-primary transition-colors truncate leading-tight">
+          <span className="link-card-title text-sm font-semibold font-display transition-colors truncate leading-tight">
             {entry.name}
           </span>
 
@@ -142,6 +142,7 @@ export function LinkCard({
       {/* ── Link preview image ── */}
       <LinkPreviewImage
         url={entry.url}
+        fallbackDomain={domain}
         className="mt-1.5 border border-border/30 max-h-28 rounded-sm"
         aspectClass="aspect-video"
       />
