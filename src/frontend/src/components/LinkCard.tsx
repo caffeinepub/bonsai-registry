@@ -1,10 +1,14 @@
 import { addUtm, isFeatured, isVerified } from "@/data/monetizationData";
 import type { RegistryEntry } from "@/data/registryData";
+import { useActor } from "@/hooks/useActor";
 import type { LocalRatingStats } from "@/hooks/useLocalRatings";
 import { recordEvent } from "@/utils/analytics";
-import { BadgeCheck, Star } from "lucide-react";
+import { BadgeCheck, ChevronUp, Star } from "lucide-react";
 import { ExternalLink } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import type { EntryRatingStats } from "../backend.d";
+import { CommentThread } from "./CommentThread";
 import { LinkPreviewImage } from "./LinkPreviewImage";
 import { StarRating } from "./StarRating";
 
@@ -57,6 +61,8 @@ export function LinkCard({
   localUserRating,
   onLocalRate,
 }: LinkCardProps) {
+  const { actor } = useActor();
+
   const domain = (() => {
     try {
       return new URL(entry.url).hostname.replace("www.", "");
@@ -68,6 +74,47 @@ export function LinkCard({
   // Determine whether this is a backend-managed entry (on-chain ratings)
   // or a static entry (localStorage ratings)
   const isBackendEntry = entry.id.startsWith("backend-");
+  const numericEntryId = isBackendEntry
+    ? BigInt(entry.id.replace("backend-", ""))
+    : null;
+
+  const [upvoteCount, setUpvoteCount] = useState(0);
+  const [hasUpvoted, setHasUpvoted] = useState(false);
+
+  useEffect(() => {
+    if (!actor || !numericEntryId) return;
+    Promise.all([
+      (actor as any).getEntryUpvotes(numericEntryId),
+      (actor as any).hasCallerUpvoted(numericEntryId),
+    ])
+      .then(([count, upvoted]) => {
+        setUpvoteCount(Number(count));
+        setHasUpvoted(Boolean(upvoted));
+      })
+      .catch(() => {});
+  }, [actor, numericEntryId]);
+
+  const handleUpvote = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      toast.error("Sign in with Internet Identity to upvote");
+      return;
+    }
+    if (!actor || !numericEntryId) return;
+    const prev = hasUpvoted;
+    const prevCount = upvoteCount;
+    setHasUpvoted(!prev);
+    setUpvoteCount(prev ? prevCount - 1 : prevCount + 1);
+    try {
+      const nowUpvoted = await (actor as any).upvoteEntry(numericEntryId);
+      setHasUpvoted(Boolean(nowUpvoted));
+      setUpvoteCount((c) => (prev ? c : c));
+    } catch {
+      setHasUpvoted(prev);
+      setUpvoteCount(prevCount);
+    }
+  };
 
   const featured = isFeatured(entry.url);
   const verified = isVerified(entry.url);
@@ -200,7 +247,52 @@ export function LinkCard({
             isLocal={true}
           />
         )}
+
+        {/* Upvote button -- backend entries only */}
+        {isBackendEntry && (
+          <div
+            className="flex items-center gap-1.5 mt-1.5"
+            onClick={(e) => e.preventDefault()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") e.preventDefault();
+            }}
+          >
+            <button
+              type="button"
+              data-ocid="registry.link.upvote"
+              onClick={handleUpvote}
+              className={[
+                "flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono border transition-all",
+                hasUpvoted
+                  ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-400"
+                  : "border-border/50 text-muted-foreground/50 hover:border-emerald-500/40 hover:text-emerald-400",
+              ].join(" ")}
+              title={
+                isAuthenticated
+                  ? hasUpvoted
+                    ? "Remove upvote"
+                    : "Upvote this project"
+                  : "Sign in to upvote"
+              }
+            >
+              <ChevronUp className="w-3 h-3" />
+              <span>{upvoteCount}</span>
+            </button>
+          </div>
+        )}
       </fieldset>
+
+      {/* Comment thread -- backend entries only */}
+      {isBackendEntry && numericEntryId !== null && (
+        <div
+          onClick={(e) => e.preventDefault()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") e.preventDefault();
+          }}
+        >
+          <CommentThread entryId={numericEntryId} />
+        </div>
+      )}
     </a>
   );
 }

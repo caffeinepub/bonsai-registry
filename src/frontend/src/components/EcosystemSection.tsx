@@ -11,7 +11,7 @@ import { useMemo, useState } from "react";
 import type { EntryRatingStats } from "../backend.d";
 import { LinkCard } from "./LinkCard";
 
-export type SortMode = "default" | "top-rated" | "most-rated";
+export type SortMode = "default" | "top-rated" | "most-rated" | "rising";
 
 const TIER_LABELS: Record<number, string> = {
   1: "Foundation",
@@ -50,6 +50,7 @@ interface EcosystemSectionProps {
   localRatingsMap?: LocalRatingsMap;
   localMyRatingsMap?: LocalMyRatingsMap;
   onLocalRate?: (url: string, rating: number) => void;
+  upvoteCountsMap?: Map<string, bigint>;
 }
 
 export function EcosystemSection({
@@ -66,6 +67,7 @@ export function EcosystemSection({
   localRatingsMap = new Map(),
   localMyRatingsMap = new Map(),
   onLocalRate,
+  upvoteCountsMap = new Map(),
 }: EcosystemSectionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -114,9 +116,15 @@ export function EcosystemSection({
         return bCount - aCount;
       }
 
+      if (sortMode === "rising") {
+        const aUpvotes = aId ? Number(upvoteCountsMap.get(aId) ?? 0n) : 0;
+        const bUpvotes = bId ? Number(upvoteCountsMap.get(bId) ?? 0n) : 0;
+        return bUpvotes - aUpvotes;
+      }
+
       return 0;
     });
-  }, [filteredEntries, sortMode, ratingsMap, localRatingsMap]);
+  }, [filteredEntries, sortMode, ratingsMap, localRatingsMap, upvoteCountsMap]);
 
   if (filteredEntries.length === 0) return null;
 

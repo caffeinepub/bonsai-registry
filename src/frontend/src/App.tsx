@@ -3,6 +3,8 @@ import { Twitter } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BonsaiNewsCarousel } from "./components/BonsaiNewsCarousel";
+import { CommunitySpotlight } from "./components/CommunitySpotlight";
+import { CommunitySubmitModal } from "./components/CommunitySubmitModal";
 import type { SortMode } from "./components/EcosystemSection";
 import { EcosystemSection } from "./components/EcosystemSection";
 import { EmailSignupWidget } from "./components/EmailSignupWidget";
@@ -49,6 +51,10 @@ export default function App() {
   const [ratingLoadingId, setRatingLoadingId] = useState<string | null>(null);
   const [tipOpen, setTipOpen] = useState(false);
   const [payToListOpen, setPayToListOpen] = useState(false);
+  const [submitOpen, setSubmitOpen] = useState(false);
+  const [upvoteCountsMap, setUpvoteCountsMap] = useState<Map<string, bigint>>(
+    new Map(),
+  );
   const [canisterEcosystemOrder, setCanisterEcosystemOrder] = useState<
     Record<string, { sortOrder?: number; hidden?: boolean }>
   >({});
@@ -91,6 +97,20 @@ export default function App() {
             );
           }
         } catch {}
+      })
+      .catch(() => {});
+  }, [actor, actorFetching]);
+
+  useEffect(() => {
+    if (!actor || actorFetching) return;
+    (actor as any)
+      .getTopUpvotedEntries(100n)
+      .then((list: Array<[bigint, bigint]>) => {
+        const map = new Map<string, bigint>();
+        for (const [id, count] of list) {
+          map.set(id.toString(), count);
+        }
+        setUpvoteCountsMap(map);
       })
       .catch(() => {});
   }, [actor, actorFetching]);
@@ -375,6 +395,10 @@ export default function App() {
         open={payToListOpen}
         onClose={() => setPayToListOpen(false)}
       />
+      <CommunitySubmitModal
+        open={submitOpen}
+        onClose={() => setSubmitOpen(false)}
+      />
       <TipButton onClick={handleTipOpen} />
 
       <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -530,6 +554,14 @@ export default function App() {
                             <Twitter className="w-3 h-3" />
                             Share on X
                           </a>
+                          <button
+                            type="button"
+                            data-ocid="registry.submit.open_modal_button"
+                            onClick={() => setSubmitOpen(true)}
+                            className="flex items-center gap-1.5 px-3 py-1 rounded border border-emerald-400/30 bg-emerald-400/8 text-emerald-400 text-xs font-mono hover:bg-emerald-400/15 transition-all"
+                          >
+                            + Submit a Project
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -549,6 +581,11 @@ export default function App() {
                 {searchQuery === "" &&
                   activeCategory === "all" &&
                   activeChain === "all" && <NewsSection />}
+                {searchQuery === "" &&
+                  activeCategory === "all" &&
+                  activeChain === "all" && (
+                    <CommunitySpotlight allEntries={mergedAllEntries} />
+                  )}
 
                 {filteredGroups.map(({ group, entries }, idx) => (
                   <EcosystemSection
@@ -566,6 +603,7 @@ export default function App() {
                     localRatingsMap={localRatingsMap}
                     localMyRatingsMap={localMyRatingsMap}
                     onLocalRate={submitLocalRating}
+                    upvoteCountsMap={upvoteCountsMap}
                   />
                 ))}
               </>

@@ -1,5 +1,5 @@
 import type { Category } from "@/data/registryData";
-import { AlignJustify, BarChart2, Star } from "lucide-react";
+import { AlignJustify, BarChart2, Star, TrendingUp } from "lucide-react";
 import type { SortMode } from "./EcosystemSection";
 
 const CATEGORY_FILTERS: { label: string; value: Category | "all" }[] = [
@@ -52,6 +52,11 @@ const SORT_OPTIONS: {
     label: "Most Rated",
     value: "most-rated",
     icon: <BarChart2 className="w-3 h-3" aria-hidden />,
+  },
+  {
+    label: "Rising",
+    value: "rising",
+    icon: <TrendingUp className="w-3 h-3" aria-hidden />,
   },
 ];
 
@@ -147,7 +152,9 @@ export function FilterBar({
                   className={[
                     "flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-medium border transition-all duration-150",
                     sortMode === opt.value
-                      ? "filter-pill-active"
+                      ? opt.value === "rising"
+                        ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
+                        : "filter-pill-active"
                       : "filter-pill-idle",
                   ].join(" ")}
                 >

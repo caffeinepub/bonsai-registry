@@ -40,6 +40,7 @@ import {
   Database,
   Download,
   ExternalLink,
+  Flag,
   InboxIcon,
   LayoutGrid,
   Loader2,
@@ -53,6 +54,7 @@ import {
   Star,
   TreePine,
   Upload,
+  Users,
   Vault,
   XCircle,
 } from "lucide-react";
@@ -71,6 +73,293 @@ const ADMIN_SECRET = "#WakeUp4";
 function e8sToIcp(e8s: bigint): string {
   const icp = Number(e8s) / 1e8;
   return icp.toFixed(4).replace(/\.?0+$/, "");
+}
+
+// ── Community Submissions Tab ──────────────────────────────────────────────────
+function CommunitySubmissionsTab() {
+  const actor = useAdminActorContext();
+  const queryClient = useQueryClient();
+
+  const { data: submissions, isLoading } = useQuery({
+    queryKey: ["pending-submissions"],
+    queryFn: async () => actor.getPendingSubmissions(ADMIN_SECRET),
+    enabled: !!actor,
+  });
+
+  const approveMutation = useMutation({
+    mutationFn: async (id: bigint) =>
+      actor.approvePendingSubmissionWithSecret(ADMIN_SECRET, id),
+    onSuccess: () => {
+      toast.success("Submission approved!");
+      queryClient.invalidateQueries({ queryKey: ["pending-submissions"] });
+    },
+    onError: () => toast.error("Failed to approve submission."),
+  });
+
+  const rejectMutation = useMutation({
+    mutationFn: async (id: bigint) =>
+      actor.rejectPendingSubmissionWithSecret(ADMIN_SECRET, id),
+    onSuccess: () => {
+      toast.success("Submission rejected.");
+      queryClient.invalidateQueries({ queryKey: ["pending-submissions"] });
+    },
+    onError: () => toast.error("Failed to reject submission."),
+  });
+
+  const communitySubmissions =
+    submissions?.filter((s) => s.paymentMemo === "community") ?? [];
+
+  if (isLoading)
+    return (
+      <div
+        data-ocid="admin.community.loading_state"
+        className="flex items-center gap-2 py-8 justify-center"
+      >
+        <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+        <span className="text-sm text-muted-foreground">
+          Loading submissions...
+        </span>
+      </div>
+    );
+
+  if (communitySubmissions.length === 0)
+    return (
+      <div
+        data-ocid="admin.community.empty_state"
+        className="flex flex-col items-center justify-center py-16 text-center"
+      >
+        <Users className="w-10 h-10 text-muted-foreground/30 mb-3" />
+        <p className="text-sm text-muted-foreground">
+          No community submissions yet.
+        </p>
+      </div>
+    );
+
+  return (
+    <div className="space-y-3" data-ocid="admin.community.table">
+      <p className="text-xs text-muted-foreground font-mono">
+        {communitySubmissions.length} community submission
+        {communitySubmissions.length !== 1 ? "s" : ""} pending review
+      </p>
+      <Table>
+        <TableHeader>
+          <TableRow className="border-border">
+            <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+              Name
+            </TableHead>
+            <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+              URL
+            </TableHead>
+            <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+              Ecosystem
+            </TableHead>
+            <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+              Submitted
+            </TableHead>
+            <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+              Submitter
+            </TableHead>
+            <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+              Status
+            </TableHead>
+            <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+              Actions
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {communitySubmissions.map((sub, idx) => (
+            <TableRow
+              key={sub.id.toString()}
+              data-ocid={`admin.community.row.item.${idx + 1}`}
+              className="border-border"
+            >
+              <TableCell className="text-sm font-medium text-foreground">
+                {sub.entry.name}
+              </TableCell>
+              <TableCell>
+                <a
+                  href={sub.entry.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-primary hover:underline font-mono truncate max-w-[160px] block"
+                >
+                  {sub.entry.url}
+                </a>
+              </TableCell>
+              <TableCell className="text-xs text-muted-foreground font-mono">
+                {sub.entry.ecosystem}
+              </TableCell>
+              <TableCell className="text-[11px] text-muted-foreground font-mono">
+                {new Date(
+                  Number(sub.submittedAt / 1_000_000n),
+                ).toLocaleDateString()}
+              </TableCell>
+              <TableCell className="text-[10px] text-muted-foreground font-mono truncate max-w-[100px]">
+                {sub.submitter.toText().slice(0, 12)}...
+              </TableCell>
+              <TableCell>
+                <Badge
+                  variant="outline"
+                  className={
+                    sub.status === "pending"
+                      ? "text-amber-400 border-amber-400/40"
+                      : sub.status === "approved"
+                        ? "text-emerald-400 border-emerald-400/40"
+                        : "text-red-400 border-red-400/40"
+                  }
+                >
+                  {sub.status}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                {sub.status === "pending" && (
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-6 text-[11px] px-2 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10"
+                      onClick={() => approveMutation.mutate(sub.id)}
+                      disabled={approveMutation.isPending}
+                      data-ocid={`admin.community.approve_button.${idx + 1}`}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-6 text-[11px] px-2 border-red-500/40 text-red-400 hover:bg-red-500/10"
+                      onClick={() => rejectMutation.mutate(sub.id)}
+                      disabled={rejectMutation.isPending}
+                      data-ocid={`admin.community.delete_button.${idx + 1}`}
+                    >
+                      Reject
+                    </Button>
+                  </div>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+// ── Flagged Comments Tab ──────────────────────────────────────────────────────
+function FlaggedCommentsTab() {
+  const actor = useAdminActorContext();
+  const queryClient = useQueryClient();
+
+  const { data: flagged, isLoading } = useQuery({
+    queryKey: ["flagged-comments"],
+    queryFn: async () => (actor as any).getFlaggedComments(ADMIN_SECRET),
+    enabled: !!actor,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (commentId: bigint) =>
+      (actor as any).deleteCommentWithSecret(ADMIN_SECRET, commentId),
+    onSuccess: () => {
+      toast.success("Comment deleted.");
+      queryClient.invalidateQueries({ queryKey: ["flagged-comments"] });
+    },
+    onError: () => toast.error("Failed to delete comment."),
+  });
+
+  if (isLoading)
+    return (
+      <div
+        data-ocid="admin.flagged.loading_state"
+        className="flex items-center gap-2 py-8 justify-center"
+      >
+        <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+        <span className="text-sm text-muted-foreground">
+          Loading flagged comments...
+        </span>
+      </div>
+    );
+
+  if (!flagged || flagged.length === 0)
+    return (
+      <div
+        data-ocid="admin.flagged.empty_state"
+        className="flex flex-col items-center justify-center py-16 text-center"
+      >
+        <Flag className="w-10 h-10 text-muted-foreground/30 mb-3" />
+        <p className="text-sm text-muted-foreground">No flagged comments.</p>
+      </div>
+    );
+
+  return (
+    <div className="space-y-3" data-ocid="admin.flagged.table">
+      <p className="text-xs text-muted-foreground font-mono">
+        {flagged.length} flagged comment{flagged.length !== 1 ? "s" : ""}{" "}
+        awaiting review
+      </p>
+      <Table>
+        <TableHeader>
+          <TableRow className="border-border">
+            <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+              Comment
+            </TableHead>
+            <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+              Author
+            </TableHead>
+            <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+              Flags
+            </TableHead>
+            <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+              Entry ID
+            </TableHead>
+            <TableHead className="text-[10px] font-mono text-muted-foreground uppercase">
+              Action
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {flagged.map((comment: any, idx: number) => (
+            <TableRow
+              key={comment.id.toString()}
+              data-ocid={`admin.flagged.row.item.${idx + 1}`}
+              className="border-border"
+            >
+              <TableCell className="text-xs text-foreground max-w-xs">
+                <p className="line-clamp-2">{comment.text}</p>
+              </TableCell>
+              <TableCell className="text-[10px] text-muted-foreground font-mono">
+                {comment.authorName ||
+                  `${comment.author?.toText?.()?.slice(0, 12)}...`}
+              </TableCell>
+              <TableCell>
+                <Badge
+                  variant="outline"
+                  className="text-amber-400 border-amber-400/40 font-mono text-[10px]"
+                >
+                  {comment.flagCount.toString()} flags
+                </Badge>
+              </TableCell>
+              <TableCell className="text-[10px] text-muted-foreground font-mono">
+                #{comment.entryId.toString()}
+              </TableCell>
+              <TableCell>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-6 text-[11px] px-2 border-red-500/40 text-red-400 hover:bg-red-500/10"
+                  onClick={() => deleteMutation.mutate(comment.id)}
+                  disabled={deleteMutation.isPending}
+                  data-ocid={`admin.flagged.delete_button.${idx + 1}`}
+                >
+                  Delete
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
 }
 
 interface AdminDashboardProps {
@@ -1774,6 +2063,22 @@ function AdminDashboardInner({ onLogout }: { onLogout: () => void }) {
               <ShieldCheck className="w-3.5 h-3.5" />
               Ambassadors
             </TabsTrigger>
+            <TabsTrigger
+              data-ocid="admin.community_tab"
+              value="community"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs gap-1.5 h-7"
+            >
+              <Users className="w-3.5 h-3.5" />
+              Community
+            </TabsTrigger>
+            <TabsTrigger
+              data-ocid="admin.flagged_tab"
+              value="flagged"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs gap-1.5 h-7"
+            >
+              <Flag className="w-3.5 h-3.5" />
+              Flagged
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="entries">
@@ -1804,6 +2109,12 @@ function AdminDashboardInner({ onLogout }: { onLogout: () => void }) {
           </TabsContent>
           <TabsContent value="ambassadors">
             <AdminAmbassadorsTab />
+          </TabsContent>
+          <TabsContent value="community">
+            <CommunitySubmissionsTab />
+          </TabsContent>
+          <TabsContent value="flagged">
+            <FlaggedCommentsTab />
           </TabsContent>
         </Tabs>
       </div>

@@ -165,6 +165,19 @@ actor {
     source : Text;
   };
 
+  // Community types
+  public type CommunityComment = {
+    id : Nat;
+    entryId : Nat;
+    author : Principal;
+    authorName : Text;
+    text : Text;
+    createdAt : Time.Time;
+    parentId : ?Nat;
+    flagCount : Nat;
+    deleted : Bool;
+  };
+
   // Ambassador / Influencer types
   public type AmbassadorSocialLinks = {
     twitter : ?Text;
@@ -285,6 +298,15 @@ actor {
   var nextContractId = 1;
 
   let bonsaiApprovedList = Map.empty<Text, BonsaiApprovedEntry>();
+
+  // Community feature stores
+  // upvotes: key = "principalId:entryId", value = timestamp
+  let upvotes = Map.empty<Text, Time.Time>();
+  // comments
+  let comments = Map.empty<Nat, CommunityComment>();
+  var nextCommentId = 1;
+  // flagged comments: key = "principalId:commentId"
+  let commentFlags = Map.empty<Text, Bool>();
 
   // ============================================================
   // MIGRATION: run once after upgrade from V1
@@ -435,6 +457,17 @@ actor {
     };
   };
 
+  func grantBadge(principal : Principal, badge : Text) {
+    switch (profiles_v2.get(principal)) {
+      case (null) {};
+      case (?p) {
+        if (not p.badges.any(func(b) { Text.equal(b, badge) })) {
+          profiles_v2.add(principal, { p with badges = p.badges.concat([badge]) });
+        };
+      };
+    };
+  };
+
   // ============================================================
   // USER PROFILE FUNCTIONS
   // ============================================================
@@ -530,6 +563,27 @@ actor {
     submissionId;
   };
 
+  // Free community submission (no payment required)
+  public shared ({ caller }) func submitCommunityEntry(entry : BonsaiRegistryEntry) : async Nat {
+    requireAuthenticated(caller);
+    ensureProfileExists(caller);
+    let submissionId = nextId;
+    let submission : PendingSubmission = {
+      id = submissionId; submitter = caller; entry;
+      paymentMemo = "community";
+      submittedAt = Time.now(); status = #pending;
+    };
+    submissions_v2.add(submissionId, submission);
+    nextId += 1;
+    switch (profiles_v2.get(caller)) {
+      case (null) {};
+      case (?p) {
+        profiles_v2.add(caller, { p with submittedEntries = p.submittedEntries.concat([submissionId]) });
+      };
+    };
+    submissionId;
+  };
+
   public query ({ caller }) func getPendingSubmissions(secret : Text) : async [PendingSubmission] {
     requireAdminSecret(secret);
     submissions_v2.values().toArray();
@@ -544,6 +598,10 @@ actor {
         entries_v2.add(nextId, newEntry);
         nextId += 1;
         submissions_v2.add(submissionId, { sub with status = #approved });
+        // Grant Contributor badge for community submissions
+        if (Text.equal(sub.paymentMemo, "community")) {
+          grantBadge(sub.submitter, "Contributor");
+        };
       };
     };
   };
@@ -714,6 +772,172 @@ actor {
         };
       } else { (0, rating) };
     });
+  };
+
+  // ============================================================
+  // COMMUNITY UPVOTES
+  // ============================================================
+
+  public shared ({ caller }) func upvoteEntry(entryId : Nat) : async Bool {
+    requireAuthenticated(caller);
+    let key = caller.toText() # ":" # entryId.toText();
+    switch (upvotes.get(key)) {
+      case (?_) {
+        // Toggle off
+        upvotes.remove(key);
+        false;
+      };
+      case (null) {
+        upvotes.add(key, Time.now());
+        true;
+      };
+    };
+  };
+
+  public query ({ caller }) func getEntryUpvotes(entryId : Nat) : async Nat {
+    let suffix = ":" # entryId.toText();
+    upvotes.keys().filter(func(k) {
+      let parts = k.split(#char ':').toArray();
+      parts.size() == 2 and parts[1] == entryId.toText();
+    }).toArray().size();
+  };
+
+  public query ({ caller }) func hasCallerUpvoted(entryId : Nat) : async Bool {
+    if (caller.isAnonymous()) { return false };
+    upvotes.containsKey(caller.toText() # ":" # entryId.toText());
+  };
+
+  public query ({ caller }) func getTopUpvotedEntries(limit : Nat) : async [(Nat, Nat)] {
+    // Tally upvotes per entryId
+    let tally = Map.empty<Nat, Nat>();
+    for (key in upvotes.keys()) {
+      let parts = key.split(#char ':').toArray();
+      if (parts.size() == 2) {
+        switch (Nat.fromText(parts[1])) {
+          case (?entryId) {
+            let current = switch (tally.get(entryId)) { case (?n) n; case (null) 0 };
+            tally.add(entryId, current + 1);
+          };
+          case (null) {};
+        };
+      };
+    };
+    let sorted = tally.toArray().sort(func((_, a), (_, b)) {
+      if (a > b) #less else if (a < b) #greater else #equal
+    });
+    sorted.sliceToArray(0, Nat.min(limit, sorted.size()));
+  };
+
+  public query ({ caller }) func getCommunitySpotlight() : async ?Nat {
+    // Returns the entry with the most upvotes overall
+    let tally = Map.empty<Nat, Nat>();
+    for (key in upvotes.keys()) {
+      let parts = key.split(#char ':').toArray();
+      if (parts.size() == 2) {
+        switch (Nat.fromText(parts[1])) {
+          case (?entryId) {
+            let current = switch (tally.get(entryId)) { case (?n) n; case (null) 0 };
+            tally.add(entryId, current + 1);
+          };
+          case (null) {};
+        };
+      };
+    };
+    if (tally.size() == 0) { return null };
+    var bestId = 0;
+    var bestCount = 0;
+    for ((id, count) in tally.entries()) {
+      if (count > bestCount) { bestId := id; bestCount := count };
+    };
+    if (bestCount == 0) { null } else { ?bestId };
+  };
+
+  // ============================================================
+  // COMMUNITY COMMENTS
+  // ============================================================
+
+  public shared ({ caller }) func addComment(entryId : Nat, text : Text) : async Nat {
+    requireAuthenticated(caller);
+    ensureProfileExists(caller);
+    let authorName = switch (profiles_v2.get(caller)) {
+      case (?p) { if (Text.equal(p.displayName, "")) "Anon" else p.displayName };
+      case (null) { "Anon" };
+    };
+    let commentId = nextCommentId;
+    comments.add(commentId, {
+      id = commentId;
+      entryId;
+      author = caller;
+      authorName;
+      text;
+      createdAt = Time.now();
+      parentId = null;
+      flagCount = 0;
+      deleted = false;
+    });
+    nextCommentId += 1;
+    commentId;
+  };
+
+  public shared ({ caller }) func replyToComment(parentCommentId : Nat, text : Text) : async Nat {
+    requireAuthenticated(caller);
+    ensureProfileExists(caller);
+    let parent = switch (comments.get(parentCommentId)) {
+      case (null) { Runtime.trap("Parent comment not found") };
+      case (?c) { c };
+    };
+    let authorName = switch (profiles_v2.get(caller)) {
+      case (?p) { if (Text.equal(p.displayName, "")) "Anon" else p.displayName };
+      case (null) { "Anon" };
+    };
+    let commentId = nextCommentId;
+    comments.add(commentId, {
+      id = commentId;
+      entryId = parent.entryId;
+      author = caller;
+      authorName;
+      text;
+      createdAt = Time.now();
+      parentId = ?parentCommentId;
+      flagCount = 0;
+      deleted = false;
+    });
+    nextCommentId += 1;
+    commentId;
+  };
+
+  public query ({ caller }) func getComments(entryId : Nat) : async [CommunityComment] {
+    comments.values().filter(func(c) {
+      c.entryId == entryId and not c.deleted
+    }).toArray();
+  };
+
+  public query ({ caller }) func getFlaggedComments(secret : Text) : async [CommunityComment] {
+    requireAdminSecret(secret);
+    comments.values().filter(func(c) { c.flagCount > 0 and not c.deleted }).toArray();
+  };
+
+  public shared ({ caller }) func flagComment(commentId : Nat) : async () {
+    requireAuthenticated(caller);
+    let flagKey = caller.toText() # ":" # commentId.toText();
+    if (commentFlags.containsKey(flagKey)) { Runtime.trap("Already flagged") };
+    switch (comments.get(commentId)) {
+      case (null) { Runtime.trap("Comment not found") };
+      case (?c) {
+        commentFlags.add(flagKey, true);
+        comments.add(commentId, { c with flagCount = c.flagCount + 1 });
+      };
+    };
+  };
+
+  public shared ({ caller }) func deleteCommentWithSecret(secret : Text, commentId : Nat) : async () {
+    requireAdminSecretAndRole(caller, secret);
+    switch (comments.get(commentId)) {
+      case (null) { Runtime.trap("Comment not found") };
+      case (?c) {
+        comments.add(commentId, { c with deleted = true });
+      };
+    };
   };
 
   // ============================================================
@@ -956,5 +1180,5 @@ actor {
 
   public query ({ caller = _ }) func getEcosystemOrder() : async Text {
     ecosystemOrderJson;
-  };
+};
 };

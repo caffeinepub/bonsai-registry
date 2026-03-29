@@ -1,36 +1,40 @@
 # Bonsai Registry
 
 ## Current State
-- Registry directory with LinkCard components that show a 24px favicon and lazy-loaded OG preview image
-- EcosystemManager in admin saves rankings to localStorage only — not visible on other devices
-- App.tsx reads ecosystem order from localStorage
-- No live price ticker exists
-- No $BONSAI token promotion or funneling
+- Full registry with 2,000+ entries across 35+ ecosystems
+- Pay-to-list submission flow via OISY wallet
+- II-authenticated user profiles with badges/achievements
+- Admin panel with pending submission approval queue (pay-to-list only)
+- Star ratings (1-5) on all entries, sortable leaderboard
+- Ambassador/creator commerce layer
+- Featured banner ads (paid)
 
 ## Requested Changes (Diff)
 
 ### Add
-- Backend functions: `saveEcosystemOrderWithSecret(secret, orderJson)` and `getEcosystemOrder()` to persist ecosystem order/visibility in the canister
-- `PriceTicker` component showing live prices for $BONSAI (Odin.Fun), $ICP, $BTC, $USDC — displayed in the header utility strip
-- $BONSAI token promotion widget/banner with invite link (https://odin.fun/token/26j2) appearing tastefully in header, footer, and sidebar
-- Larger favicon fallback in LinkCard when no OG preview image is available
+- **Community Submission flow**: Any user (II-authenticated) can submit a project for free via a new modal. Submissions enter a pending queue in admin for approval. Upon admin approval, the submitter's profile gets a "Contributor" badge automatically.
+- **Upvotes**: II-authenticated users can upvote any registry entry (one vote per entry per user). Upvote count stored per entry in the canister.
+- **"Rising" tab**: New tab on the registry page filtering/sorting by upvote count, showing community-curated gems.
+- **Comments**: II-authenticated users can post threaded comments on any project card. Comments support one level of replies. Users can flag comments for moderation (DAO-style). Admin can delete flagged comments.
+- **Community Spotlight**: A weekly highlighted featured slot shown at the top of the registry (below paid banners). Rotates based on upvote count -- the top-voted entry each week earns the spotlight. No payment required.
 
 ### Modify
-- `EcosystemManager.tsx`: Replace localStorage save/load with canister API calls (`saveEcosystemOrderWithSecret` / `getEcosystemOrder`)
-- `App.tsx`: Load ecosystem order from canister on mount instead of localStorage
-- `LinkCard.tsx`: When no OG preview image loads, show a larger (48px) centered favicon as a fallback in the preview area
-- `Header.tsx`: Add PriceTicker in the utility strip and a subtle $BONSAI call-to-action
-- `Footer.tsx`: Add $BONSAI / Odin.Fun link in ecosystem partners
-- `backend.d.ts` and backend bindings: Expose new ecosystem order endpoints
+- Backend: Add upvote storage, comments storage, community submission endpoint (free, no paymentMemo required beyond empty string)
+- Admin panel: Add "Community Submissions" tab, "Flagged Comments" tab
+- Registry page: Add "Rising" tab alongside existing ecosystem/category tabs
+- LinkCard: Add upvote button + count, comment count indicator, expandable comment thread
+- UserProfilePage: Award "Contributor" badge when submission is approved
 
 ### Remove
-- localStorage-only ecosystem order logic from EcosystemManager and App.tsx
+- Nothing removed
 
 ## Implementation Plan
-1. Add two canister functions in main.mo: `saveEcosystemOrderWithSecret` (stores JSON string) and `getEcosystemOrder` (public query returning the string)
-2. Regenerate backend.d.ts bindings to expose new endpoints
-3. Update EcosystemManager to call `saveEcosystemOrderWithSecret` on save/move and `getEcosystemOrder` on load, falling back to localStorage for migration
-4. Update App.tsx to call `getEcosystemOrder` on mount and merge with static data
-5. Create `PriceTicker.tsx` — fetches ICP+BTC from CoinGecko public API, BONSAI from Odin.Fun API, USDC hardcoded at $1. Auto-refreshes every 30s. Horizontal scrolling strip in header.
-6. Add $BONSAI promotion: subtle banner/badge with Odin.Fun invite link in header utility strip, footer partner link, and a small persistent call-to-action in the sidebar
-7. Improve LinkCard favicon fallback: when OG image fails/absent, render a larger favicon (64px) centered in the preview area with a subtle background
+1. Generate Motoko backend with: `submitCommunityEntry`, `upvoteEntry`, `getEntryUpvotes`, `getTopUpvotedEntries`, `addComment`, `replyToComment`, `getComments`, `flagComment`, `deleteCommentWithSecret`, `getCommunitySpotlight` endpoints
+2. Update `backend.d.ts` with new types and function signatures
+3. Build `CommunitySubmitModal.tsx` component for free project submissions
+4. Build `CommentThread.tsx` component for threaded comments on project cards
+5. Add upvote button to `LinkCard.tsx` with optimistic UI
+6. Add "Rising" tab to registry filter/tab bar with upvote-sorted entries
+7. Add Community Spotlight banner component above the registry section
+8. Update `AdminDashboard.tsx` with Community Submissions tab and Flagged Comments tab
+9. Grant "Contributor" badge on submission approval in admin flow

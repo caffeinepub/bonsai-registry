@@ -152,6 +152,17 @@ export interface BonsaiApprovedEntry {
     email: string;
     approvedAt: bigint;
 }
+export interface CommunityComment {
+    id: bigint;
+    entryId: bigint;
+    author: Principal;
+    authorName: string;
+    text: string;
+    createdAt: Time;
+    parentId: [] | [bigint];
+    flagCount: bigint;
+    deleted: boolean;
+}
 export interface backendInterface {
     addRegistryEntry(entry: BonsaiRegistryEntry): Promise<bigint>;
     addRegistryEntryWithSecret(secret: string, entry: BonsaiRegistryEntry): Promise<bigint>;
@@ -190,10 +201,25 @@ export interface backendInterface {
     saveCallerUserProfile(profile: ExtendedUserProfile): Promise<void>;
     setListingFeeWithSecret(secret: string, fee: bigint): Promise<void>;
     submitProjectListing(entry: BonsaiRegistryEntry, paymentMemo: string): Promise<bigint>;
+    submitCommunityEntry(entry: BonsaiRegistryEntry): Promise<bigint>;
     subscribeEmail(email: string, oisyPrincipal: string, source: string): Promise<void>;
     unbookmarkEntry(entryId: bigint): Promise<void>;
     updateRegistryEntry(id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
     updateRegistryEntryWithSecret(secret: string, id: bigint, newEntry: BonsaiRegistryEntry): Promise<void>;
+    // Community upvotes
+    upvoteEntry(entryId: bigint): Promise<boolean>;
+    getEntryUpvotes(entryId: bigint): Promise<bigint>;
+    hasCallerUpvoted(entryId: bigint): Promise<boolean>;
+    getTopUpvotedEntries(limit: bigint): Promise<Array<[bigint, bigint]>>;
+    getCommunitySpotlight(): Promise<bigint | null>;
+    // Community comments
+    addComment(entryId: bigint, text: string): Promise<bigint>;
+    replyToComment(parentCommentId: bigint, text: string): Promise<bigint>;
+    getComments(entryId: bigint): Promise<Array<CommunityComment>>;
+    getFlaggedComments(secret: string): Promise<Array<CommunityComment>>;
+    flagComment(commentId: bigint): Promise<void>;
+    deleteCommentWithSecret(secret: string, commentId: bigint): Promise<void>;
+    // Ambassador
     registerAmbassador(profile: AmbassadorProfile): Promise<void>;
     getAmbassadorProfile(principalId: string): Promise<AmbassadorProfile | null>;
     saveAmbassadorProfile(profile: AmbassadorProfile): Promise<void>;
